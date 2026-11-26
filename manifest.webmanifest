@@ -1,0 +1,11 @@
+{
+  "name": "Pastel Siege",
+  "short_name": "Pastel Siege",
+  "description": "A pastel tower-climbing FPS. Fight up the floors, mutate your guns, beat the Warden.",
+  "start_url": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#f6efe2",
+  "theme_color": "#ff8a6b",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}
