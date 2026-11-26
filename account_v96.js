@@ -164,8 +164,9 @@ export async function signIn(who, pass) {
   catch (e) {
     keep(null); clear();
     const wrong = e.code === 'invalid_credentials' || /invalid login/i.test(e.message);
-    const err = new Error(wrong && byName ? 'Wrong username or password. If your account has an email, sign in with that instead.' : e.code === 'email_not_confirmed' ? 'Confirm your email first: open the link we sent you.' : nice(e));
-    err.unconfirmed = e.code === 'email_not_confirmed';
+    const waiting = e.code === 'email_not_confirmed';
+    const err = new Error(wrong && byName ? 'Wrong username or password. If your account has an email, sign in with that instead.' : waiting && byName ? 'This account was never finished. Create a new one with your email and a different username.' : waiting ? 'Confirm your email first: open the link we sent you.' : nice(e));
+    err.unconfirmed = waiting && !byName; // an unfinished account with a made-up address has nowhere to send a link
     throw err;
   }
 }
