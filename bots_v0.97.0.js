@@ -1,5 +1,5 @@
-import { THREE, scene, camera, world, quality, resolveCircle, lineOfSight, insideSolid, openPoint, openPointNear, rand, clamp, angDiff, tracer, beam, sparks, blood, pool, flashLight, SND, goreBurst, gibs, fountain, drip, fxSettings, explosionFx } from './world_v97.js';
-import { at3 } from './audio_v97.js';
+import { THREE, scene, camera, world, quality, resolveCircle, lineOfSight, insideSolid, openPoint, openPointNear, rand, clamp, angDiff, tracer, beam, sparks, blood, pool, flashLight, SND, goreBurst, gibs, fountain, drip, fxSettings, explosionFx } from './world_v0.97.0.js';
+import { at3 } from './audio_v0.97.0.js';
 
 // Set by game.js: player state, whether the game is live, difficulty, damage and explosion callbacks.
 export const ctx = { player: null, playing: () => false, diff: null, hurt: () => {}, explode: () => {} };
@@ -14,7 +14,7 @@ let NID = 0;
 // A cheat script that gets hold of the player or a bot (by hooking a built-in function for a moment) could just write
 // player.cash = 1e9 or bot.hp = 0. These values are guarded: every change is checked to come from the game's own files.
 // The game itself always passes the check, whatever happens in play, so it can't flag someone for being good.
-const OUR_FILE = /_v\d+\.js/;
+const OUR_FILE = /_v\d+\.\d+\.\d+\.js/;
 export function fromGame() {
   if (Error.stackTraceLimit !== undefined && Error.stackTraceLimit < 12) Error.stackTraceLimit = 12; // a script can set it to 0 to hide
   const st = new Error().stack; if (typeof st !== 'string') return true; // browser without stacks: allow

@@ -1,12 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { ACTIONS, setBinds, bindIn, rebind, keyLabel } from '../controls_v97.js';
-import { XH_PRESETS, crosshairCode, parseCrosshair } from '../crosshair_v97.js';
-import { MODS, ACH, doorOffers, upgCost, upgSpent, upgPoints, paintGoal, mulberry } from '../run_v97.js';
-import { MUTATIONS, MV } from '../mutations_v97.js';
-import { ABILITIES } from '../abilities_v97.js';
-import { CHARMS } from '../charms_v97.js';
+import { ACTIONS, setBinds, bindIn, rebind, keyLabel } from '../controls_v0.97.0.js';
+import { XH_PRESETS, crosshairCode, parseCrosshair } from '../crosshair_v0.97.0.js';
+import { MODS, ACH, doorOffers, upgCost, upgSpent, upgPoints, paintGoal, mulberry } from '../run_v0.97.0.js';
+import { MUTATIONS, MV } from '../mutations_v0.97.0.js';
+import { ABILITIES } from '../abilities_v0.97.0.js';
+import { CHARMS } from '../charms_v0.97.0.js';
 
 test('control actions and default keys are unique', () => {
   const ids = ACTIONS.map(a => a[0]);

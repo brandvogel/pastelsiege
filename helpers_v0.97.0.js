@@ -1,7 +1,7 @@
 // Things you can buy that fight for you: orbiting sentry drones, a medic drone, deployable turrets and one-shot strike drones.
-import { THREE, scene, camera, world, lineOfSight, groundAt, insideSolid, rand, tracer, sparks, flashLight, SND } from './world_v97.js';
-import { at3 } from './audio_v97.js';
-import { bots } from './bots_v97.js';
+import { THREE, scene, camera, world, lineOfSight, groundAt, insideSolid, rand, tracer, sparks, flashLight, SND } from './world_v0.97.0.js';
+import { at3 } from './audio_v0.97.0.js';
+import { bots } from './bots_v0.97.0.js';
 const V3 = THREE.Vector3;
 
 // Every support item has levels. Level 1 is cheap and weak; each upgrade costs more and does more.
@@ -9,7 +9,7 @@ const V3 = THREE.Vector3;
 // upgrading them makes every charge stronger.
 const r1 = x => (Math.round(x * 10) / 10).toString();
 export const SUPPORT = [
-  // (Medic Drone, Sentry Drone, Auto-Turret and Strike Drone were removed in v46; old saves just ignore them)
+  // (Medic Drone, Sentry Drone, Auto-Turret and Strike Drone were removed in v0.46.0; old saves just ignore them)
   { id: 'scan', name: 'Recon Scan', icon: '◎', key: 'K', price: 700, charge: 500, stock: 2, up: [900, 1600, 2600, 4000],
     dur: [6, 10, 15, 22, 30],
     desc: 'Press K to ping every bot on your minimap and through walls.',

@@ -139,7 +139,7 @@ export const WEAPONS = [
   W({ id: 'arclance', name: 'Arc Lance', cat: 'Special', slot: 'primary', price: 7000, dmg: 70, head: 2, rpm: 260, modes: ['semi'], mag: 12, reserve: 60, reload: 2.6,
     pierce: 3, innate: ['arc', 'cryo'], hip: .015, ads: .001, bloom: .004, recoilV: .03, kick: .7, range: 120, falloff: 250, minMult: .9, scope: 'holo', zoom: 40, mobility: .9, adsSpeed: 5,
     snd: S(1800, 120, .4, .3, 'sine'), model: { kind: 'rail', color: 0x2b2d42, accent: 0x7dd3ff } }),
-  // ======== v19 guns ========
+  // ======== v0.19.0 guns ========
   W({ id: 'tick', name: 'Tick Auto', cat: 'Pistol', slot: 'secondary', price: 900, dmg: 18, rpm: 900, modes: ['auto', 'semi'], mag: 18, reserve: 108, reload: 1.5,
     hip: .026, ads: .01, bloom: .006, recoilV: .009, recoilH: .007, range: 16, falloff: 40, minMult: .5, zoom: 64, draw: .3, snd: S(700, 170, .32, .06), model: { kind: 'pistol', color: 0x9cc5d6, accent: 0x2b2d42, ext: true } }),
   W({ id: 'nova', name: 'Nova Bouncer', cat: 'Pistol', slot: 'secondary', price: 1800, dmg: 34, rpm: 360, modes: ['semi'], mag: 12, reserve: 72, reload: 1.5,

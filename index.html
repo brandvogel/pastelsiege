@@ -731,7 +731,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) addEve
   @media (max-width:860px){.gsgrid,.shopbody,.pausegrid{grid-template-columns:minmax(0,1fr)}.gsstats{position:static}.side{flex-direction:row;flex-wrap:wrap}}
   @media print{#hud,.screen{display:none!important}}
   .ddesc{margin:2px 0 8px;font-size:14px;line-height:1.45;color:var(--navy)}
-  /* ---- v19: menu extras ---- */
+  /* ---- v0.19.0: menu extras ---- */
   .gorow{display:grid;grid-template-columns:1.3fr 1.3fr .8fr;gap:12px}
   #mpHostGo{grid-template-columns:repeat(2,minmax(0,1fr))} #mpGuest{grid-template-columns:minmax(0,260px)}
   .go small{display:block;font-size:11px;letter-spacing:.04em;font-weight:700;opacity:.85;margin-top:3px;font-family:var(--mono)}
@@ -894,7 +894,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) addEve
   .pal button[disabled]{opacity:.4;cursor:not-allowed}
   @media (max-width:700px){.admgrid{grid-template-columns:1fr 1fr}}
 
-  /* =================== clean menus (v92) ===================
+  /* =================== clean menus (v0.92.0) ===================
      One set of sizes for every menu, so buttons and text match from page to page:
        big buttons (.go)        18px text, 13px padding       the main action on a screen (Play's DEPLOY is the one hero button)
        small buttons            13px text, 8px 14px padding   everything else: buy, remove, tabs, pills, codes, settings choices,
@@ -964,7 +964,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) addEve
   #pause .card{padding-top:24px}
   #pause .pausegrid > div:first-child .go{margin-bottom:10px}
   #pause .pausegrid h2{font-size:28px}
-  /* ranks, kicking and the global leaderboard (v93) */
+  /* ranks, kicking and the global leaderboard (v0.93.0) */
   .lbtabs,.lbmodes{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 10px}
   .lbgate{display:flex;flex-direction:column;align-items:flex-start;gap:8px;border:2.5px solid var(--ink);border-radius:12px;background:var(--cream);padding:16px 18px;max-width:560px;box-shadow:3px 3px 0 var(--ink)}
   .lbgate b{font-size:18px} .lbgate span{font-size:13px;color:var(--navy)} .lbgate .go{width:auto}
@@ -977,7 +977,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) addEve
   .pal.kicked{background:#f6dcd6} .pal.kicked .dot{background:#d6453d}
   .kickbox{position:fixed;inset:0;z-index:9000;display:grid;place-items:center;background:rgba(30,24,50,.55)}
   .kickbox .savecard{max-width:420px;text-align:center} .kickbox h3{color:#d6453d}
-  /* co-op chat (v95) */
+  /* co-op chat (v0.95.0) */
   #chat{position:fixed;left:18px;bottom:196px;width:min(360px,80vw);z-index:50;display:none;flex-direction:column;gap:4px;pointer-events:none;font-size:13px}
   #chat.on{display:flex} #chat.menu{bottom:18px}
   #chat .clog{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
@@ -1308,6 +1308,6 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) addEve
   window.addEventListener('unhandledrejection', e => showErr('Promise: ' + (e.reason && e.reason.message || e.reason)));
   setTimeout(() => { if (!window.__gameReady) showErr('Game code did not finish loading.'); }, 7000);
 </script>
-<script type="module" src="game_v97.js" onerror="showErr('Could not load game_v97.js')"></script>
+<script type="module" src="game_v0.97.0.js" onerror="showErr('Could not load game_v0.97.0.js')"></script>
 </body>
 </html>

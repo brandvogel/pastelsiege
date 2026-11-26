@@ -1,13 +1,15 @@
 # Changelog
 
-## v97 (unreleased)
+## v0.97.0 (unreleased)
+
+Versions now use semantic versioning: v97 is 0.97.0. Older entries are renumbered the same way.
 
 ### Fixed: "Which save do you want?"
 
 - It no longer appears when progress is the same, when only settings or daily quests differ, or after signing out and back in.
 - Nothing uploads while the question is unanswered, or before your account save has been checked, so it can't be overwritten first.
 
-## v96
+## v0.96.0
 
 ### Changed: accounts use real emails
 
@@ -41,7 +43,7 @@
 - Names and messages from other players are escaped before being shown.
 - Account token refresh runs once at a time; space and arrows work in text boxes on game sites.
 
-## v95 — 2026-11-26
+## v0.95.0 — 2026-11-26
 
 ### Fixed
 
@@ -62,6 +64,6 @@
 
 ### Changed
 
-- All modules renamed from `*_v94.js` to `*_v95.js`, and the service-worker cache version bumped, so returning players receive the fixes instead of cached v94 files.
+- All modules renamed from `*_v94.js` to `*_v95.js`, and the service-worker cache version bumped, so returning players receive the fixes instead of cached v0.94.0 files.
 - `_headers` now uses proper `#` comments instead of pseudo C-style comments that were parsed as path rules.
 - Removed a dead `JSON.parse` in the save-import confirmation.
