@@ -1,5 +1,41 @@
 # Changelog
 
+## v96 (unreleased)
+
+`npm test` passes. Not yet played in a browser. Supabase needs email sending set up before this is deployed.
+
+### Changed: accounts use real emails
+
+- New accounts need a username, an email and a password, and the email must be confirmed before signing in.
+- Accounts without an email must add and confirm one the next time the game opens. The box can't be closed, except by signing out.
+- Sign in with your email. Accounts that haven't added one yet sign in with their username.
+- While Supabase's "Confirm email" setting is off, new sign-ups are paused and nobody is asked for an email.
+
+### Fixed: menus and HUD
+
+- **Style-name clashes.** Detailed inspect no longer puts a solid panel over the game, mutation descriptions no longer fade away, and the HUD weapon name, armory cards and built-in mutation tag no longer pick up another element's style.
+- **One set of button sizes.** Dialog rows, friends, admin and leaderboard buttons match; the graphics test button is small again; the top bar and pages span the full width.
+- **One type scale** (10 to 64 px, 13 sizes instead of 34), larger settings explanations and popup titles, consistent card and screen titles, fewer corner radii and border widths.
+- Co-op host buttons, HUD counters and top chips, Rampage/Frenzy banners, short-window Deploy button and assorted spacing. Overridden old styles removed.
+- Minimap and name-tag text follow the Font setting.
+
+### Fixed: game
+
+- Glass Cannon, one-hit kills, Smite, Kill aura and executes now kill armoured bots.
+- A Titan no longer jumps to phase 3 after continuing a run; friends' hits now advance its phases, and a friend's game no longer spawns its own backup.
+- Continuing a run keeps night waves, door and weather effects on bots, the "took damage" flag and the run's XP.
+- Joining a friend's game no longer deletes your saved run; importing a save from the pause menu is no longer overwritten by the current run.
+- Controller A on the menu continues a saved run instead of replacing it.
+- Daily Tower or a friend's game no longer changes your chosen difficulty.
+- Co-op guests earn weapon XP and mutation progress for their kills.
+- A grenade being cooked is put away when you pause or open a menu.
+- Backspace now clears a keybind, and on-screen key hints follow your keybinds.
+- The normal Leech MP has its own description again, and Pip-9 upgrades keep the Rapid-Fire Barrel bonus.
+- Laser dot shows on walls; the boss bar names the Titan.
+- An abandoned multiplayer attempt can no longer end a newer one, hosting errors stay on screen, and junk network data is rejected.
+- Names and messages from other players are escaped before being shown.
+- Account token refresh runs once at a time; space and arrows work in text boxes on game sites.
+
 ## v95 — 2026-11-26
 
 ### Fixed

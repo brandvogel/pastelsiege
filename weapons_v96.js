@@ -330,7 +330,7 @@ Object.assign(DESC, {
   boomstick: 'Shotgun whose pellets explode where they land. Never hurts you.',
   brrrt: '3,000 rounds a minute, 2,000 a belt, through walls.',
   supernova: 'Fast, straight rockets that burst into 8 bomblets. Never hurts you.',
-  leech: 'Aimbot rifle. Every point of damage heals you.',
+  leechadmin: 'Aimbot rifle. Every point of damage heals you.',
   yeet: 'Sends bots flying across the room.',
   smite: 'Every shot strikes every bot on the floor with lightning from the sky. Walls do not matter.',
 });
@@ -485,7 +485,8 @@ export function applyPipTier(w, tier) {
   if (!tier) return w;
   const T = PIP_TIERS[Math.min(tier, PIP_TIERS.length - 1)], o = { ...w, name: T.name, pipTier: tier };
   for (const k in T.mul || {}) o[k] *= T.mul[k];
-  for (const k in T.set || {}) o[k] = k === 'mag' ? Math.max(o.mag, Math.round(T.set.mag * (w.mag / 15))) : T.set[k];
+  // magazine and fire rate keep whatever your attachments added on top of the stock Pip-9 (15 rounds, 400 rpm)
+  for (const k in T.set || {}) o[k] = k === 'mag' ? Math.max(o.mag, Math.round(T.set.mag * (w.mag / 15))) : k === 'rpm' ? T.set.rpm * (w.rpm / 400) : T.set[k];
   o.reserve = Math.max(o.reserve, o.mag * 6);
   if (T.gold) o.model = { ...o.model, color: 0xd4a73a, accent: 0xfff1c0 };
   return o;

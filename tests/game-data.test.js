@@ -1,12 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { ACTIONS, setBinds, bindIn, rebind, keyLabel } from '../controls_v95.js';
-import { XH_PRESETS, crosshairCode, parseCrosshair } from '../crosshair_v95.js';
-import { MODS, ACH, doorOffers, upgCost, upgSpent, upgPoints, paintGoal, mulberry } from '../run_v95.js';
-import { MUTATIONS, MV } from '../mutations_v95.js';
-import { ABILITIES } from '../abilities_v95.js';
-import { CHARMS } from '../charms_v95.js';
+import { ACTIONS, setBinds, bindIn, rebind, keyLabel } from '../controls_v96.js';
+import { XH_PRESETS, crosshairCode, parseCrosshair } from '../crosshair_v96.js';
+import { MODS, ACH, doorOffers, upgCost, upgSpent, upgPoints, paintGoal, mulberry } from '../run_v96.js';
+import { MUTATIONS, MV } from '../mutations_v96.js';
+import { ABILITIES } from '../abilities_v96.js';
+import { CHARMS } from '../charms_v96.js';
 
 test('control actions and default keys are unique', () => {
   const ids = ACTIONS.map(a => a[0]);
@@ -35,6 +35,13 @@ test('rebinding a used key swaps the two actions', () => {
   assert.equal(bindIn('KeyW'), 'Space');
   assert.equal(bindIn('Space'), 'KeyW');
   assert.equal(keyLabel('jump'), 'W');
+});
+
+test('a cleared binding stays cleared', () => {
+  setBinds({ jump: '' });
+  assert.equal(bindIn('Space'), null);
+  assert.equal(keyLabel('jump'), '—');
+  setBinds({});
 });
 
 test('crosshair presets survive the share-code round trip', () => {

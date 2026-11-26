@@ -1,14 +1,16 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
-import { makeBuilder } from './mapgen_v95.js';
-import { Nav } from './nav_v95.js';
-import { SND, ac, sfx } from './audio_v95.js';
-import { makeEnv } from './gunkit_v95.js';
-import { surfaces, ground } from './textures_v95.js';
+import { makeBuilder } from './mapgen_v96.js';
+import { Nav } from './nav_v96.js';
+import { SND, ac, sfx } from './audio_v96.js';
+import { makeEnv } from './gunkit_v96.js';
+import { surfaces, ground } from './textures_v96.js';
 export { THREE, SND, ac, sfx };
 
 export const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 export const rand = (a, b) => a + Math.random() * (b - a);
 export const angDiff = (a, b) => { let d = b - a; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI; return d; };
+// the font picked in Settings, for text drawn on a canvas (which can't use the CSS variable directly)
+export const uiFont = () => document.documentElement.style.getPropertyValue('--display') || 'Futura, "Trebuchet MS", sans-serif';
 
 // Sun shadows only cover a box around the player. Without this, shadows stopped dead along a straight line ~70 m away.
 // Near the edge of that box, each spot is nudged toward the sun so its shadow fades out gradually instead.

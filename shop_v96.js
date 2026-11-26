@@ -1,10 +1,11 @@
-import { WEAPONS, CATS, GEAR, drawSilhouette, PIP_TIERS, ttk } from './weapons_v95.js';
-export { ttk }; // the weapon card uses it, and weapons_v95 keeps it testable without the 3D imports
-import { ATTACH, SLOT_NAMES, compatible, slotsFor, describe, attById, computeWeapon, LASER_COLS, LASER_LV } from './attachments_v95.js';
-import { SKINS, TIER_COL, PERKS, MAX_LEVEL, levelOf, prog, skinUnlocked, drawSwatch, skinById } from './skins_v95.js';
-import { SUPPORT } from './helpers_v95.js';
-import { ABILITIES } from './abilities_v95.js';
-import { CHARMS } from './charms_v95.js';
+import { WEAPONS, CATS, GEAR, drawSilhouette, PIP_TIERS, ttk } from './weapons_v96.js';
+export { ttk }; // the weapon card uses it, and weapons_v96 keeps it testable without the 3D imports
+import { ATTACH, SLOT_NAMES, compatible, slotsFor, describe, attById, computeWeapon, LASER_COLS, LASER_LV } from './attachments_v96.js';
+import { SKINS, TIER_COL, PERKS, MAX_LEVEL, levelOf, prog, skinUnlocked, drawSwatch, skinById } from './skins_v96.js';
+import { SUPPORT } from './helpers_v96.js';
+import { ABILITIES } from './abilities_v96.js';
+import { CHARMS } from './charms_v96.js';
+import { keyLabel } from './controls_v96.js';
 
 // The buy menu. Left: sections. Middle: a list of everything in the section. Right: a big detail panel for the
 // selected item, compared against what you're carrying now, with one big buy button.
@@ -51,6 +52,8 @@ export function compareBars(w, vs) {
 }
 
 const isW = t => t === 'Locker' || CATS.includes(t);
+// which control each gear card's key hint refers to, so it shows your own keybind
+const KEY_ACT = { scan: 'scan', dash: 'dash', grapple: 'grapple', djump: 'jump', slam: 'crouch', glide: 'jump' };
 export class Shop {
   constructor(root, api) { this.root = root; this.api = api; this.tab = 'Rifle'; this.gs = 'primary'; this.gsTab = 'parts'; this.pick = {}; }
   open() { this.opened = false; this.lastCash = null; this.render(); this.opened = true; this.root.classList.add('on'); }
@@ -96,7 +99,7 @@ export class Shop {
       <div class="dhero"><canvas width="520" height="150" data-sil="${w.id}" class="big"></canvas><div class="dlvl">${lvlBadge(w.id)}</div></div>
       <div class="dname"><span class="dcat">${ICON[w.cat] || '✦'} ${w.cat}</span><h3>${w.name}</h3></div>
       ${w.desc ? `<p class="ddesc">${w.desc}</p>` : ""}
-      <div class="tags">${tags.map(t => `<span>${t}</span>`).join('')}${w.innate ? w.innate.map(id => `<span class="mut">✦ ${id}</span>`).join('') : ''}</div>
+      <div class="tags">${tags.map(t => `<span>${t}</span>`).join('')}${w.innate ? w.innate.map(id => `<span class="innate">✦ ${id}</span>`).join('') : ''}</div>
       <div class="ttk"><div><small>TIME TO KILL · 100 HP</small><b>${T.text}</b></div><span>${T.sub}</span></div>
       <div class="nums">${nums.map(([k, v]) => `<div><small>${k}</small><b>${v}</b></div>`).join('')}</div>
       <div class="cbars">${compareBars(w, vs)}</div>
@@ -123,9 +126,9 @@ export class Shop {
         ${a.supStock(g.id) < g.stock ? `<button class="mini${cash >= g.charge ? '' : ' poor'}" data-charge="${g.id}">+1 · ${money(g.charge)}</button>` : '<em>full</em>'}</div>` : '';
       const label = l === 0 ? 'BUY' : `UPGRADE → ${['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'][l + 1]}`;
       return `<div class="gcard${price == null ? ' full' : ''}"><div class="gc-icon">${g.icon}</div><div class="gc-body"><b>${g.name} ${l ? `<sup>LV ${l}</sup>` : ''}</b>${pips}<p>${g.desc}</p>
-        <div class="gc-stat"><span class="now">${now}</span>${next ? `<span class="nx">→ ${next}</span>` : ''}${g.key ? ` · <kbd>${g.key}</kbd>${g.alt ? ` <small>${g.alt}</small>` : ''}` : ''}</div>${stock}</div>
+        <div class="gc-stat"><span class="now">${now}</span>${next ? `<span class="nx">→ ${next}</span>` : ''}${g.key ? ` · <kbd>${KEY_ACT[g.id] ? keyLabel(KEY_ACT[g.id]) : g.key}</kbd>${g.alt ? ` <small>${g.alt}</small>` : ''}` : ''}</div>${stock}</div>
         ${price == null ? buyBtn(0, 'MAXED', cash) : buyBtn(price, '', cash, label, `${isAb ? 'data-ab' : 'data-sup'}="${g.id}"`)}</div>`;
-    }).join('')}</div><p class="dnote">${isAb ? 'Abilities stay for the whole run. Dash comes free; upgrade it for shorter cooldowns and a second charge.' : 'Drones follow you between floors and get stronger every level. Turrets, strike drones and scans are charges: upgrades make every charge stronger.'}</p>`;
+    }).join('')}</div><p class="dnote">${isAb ? 'Abilities stay for the whole run. Dash comes free; upgrade it for shorter cooldowns and a second charge.' : 'Scans are charges you use up: upgrades make every charge stronger.'}</p>`;
   }
   // ---------- sidearm workshop ----------
   upgradeTab() {
@@ -209,7 +212,7 @@ export class Shop {
         <div class="wname">${w.name}</div>${lvlBadge(it.base.id)}
         <div class="tags"><span>${w.wt} kg</span><span>${w.mag} rds</span><span>${scopeName(w.scope)}</span><span>Skin: ${skin.name}</span>${w.quiet ? '<span>Silenced</span>' : ''}${w.bipod ? '<span>Bipod</span>' : ''}</div>
         <div class="bars">${rows}</div><p class="gnote">Faint bar = stock gun. Green = better, red = worse. Weight slows movement and aiming.</p></div>
-      <div class="gsslots"><div class="tabs sub">${sub}</div>${body}</div></div>`;
+      <div class="gsslots"><div class="tabs gstabs">${sub}</div>${body}</div></div>`;
   }
   render() {
     const a = this.api, cash = a.cash(), items = a.items(), keepScroll = this.root.querySelector('.wlist')?.scrollTop || 0, keepMain = this.root.querySelector('.s2main')?.scrollTop || 0;
@@ -221,11 +224,11 @@ export class Shop {
     this.root.innerHTML = `<div class="shopcard s2${this.opened ? " still" : ""}">
       <header class="s2head"><div class="st"><div class="eyebrow">Armoury · Floor ${a.floor()}</div><h2>Buy menu</h2></div>
         <div class="loadout">${load}</div>
-        <div class="cash${spent ? " spent" : ""}"><small>CASH</small>${money(cash)}</div><button class="x" data-close>CLOSE <kbd>B</kbd></button></header>
+        <div class="cash${spent ? " spent" : ""}"><small>CASH</small>${money(cash)}</div><button class="x" data-close>CLOSE <kbd>${keyLabel('shop')}</kbd></button></header>
       <div class="s2body"><nav class="s2nav">${nav}
         <div class="codewrap"><div class="codebox"><input id="shopCode" placeholder="Code" maxlength="20" autocomplete="off"><button data-redeem>OK</button></div><div class="codemsg">${this.msg || ''}</div></div></nav>
         <main class="s2main">${main}</main></div>
-      <footer class="s2foot"><span>↑ ↓ pick · ← → section · Enter or double-click to buy · B close</span><span>Buying a gun swaps it in with full ammo · the game is paused while you shop</span></footer></div>`;
+      <footer class="s2foot"><span>↑ ↓ pick · ← → section · Enter or double-click to buy · ${keyLabel('shop')} close</span><span>Buying a gun swaps it in with full ammo · the game is paused while you shop</span></footer></div>`;
     // real 3D renders of the guns (same models as in your hands); the flat drawing shows until the render is ready
     this.root.querySelectorAll('canvas[data-sil]').forEach(c => { const wd = c.dataset.sil === 'pip' && c.classList.contains('goldsil') ? { ...WEAPONS.find(w => w.id === 'pip'), model: { kind: 'pistol', color: 0xd4a73a, accent: 0xfff1c0 } } : WEAPONS.find(w => w.id === c.dataset.sil); if (!wd) return; if (a.thumb) a.thumb(c, wd); else drawSilhouette(c, wd); });
     this.root.querySelectorAll('canvas[data-swatch]').forEach(c => drawSwatch(c, SKINS.find(s => s.id === c.dataset.swatch)));

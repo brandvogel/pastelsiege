@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { WEAPONS, byId, PIP_TIERS, applyPipTier, ttk } from '../weapons_v95.js';
-import { ATTACH, SLOTS, attById, compatible, computeWeapon, describe } from '../attachments_v95.js';
+import { WEAPONS, byId, PIP_TIERS, applyPipTier, ttk } from '../weapons_v96.js';
+import { ATTACH, SLOTS, attById, compatible, computeWeapon, describe } from '../attachments_v96.js';
 
 test('weapon ids are unique', () => {
   const ids = WEAPONS.map(w => w.id);
@@ -25,6 +25,18 @@ test('admin guns keep working next to normal guns with the same name', () => {
   assert.equal(byId('leech').name, 'Leech MP');
   assert.equal(byId('leechadmin').name, 'Leech');
   assert.equal(byId('leechadmin').admin, true);
+});
+
+test('the normal and admin Leech have their own descriptions', () => {
+  assert.doesNotMatch(byId('leech').desc, /Aimbot/);
+  assert.match(byId('leechadmin').desc, /Aimbot/);
+});
+
+test('Pip tiers keep the fire rate added by attachments', () => {
+  const rapid = computeWeapon(byId('pip'), { barrel: 'rapid' });
+  const plain = computeWeapon(byId('pip'), {});
+  assert.ok(applyPipTier(rapid, 3).rpm > applyPipTier(plain, 3).rpm);
+  assert.equal(applyPipTier(plain, 3).rpm, PIP_TIERS[3].set.rpm);
 });
 
 test('Pip tiers improve the sidearm and stay finite', () => {

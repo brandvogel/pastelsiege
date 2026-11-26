@@ -42,7 +42,7 @@ let map = {}, byAct = {};
 // binds = { actionId: code } holding only the ones the player changed
 export function setBinds(binds = {}) {
   map = {}; byAct = {};
-  for (const [id, , internal, def] of ACTIONS) { const k = binds[id] || def; byAct[id] = k; if (k) map[k] = internal; }
+  for (const [id, , internal, def] of ACTIONS) { const k = binds[id] ?? def; byAct[id] = k; if (k) map[k] = internal; }
 }
 // real code -> the internal code the game reacts to, or null if that key now does nothing
 export function bindIn(code) {
@@ -52,7 +52,7 @@ export function bindIn(code) {
 export const keyOf = id => byAct[id] || '';
 // assign a key; whatever action had it before gets this action's old key (a swap), so nothing is ever lost.
 // Everything is read from the `binds` argument, so a caller editing a copy (or an older settings object) still swaps correctly.
-const keyIn = (binds, id, def) => binds[id] || def;
+const keyIn = (binds, id, def) => binds[id] ?? def;
 export function rebind(binds, id, code) {
   const out = { ...binds }, act = ACTIONS.find(a => a[0] === id), old = act ? keyIn(binds, id, act[3]) : keyOf(id);
   for (const [other, , , def] of ACTIONS) if (other !== id && keyIn(binds, other, def) === code) out[other] = old;

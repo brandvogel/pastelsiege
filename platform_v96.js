@@ -1,6 +1,6 @@
 // Game-site hooks. Each release's index.html sets window.PS_PLATFORM to 'web', 'crazygames' or 'poki';
 // the preview leaves it unset ('dev'). Everything here is safe when a site's SDK is missing or blocked: it just does nothing.
-import { ac } from './audio_v95.js';
+import { ac } from './audio_v96.js';
 
 export const PLATFORM = window.PS_PLATFORM || 'dev';
 
@@ -64,6 +64,6 @@ export function happy() { safe(() => CG()?.game.happytime()); }
 
 // on game sites the page around the game can scroll: stop space/arrows and the wheel from moving it during play
 if (PLATFORM === 'crazygames' || PLATFORM === 'poki') {
-  addEventListener('keydown', e => { if ([' ', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key) && e.target?.tagName !== 'INPUT') e.preventDefault(); });
+  addEventListener('keydown', e => { if ([' ', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key) && !['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target?.tagName)) e.preventDefault(); });
   addEventListener('wheel', e => { if (document.pointerLockElement) e.preventDefault(); }, { passive: false });
 }

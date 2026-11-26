@@ -1,11 +1,11 @@
 {
   "name": "pastel-siege",
-  "version": "0.95.0",
+  "version": "0.96.0",
   "private": true,
   "description": "Pastel Siege: a chunky, colourful tower shooter.",
   "type": "module",
   "scripts": {
-    "test": "node --test tests/",
+    "test": "node --test",
     "serve": "python3 -m http.server 8080"
   },
   "engines": {

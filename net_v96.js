@@ -2,7 +2,7 @@
 // to each other; after that they talk directly. The host is the hub: friends send their position to the host, and the
 // host passes everyone's on to everyone else. Co-op runs (shared bots, waves and floors) are built on top in the game file.
 // Everyone's character look (shirt, pants, visor, hat, back item, name tag) travels with their name.
-import { THREE, scene, tracer } from './world_v95.js';
+import { THREE, scene, tracer, uiFont } from './world_v96.js';
 
 const PEER_URL = 'https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js';
 const PREFIX = 'pastelsiege-p1-';            // keeps our codes apart from other games on the same free server
@@ -109,7 +109,7 @@ export function buildAvatar(look) {
 const disposeGroup = g => g.traverse(m => { if (m.isMesh) { m.geometry.dispose(); m.material.dispose?.(); } });
 
 export const net = { on: false, host: false, code: '', id: '', name: '', col: COLS[0], look: { ...DEFAULT_LOOK }, status: '', peers: new Map(), onGo: null, onChange: null, onMsg: null, onJoin: null };
-let peer = null, hostConn = null, sendT = 0;
+let peer = null, hostConn = null, sendT = 0, attempt = 0; // attempt goes up every time a connection is dropped
 const V3 = THREE.Vector3;
 
 const changed = () => { try { net.onChange?.(); } catch (e) { } };
@@ -199,7 +199,9 @@ export async function host(name) {
   const code = WORDS[Math.floor(Math.random() * WORDS.length)] + '-' + (10 + Math.floor(Math.random() * 90)), key = code.replace('-', '').toLowerCase();
   net.name = clean(name); net.id = PREFIX + key;
   relayHost(code, key, name); // the relay room opens alongside the direct one (if there is a relay)
-  try { await loadLib(); } catch (e) { if (!RELAY_URL) setStatus(e.message); return; } // blocked library: the relay alone can still host
+  const mine = attempt;
+  try { await loadLib(); } catch (e) { if (mine === attempt && !RELAY_URL) setStatus(e.message); return; } // blocked library: the relay alone can still host
+  if (mine !== attempt) return;
   peer = new window.Peer(PREFIX + key);
   peer.on('open', id => { Object.assign(net, { on: true, host: true, code, id, col: COLS[0] }); setStatus(`Hosting. Tell your friends the code ${code}`); });
   peer.on('connection', c => {
@@ -207,7 +209,7 @@ export async function host(name) {
     c.on('data', d => onData(d, c));
     c.on('close', () => drop(c.peer)); c.on('error', () => drop(c.peer));
   });
-  peer.on('error', e => { if (e.type === 'unavailable-id') return host(name); if (relay && net.on) return; setStatus(errText(e)); if (!net.on && !relay) leave(true); });
+  peer.on('error', e => { if (e.type === 'unavailable-id') return host(name); if (relay && net.on) return; setStatus(errText(e)); if (!net.on && !relay) leave(true, true); }); // keep the message on screen
   peer.on('disconnected', () => { try { peer.reconnect(); } catch (e) { } });
 }
 function roster() {
@@ -227,15 +229,17 @@ export async function join(code, name) {
   leave(true);
   const key = String(code || '').replace(/[^a-z0-9]/gi, '').toLowerCase(); if (!key) return setStatus('Type the code your friend gave you.');
   setStatus('Connecting…'); net.name = clean(name);
-  let fellBack = false;
+  let fellBack = false; const mine = attempt;
   const viaRelay = async why => {
-    if (fellBack || net.on) return; fellBack = true;
+    if (fellBack || net.on || mine !== attempt) return; fellBack = true;
     if (!RELAY_URL) { setStatus(why); return leave(true, true); }
     setStatus('Direct connection blocked, trying the relay…');
     const r = await relayJoin(code, key); if (r === true) return;
+    if (mine !== attempt) return;
     leave(true, true); setStatus(r === 'full' ? 'That game is full (5 players max).' : r === 'none' ? errText({ type: 'peer-unavailable' }) : 'Could not reach the host, directly or through the relay.');
   };
   try { await loadLib(); } catch (e) { return viaRelay(e.message); }
+  if (mine !== attempt) return;
   peer = new window.Peer();
   const slow = setTimeout(() => viaRelay('Could not reach the host. Their Wi-Fi (or yours) might block direct connections.'), RELAY_URL ? 6000 : 12000);
   peer.on('open', myId => {
@@ -256,6 +260,7 @@ function onData(d, c) {
   if (net.host) {
     const id = c.peer;
     if (d.t === 'hello') {
+      if (net.peers.has(id)) return; // already in
       if (net.peers.size >= MAX - 1) return;
       const used = new Set([net.col, ...[...net.peers.values()].map(p => p.col)]), col = COLS.find(x => !used.has(x)) ?? COLS[1];
       net.peers.set(id, { id, name: clean(d.name), col, look: cleanLook(d.look), conn: c, st: null });
@@ -265,20 +270,21 @@ function onData(d, c) {
     }
     const p = net.peers.get(id); if (!p) return;
     d.id = id;
-    if (d.t === 'st') { if (!Array.isArray(d.p) || d.p.length !== 3 || !d.p.every(Number.isFinite)) return; d.hp = Math.max(0, Math.min(300, +d.hp || 0)); d.mh = Math.max(1, Math.min(300, +d.mh || 100)); p.st = d; p.seen = performance.now(); toAll(d, id); } // junk positions from a modded game are dropped
+    if (d.t === 'st') { if (!cleanState(d)) return; p.st = d; p.seen = performance.now(); toAll(d, id); }
     else if (d.t === 'shot') { showShot(d); toAll(d, id); }
     else if (d.t === 'look') { p.look = cleanLook(d.look); roster(); }
     else if (d.t === 'chat') { const now = performance.now(); if (now - (p.chatT || 0) < 800) return; p.chatT = now; hostChat(id, p.name, p.col, d.x, p.conn); } // at most one message a second each
     else { try { net.onMsg?.(d, id); } catch (e) { console.warn('co-op', e); } }
   } else {
-    if (d.t === 'welcome') { net.col = d.col; if (typeof d.id === 'string') net.id = d.id; }
+    if (d.t === 'welcome') { net.col = cleanCol(d.col); if (typeof d.id === 'string') net.id = d.id; }
     else if (d.t === 'roster') {
+      if (!Array.isArray(d.list)) return;
       const keep = new Set(d.list.map(x => x.id));
       for (const [id, p] of net.peers) if (!keep.has(id)) { removeAvatar(p); net.peers.delete(id); }
-      for (const x of d.list) if (x.id !== net.id) { const p = net.peers.get(x.id), look = cleanLook(x.look); if (p) { p.name = clean(x.name); p.col = x.col; p.look = look; } else net.peers.set(x.id, { id: x.id, name: clean(x.name), col: x.col, look, st: null }); }
+      for (const x of d.list) if (x.id !== net.id) { const p = net.peers.get(x.id), look = cleanLook(x.look); const col = cleanCol(x.col); if (p) { p.name = clean(x.name); p.col = col; p.look = look; } else net.peers.set(x.id, { id: x.id, name: clean(x.name), col, look, st: null }); }
       changed();
     }
-    else if (d.t === 'st') { const p = net.peers.get(d.id); if (p) { p.st = d; p.seen = performance.now(); } }
+    else if (d.t === 'st') { const p = net.peers.get(d.id); if (p && cleanState(d)) { p.st = d; p.seen = performance.now(); } }
     else if (d.t === 'shot') showShot(d);
     else if (d.t === 'go') { try { net.onGo?.(d.mode); } catch (e) { } }
     else if (d.t === 'full') { leave(true, true); setStatus('That game is full (5 players max).'); }
@@ -286,6 +292,14 @@ function onData(d, c) {
     else if (d.t === 'chatno') { try { net.onChat?.({ sys: true, x: 'You are muted, so your message was not sent.' }); } catch (e) { } }
     else { try { net.onMsg?.(d, null); } catch (e) { console.warn('co-op', e); } }
   }
+}
+const cleanCol = c => Number.isInteger(c) && c >= 0 && c <= 0xffffff ? c : COLS[0];
+// a player's position report: junk from a modded game must not reach the renderer (false = drop the message)
+function cleanState(d) {
+  if (!Array.isArray(d.p) || d.p.length !== 3 || !d.p.every(Number.isFinite)) return false;
+  d.hp = Math.max(0, Math.min(300, +d.hp || 0)); d.mh = Math.max(1, Math.min(300, +d.mh || 100));
+  for (const k of ['yaw', 'pitch', 'c', 'rv']) d[k] = Number.isFinite(d[k]) ? d[k] : 0;
+  return true;
 }
 // host only: everyone starts the same mode at once
 export function go(mode) { if (net.on && net.host) toAll({ t: 'go', mode }); }
@@ -312,6 +326,7 @@ export function chat(x) {
 }
 
 export function leave(quiet = false, keepStatus = false) {
+  attempt++;
   for (const p of net.peers.values()) removeAvatar(p);
   net.peers.clear(); net.on = false; net.host = false; net.code = '';
   try { hostConn?.close(); } catch (e) { } try { peer?.destroy(); } catch (e) { } try { relay?.close(); } catch (e) { } relay = null; rconns.clear();
@@ -387,7 +402,7 @@ function makeAvatar(p) {
 function setTag(a, name) {
   a.name = name;
   const c = document.createElement('canvas'); c.width = 256; c.height = 64; const x = c.getContext('2d');
-  x.font = '800 30px system-ui, sans-serif'; const w = Math.min(240, x.measureText(name).width + 30);
+  x.font = `800 30px ${uiFont()}`; const w = Math.min(240, x.measureText(name).width + 30);
   x.fillStyle = 'rgba(43,45,66,.85)'; x.beginPath(); x.roundRect((256 - w) / 2, 10, w, 44, 14); x.fill();
   const T = pick('tag', a.tagId);
   if (T.fx === 'rainbow') { const gr = x.createLinearGradient(128 - w / 2, 0, 128 + w / 2, 0); ['#ff8fab', '#ffc86b', '#b6ff6b', '#7ff6ff', '#c49bff'].forEach((s, i) => gr.addColorStop(i / 4, s)); x.fillStyle = gr; }
@@ -404,7 +419,7 @@ function drawRevive(a, rv) {
   x.lineWidth = 8; x.strokeStyle = 'rgba(255,255,255,.25)'; x.beginPath(); x.arc(64, 54, 40, 0, 7); x.stroke();
   if (rv > 0) { x.strokeStyle = '#7bd8b5'; x.beginPath(); x.arc(64, 54, 40, -Math.PI / 2, -Math.PI / 2 + rv * Math.PI * 2); x.stroke(); }
   x.fillStyle = '#7bd8b5'; x.fillRect(56, 32, 16, 44); x.fillRect(42, 46, 44, 16);
-  x.font = '900 20px system-ui, sans-serif'; x.textAlign = 'center'; x.fillStyle = '#fff'; x.fillText(rv > 0 ? `${Math.round(rv * 100)}%` : 'REVIVE', 64, 122);
+  x.font = `900 20px ${uiFont()}`; x.textAlign = 'center'; x.fillStyle = '#fff'; x.fillText(rv > 0 ? `${Math.round(rv * 100)}%` : 'REVIVE', 64, 122);
   a.rev.material.map?.dispose(); a.rev.material.map = new THREE.CanvasTexture(c); a.rev.material.map.colorSpace = THREE.SRGBColorSpace; a.rev.material.needsUpdate = true;
 }
 function removeAvatar(p) {

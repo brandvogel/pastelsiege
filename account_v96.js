@@ -1,12 +1,13 @@
-// Accounts: sign in with a username and password, and keep your save online. Supabase stores the accounts (passwords
+// Accounts: sign in with an email and password, and keep your save online. Supabase stores the accounts (passwords
 // are hashed, nobody can read them) and the saves. The game talks to it with plain fetch calls, no library.
-// Supabase needs an email for each account, so a username becomes a made-up address behind the scenes; nobody types one.
+// Each account has a real, confirmed email. The username is the public name; other players never see the email.
+// Supabase must have "Confirm email" turned on, or addresses would be accepted without being checked.
 // Playing without an account still works exactly as before.
 // The key below is the "publishable" one: it's meant to be public. What players can do is decided by the database's
 // row-level security rules (you can only read and write your own save, and nobody can make themselves admin).
 const BASE = 'https://qembjixloxurcybpivli.supabase.co', KEY = 'sb_publishable_WkZwlljL0X3k_f6hYjvSUA_pAjc8ozO';
-const STORE = 'sbPastelAuth', SYNC = 'sbPastelSync'; // not "ps..." names, so they stay out of save exports and cloud saves
-export const account = { user: null, name: '', role: '', admin: false, mod: false, tester: false, status: '', syncedAt: 0 };
+const STORE = 'sbPastelAuth', SYNC = 'sbPastelSync', PEND = 'sbPastelPending'; // not "ps..." names, so they stay out of save exports and cloud saves
+export const account = { user: null, name: '', email: '', newEmail: '', needsEmail: false, role: '', admin: false, mod: false, tester: false, status: '', syncedAt: 0 };
 // Ranks: owner (you) > admin > moderator > bug tester. Who may do what is checked by the database's functions, not by the
 // game, so editing the game can't give anyone powers. The game only uses the role to show the right buttons.
 export const RANK = { owner: 4, admin: 3, mod: 2, tester: 1 };
@@ -24,15 +25,31 @@ export function checkName(n) {
   if (BAD.some(b => n.includes(b))) return 'Pick a different username.';
   return '';
 }
-const mail = n => `${n}@players.pastelsiege.game`;
+
+// ---------- emails ----------
+// Accounts made before emails were asked for have a placeholder address, <username>@players.pastelsiege.game, that
+// can't receive anything. Those players sign in with their username one last time and then have to add a real email.
+// Once no account uses a placeholder any more, everything that mentions OLD_DOMAIN can be deleted.
+const OLD_DOMAIN = '@players.pastelsiege.game';
+export const isPlaceholder = e => String(e || '').toLowerCase().endsWith(OLD_DOMAIN);
+const cleanEmail = e => String(e || '').trim().toLowerCase();
+export function checkEmail(e) {
+  e = cleanEmail(e);
+  if (e.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e) || isPlaceholder(e)) return 'Type a real email address, like name@example.com.';
+  return '';
+}
 // a short fingerprint of a save, to tell if it changed since the last upload
 export function sig(s) { let h = 5381; for (let i = 0; i < s.length; i++) h = (Math.imul(h, 33) ^ s.charCodeAt(i)) >>> 0; return h.toString(36) + ':' + s.length; }
 
 // ---------- talking to Supabase ----------
 let sess = null; try { sess = JSON.parse(localStorage.getItem(STORE)); } catch (e) { }
 const keep = s => { sess = s; try { s ? localStorage.setItem(STORE, JSON.stringify(s)) : localStorage.removeItem(STORE); } catch (e) { } };
-async function call(path, { method = 'GET', body, auth = false, prefer, keepalive = false } = {}) {
+const stored = () => { try { return JSON.parse(localStorage.getItem(STORE)); } catch (e) { return null; } };
+// another tab (like the one an email link opens) may have renewed this sign-in: take its newer tokens
+const adopt = () => { const s = stored(); if (s && sess && s.uid === sess.uid && s.refresh_token !== sess.refresh_token) { sess = s; return true; } return false; };
+async function call(path, { method = 'GET', body, auth = false, token, prefer, keepalive = false } = {}) {
   const h = { apikey: KEY, 'Content-Type': 'application/json' };
+  if (token) h.Authorization = 'Bearer ' + token;
   if (auth) { await fresh(); if (!sess) throw new Error('You were signed out.'); h.Authorization = 'Bearer ' + sess.access_token; }
   if (prefer) h.Prefer = prefer;
   const r = await fetch(BASE + path, { method, headers: h, body: body ? JSON.stringify(body) : undefined, keepalive });
@@ -40,14 +57,30 @@ async function call(path, { method = 'GET', body, auth = false, prefer, keepaliv
   if (!r.ok) { const e = new Error(j?.msg || j?.message || j?.error_description || `Error ${r.status}`); e.status = r.status; e.code = j?.code || j?.error_code; throw e; }
   return j;
 }
-const session = (j, old = {}) => ({ ...old, access_token: j.access_token, refresh_token: j.refresh_token, expires_at: j.expires_at || Math.floor(Date.now() / 1000) + (j.expires_in || 3600), uid: j.user?.id || old.uid });
+const session = (j, old = {}) => ({ ...old, access_token: j.access_token, refresh_token: j.refresh_token, expires_at: j.expires_at || Math.floor(Date.now() / 1000) + (j.expires_in || 3600), uid: j.user?.id || old.uid, email: j.user?.email || old.email });
 // sign-ins last an hour; swap for a new one a minute before it runs out
-async function fresh() {
+// (several requests can find it expired at once: they all wait for the same swap, as a used refresh token may be refused)
+let refreshing = null;
+function fresh() {
+  adopt();
   if (!sess || sess.expires_at * 1000 - Date.now() > 60000) return;
-  try { keep(session(await call('/auth/v1/token?grant_type=refresh_token', { method: 'POST', body: { refresh_token: sess.refresh_token } }), sess)); }
-  catch (e) { if (e.status === 400 || e.status === 401) { keep(null); clear(); } throw e; }
+  return refreshing ||= swapToken().finally(() => { refreshing = null; });
 }
-function clear() { account.user = null; account.name = ''; setRole(''); account.status = ''; account.syncedAt = 0; }
+async function swapToken() {
+  try { keep(session(await call('/auth/v1/token?grant_type=refresh_token', { method: 'POST', body: { refresh_token: sess.refresh_token } }), sess)); }
+  catch (e) {
+    if (e.status === 400 || e.status === 401) { if (adopt()) return; keep(null); clear(); }
+    throw e;
+  }
+}
+function clear() { account.user = null; account.name = ''; setEmail(); setRole(''); account.status = ''; account.syncedAt = 0; }
+function setEmail(email = '', newEmail = '') { account.email = email; account.newEmail = newEmail; account.needsEmail = isPlaceholder(email); }
+// asks the server which email the account has now, and whether a new one is waiting to be confirmed
+export async function refreshUser() {
+  const u = await call('/auth/v1/user', { auth: true });
+  if (!sess) return;
+  setEmail(u.email, u.new_email); adopt(); keep({ ...sess, email: u.email });
+}
 // the old setup only had is_admin / is_tester; until the roles script runs, the admin counts as the owner
 export const roleOf = p => RANK[p?.role] ? p.role : p?.is_admin ? 'owner' : p?.is_tester ? 'tester' : '';
 async function loadProfile() {
@@ -59,37 +92,92 @@ async function loadProfile() {
     catch (e) { if (e.status === 401 || cols === 'username,is_admin') throw e; }
   }
   account.user = { id: sess.uid }; account.name = rows?.[0]?.username || sess.name || ''; setRole(roleOf(rows?.[0]));
-  keep({ ...sess, name: account.name, role: account.role, admin: undefined, tester: undefined }); // remembered, so a bad connection does not hide your role
+  adopt(); keep({ ...sess, name: account.name, role: account.role, admin: undefined, tester: undefined }); // remembered, so a bad connection does not hide your role
+  setEmail(sess.email);
+  try { await refreshUser(); } catch (e) { if (!sess) throw e; }
 }
 function nice(e, signup) {
   const m = (e.message || '').toLowerCase();
   if (e instanceof TypeError) return 'Could not reach the account server. Check your internet.';
   if (e.status === 429) return 'Too many tries. Wait a minute and try again.';
+  if (e.code === 'email_exists' || m.includes('email address has already been registered')) return 'Another account already uses that email.';
+  if (e.code === 'email_address_invalid') return 'That email address was refused. Check it, or use a different one.';
+  if (e.code === 'email_address_not_authorized' || m.includes('error sending')) return 'The game could not send the email. Try again later.';
   if (signup && (e.code === 'user_already_exists' || m.includes('already registered') || m.includes('database error'))) return 'That username is taken.';
-  if (m.includes('invalid login') || e.code === 'invalid_credentials') return 'Wrong username or password.';
+  if (m.includes('invalid login') || e.code === 'invalid_credentials') return 'Wrong email or password.';
   if (m.includes('password')) return 'Passwords need at least 6 characters.';
   return e.message || 'Something went wrong.';
 }
 
-// ---------- signing in and out ----------
-export async function signUp(name, pass) {
-  const bad = checkName(name); if (bad) throw new Error(bad);
-  name = name.trim().toLowerCase();
-  if (String(pass || '').length < 6) throw new Error('Passwords need at least 6 characters.');
-  let j;
+// ---------- email links ----------
+// the page the links in our emails bring people back to (it has to be on Supabase's list of allowed redirect URLs)
+const back = () => typeof location !== 'undefined' && location.protocol.startsWith('http') ? '?redirect_to=' + encodeURIComponent(location.origin + location.pathname) : '';
+// false while Supabase's "Confirm email" is off: it would then accept any address without checking it
+export async function confirmsEmail() { return (await call('/auth/v1/settings'))?.mailer_autoconfirm === false; }
+const pending = () => { try { return localStorage.getItem(PEND) || ''; } catch (e) { return ''; } };
+const setPending = e => { try { e ? localStorage.setItem(PEND, e) : localStorage.removeItem(PEND); } catch (x) { } };
+// Opening a link from one of our emails lands here with the result after the # in the address. Returns null for a
+// normal visit. It only signs you in if this browser asked for the email, or is already signed in to that account,
+// so a link somebody else sends you can't quietly put you into their account.
+export async function finishLink() {
+  if (typeof location === 'undefined') return null;
+  const q = new URLSearchParams(location.hash.slice(1)), token = q.get('access_token'), error = q.get('error_description') || q.get('error'), message = q.get('message');
+  if (!token && !error && !message) return null;
+  history.replaceState(null, '', location.pathname + location.search); // keep the tokens out of the address bar and history
+  if (error) return { error };
+  if (!token) return { message };
   try {
+    const u = await call('/auth/v1/user', { token });
+    if (u.id !== sess?.uid && !(pending() && u.email === pending())) return { signedIn: false, email: u.email };
+    keep(session({ access_token: token, refresh_token: q.get('refresh_token'), expires_at: +q.get('expires_at') || 0, expires_in: +q.get('expires_in') || 0, user: u }, u.id === sess?.uid ? sess : {}));
+    setPending('');
+    return { signedIn: true, email: u.email };
+  } catch (e) { return { error: nice(e) }; }
+}
+
+// ---------- signing in and out ----------
+// Makes the account and sends the confirmation email. You can sign in once the link in it has been opened.
+export async function signUp(name, email, pass) {
+  const bad = checkName(name) || checkEmail(email); if (bad) throw new Error(bad);
+  name = name.trim().toLowerCase(); email = cleanEmail(email);
+  if (String(pass || '').length < 6) throw new Error('Passwords need at least 6 characters.');
+  try {
+    if (!await confirmsEmail()) throw new Error('New accounts are paused while email confirmation is being set up. Try again later.');
     const taken = await call(`/rest/v1/profiles?username=eq.${name}&select=id`);
     if (taken?.length) throw new Error('That username is taken.');
-    j = await call('/auth/v1/signup', { method: 'POST', body: { email: mail(name), password: pass, data: { username: name } } });
+    await call('/auth/v1/signup' + back(), { method: 'POST', body: { email, password: pass, data: { username: name } } });
   } catch (e) { throw new Error(e.status || e instanceof TypeError ? nice(e, true) : e.message); }
-  if (!j?.access_token) throw new Error('Your account was made, but it\'s waiting for an email confirmation. Turn off "Confirm email" in Supabase (Authentication > Sign In / Providers > Email), then sign in.');
-  keep(session(j)); await loadProfile(); return account;
+  setPending(email);
+  return email;
 }
-export async function signIn(name, pass) {
-  name = String(name || '').trim().toLowerCase();
-  if (!name || !pass) throw new Error('Type your username and password.');
-  try { keep(session(await call('/auth/v1/token?grant_type=password', { method: 'POST', body: { email: mail(name), password: pass } }))); await loadProfile(); return account; }
-  catch (e) { keep(null); clear(); throw new Error(nice(e)); }
+export async function resendSignUp(email) {
+  try { await call('/auth/v1/resend' + back(), { method: 'POST', body: { type: 'signup', email: cleanEmail(email) } }); }
+  catch (e) { throw new Error(nice(e)); }
+}
+// "who" is an email. Accounts that haven't added one yet type their username instead.
+export async function signIn(who, pass) {
+  who = cleanEmail(who);
+  if (!who || !pass) throw new Error('Type your email and password.');
+  const byName = !who.includes('@');
+  if (byName && !/^[a-z0-9_]{3,16}$/.test(who)) throw new Error('Type your email address.');
+  try { keep(session(await call('/auth/v1/token?grant_type=password', { method: 'POST', body: { email: byName ? who + OLD_DOMAIN : who, password: pass } }))); await loadProfile(); setPending(''); return account; }
+  catch (e) {
+    keep(null); clear();
+    const wrong = e.code === 'invalid_credentials' || /invalid login/i.test(e.message);
+    const err = new Error(wrong && byName ? 'Wrong username or password. If your account has an email, sign in with that instead.' : e.code === 'email_not_confirmed' ? 'Confirm your email first: open the link we sent you.' : nice(e));
+    err.unconfirmed = e.code === 'email_not_confirmed';
+    throw err;
+  }
+}
+// Sends a confirmation link to the new address. The account keeps its old one until the link is opened.
+export async function changeEmail(email) {
+  const bad = checkEmail(email); if (bad) throw new Error(bad);
+  email = cleanEmail(email);
+  try {
+    if (!await confirmsEmail()) throw new Error('Adding an email isn\'t switched on yet. Try again later.');
+    await call('/auth/v1/user' + back(), { method: 'PUT', auth: true, body: { email } });
+    await refreshUser();
+  } catch (e) { throw new Error(e.status || e instanceof TypeError ? nice(e) : e.message); }
 }
 export async function signOut() {
   try { if (sess) await call('/auth/v1/logout', { method: 'POST', auth: true }); } catch (e) { }
@@ -99,7 +187,7 @@ export async function signOut() {
 export async function resume() {
   if (!sess) return false;
   try { await fresh(); if (!sess) return false; await loadProfile(); return true; }
-  catch (e) { if (!sess) return false; account.user = { id: sess.uid }; account.name = sess.name || ''; setRole(sess.role || (sess.admin ? 'owner' : sess.tester ? 'tester' : '')); account.status = 'offline'; return true; }
+  catch (e) { if (!sess) return false; account.user = { id: sess.uid }; account.name = sess.name || ''; setEmail(sess.email); setRole(sess.role || (sess.admin ? 'owner' : sess.tester ? 'tester' : '')); account.status = 'offline'; return true; }
 }
 
 // ---------- online saves ----------

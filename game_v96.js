@@ -1,27 +1,27 @@
-import { THREE, renderer, scene, camera, world, loadMap, resolveCircle, groundAt, ceilingAt, lineOfSight, boxAt, insideSolid, openPoint, clamp, rand,
-  tracer, beam, sparks, shell, decal, smoke, explosionFx, flashLight, updateFx, updateAtmos, fxSettings, SND, ac, setQuality, SUN_DIR, setWeather, lightningBolt, skyFlash, WEATHER, underCover, rayWall, collidersNear, followShadow, updatePads, updateEdges, setNight, followGlow, setResScale, getResScale, setResPct, renderPct, QUALITY, quality, IS_MAC, RETINA, APPLE_SI, CHIP, goreBurst, gibs, splat, bloodColor } from './world_v95.js';
-import { setVolume, musicStart, musicLevel, musicSong, setMusicVolume, at3, setListener, audioSettings, setAmbience, ambienceLevel, ambienceTick, ambienceCover, setStepSurface, audioClock } from './audio_v95.js';
-import { makePost } from './post_v95.js';
-import { XH_STYLES, XH_COLORS, XH_DEFAULT, XH_PRESETS, mountCrosshair, spreadCrosshair, crosshairSVG, crosshairCode, parseCrosshair } from './crosshair_v95.js';
-import { generateMap } from './mapgen_v95.js';
-import { byId, WEAPONS, drawSilhouette, PIP_TIERS, applyPipTier } from './weapons_v95.js';
-import { buildGun, addArms, decorateGun, makeEnv } from './models_v95.js';
-import { muzzleFlash } from './gunkit_v95.js';
-import { Bot, bots, ctx, guardProps, updateShots, clearBots, updateDebris, updateLOD, TYPES, SPAWN_EXTRA, mates, botByNid, ghostBolt, puppetStep, laserOf as botLaser } from './bots_v95.js';
-import { Shop, compareBars, fineStats, ttk } from './shop_v95.js';
-import { computeWeapon, attById, SLOT_NAMES, LASER_COLS, LASER_LV, laserCol } from './attachments_v95.js';
-import { SKINS, skinById, prog, saveProg, sealSave, openSave, dropSave, tamper, levelOf, gunLevel, applyLevel, xpForLevel, MAX_LEVEL, TIER_COL } from './skins_v95.js';
-import { CHARMS, charmById, buildCharm, updateCharm } from './charms_v95.js';
+import { uiFont, THREE, renderer, scene, camera, world, loadMap, resolveCircle, groundAt, ceilingAt, lineOfSight, boxAt, insideSolid, openPoint, clamp, rand,
+  tracer, beam, sparks, shell, decal, smoke, explosionFx, flashLight, updateFx, updateAtmos, fxSettings, SND, ac, setQuality, SUN_DIR, setWeather, lightningBolt, skyFlash, WEATHER, underCover, rayWall, collidersNear, followShadow, updatePads, updateEdges, setNight, followGlow, setResScale, getResScale, setResPct, renderPct, QUALITY, quality, IS_MAC, RETINA, APPLE_SI, CHIP, goreBurst, gibs, splat, bloodColor } from './world_v96.js';
+import { setVolume, musicStart, musicLevel, musicSong, setMusicVolume, at3, setListener, audioSettings, setAmbience, ambienceLevel, ambienceTick, ambienceCover, setStepSurface, audioClock } from './audio_v96.js';
+import { makePost } from './post_v96.js';
+import { XH_STYLES, XH_COLORS, XH_DEFAULT, XH_PRESETS, mountCrosshair, spreadCrosshair, crosshairSVG, crosshairCode, parseCrosshair } from './crosshair_v96.js';
+import { generateMap } from './mapgen_v96.js';
+import { byId, WEAPONS, drawSilhouette, PIP_TIERS, applyPipTier } from './weapons_v96.js';
+import { buildGun, addArms, decorateGun, makeEnv } from './models_v96.js';
+import { muzzleFlash } from './gunkit_v96.js';
+import { Bot, bots, ctx, guardProps, updateShots, clearBots, updateDebris, updateLOD, TYPES, SPAWN_EXTRA, mates, botByNid, ghostBolt, puppetStep, laserOf as botLaser } from './bots_v96.js';
+import { Shop, compareBars, fineStats, ttk } from './shop_v96.js';
+import { computeWeapon, attById, SLOT_NAMES, LASER_COLS, LASER_LV, laserCol } from './attachments_v96.js';
+import { SKINS, skinById, prog, saveProg, sealSave, openSave, dropSave, tamper, levelOf, gunLevel, applyLevel, xpForLevel, MAX_LEVEL, TIER_COL } from './skins_v96.js';
+import { CHARMS, charmById, buildCharm, updateCharm } from './charms_v96.js';
 prog.charms = prog.charms || ['none']; prog.charmOf = prog.charmOf || {};
-import { SUPPORT, support, hctx, buySupport, buyCharge, setSupport, useScan, slv, supById, supNextPrice, owned, deployTurret, launchStriker, updateSupport, floorChange, clearSupport } from './helpers_v95.js';
-import { ABILITIES, abById, abNextPrice, abMax, AB } from './abilities_v95.js';
-import { MUTATIONS, mutById, MUT_STEPS, nextStep, applyMuts, offers, MV, mutDesc, ROMAN, MAX_MLV } from './mutations_v95.js';
-import { levelInfo, levelPerks, LEVEL_REWARDS, nextReward, XP_FOR, xpForFloor, ensureDaily, questById, markPlayed, streakXp, questTick, recordRun } from './meta_v95.js';
-import { ACTIONS, NOBIND, setBinds, bindIn, rebind, keyLabel } from './controls_v95.js';
-import { PLATFORM, allowed, enforce, sdkInit, sdkLoaded, playState, midAd, happy, audioGate, adBusy } from './platform_v95.js';
-import * as NET from './net_v95.js';
-import { account, staff, sig, signIn, signUp, signOut, resume as resumeAccount, cloudGet, cloudPut, syncInfo, setSync, friendList, ping, addFriend, acceptFriend, removeFriend, testerList, setTester, playerList, giveRole, kick as kickPlayer, mute as mutePlayer, muteInfo, submitScore, topScores, clearScores, rank, ROLE_NAME, roleOf } from './account_v95.js';
-import { MODS, modById, doorOffers, CHARS, charById, charUnlocked, PERK, UPGRADES, upgCost, upgPoints, ACH, todayKey, dailySeed, mulberry, paintGoal } from './run_v95.js';
+import { SUPPORT, support, hctx, buySupport, buyCharge, setSupport, useScan, slv, supById, supNextPrice, owned, deployTurret, launchStriker, updateSupport, floorChange, clearSupport } from './helpers_v96.js';
+import { ABILITIES, abById, abNextPrice, abMax, AB } from './abilities_v96.js';
+import { MUTATIONS, mutById, MUT_STEPS, nextStep, applyMuts, offers, MV, mutDesc, ROMAN, MAX_MLV } from './mutations_v96.js';
+import { levelInfo, levelPerks, LEVEL_REWARDS, nextReward, XP_FOR, xpForFloor, ensureDaily, questById, markPlayed, streakXp, questTick, recordRun } from './meta_v96.js';
+import { ACTIONS, NOBIND, setBinds, bindIn, rebind, keyLabel } from './controls_v96.js';
+import { PLATFORM, allowed, enforce, sdkInit, sdkLoaded, playState, midAd, happy, audioGate, adBusy } from './platform_v96.js';
+import * as NET from './net_v96.js';
+import { account, staff, sig, signIn, signUp, resendSignUp, changeEmail, refreshUser, confirmsEmail, finishLink, signOut, resume as resumeAccount, cloudGet, cloudPut, syncInfo, setSync, friendList, ping, addFriend, acceptFriend, removeFriend, testerList, setTester, playerList, giveRole, kick as kickPlayer, mute as mutePlayer, muteInfo, submitScore, topScores, clearScores, rank, ROLE_NAME, roleOf } from './account_v96.js';
+import { MODS, modById, doorOffers, CHARS, charById, charUnlocked, PERK, UPGRADES, upgCost, upgPoints, ACH, todayKey, dailySeed, mulberry, paintGoal } from './run_v96.js';
 
 const $ = id => document.getElementById(id);
 const V3 = THREE.Vector3, lerp = THREE.MathUtils.lerp;
@@ -39,7 +39,7 @@ let frozenDrawn = false; // solo menus show one still frame (see the end of fram
 const stats = { kills: 0, fired: 0, hit: 0, heads: 0, earned: 0, bestStreak: 0 };
 const runXP = {};
 
-// version shown at the bottom of Settings, taken from this file's name (game_v95.js -> v34) so it can't go out of date
+// version shown at the bottom of Settings, taken from this file's name (game_v96.js -> v34) so it can't go out of date
 const GAME_VERSION = (import.meta.url.match(/_(v\d+)\.js/) || [, 'dev'])[1];
 // ---------- settings (saved) ----------
 const SET_KEY = 'pastelSiegeSettings12';
@@ -579,6 +579,7 @@ function lightningFlash(dist) {
   setTimeout(() => { fb.style.transition = 'opacity .9s'; fb.style.opacity = 0; setTimeout(() => { fb.style.transition = ''; fb.style.background = ''; }, 950); }, 70);
   player.shake += 1.6 * k;
 }
+const stopCooking = () => { player.cooking = false; player.cookT = 0; };
 function throwNade() {
   if (player.nades <= 0) return;
   player.nades--; player.cooking = false;
@@ -768,11 +769,14 @@ function addPaint(x) {
   const f = clamp(paint / paintGoal(floorN, paintFills), 0, 1), el = $('paintchip');
   if (el) { el.querySelector('u').style.width = `${Math.round(f * 100)}%`; el.querySelector('b').textContent = paintFills ? `×${paintFills}` : `${Math.round(f * 100)}%`; }
 }
+// damage that is sure to kill, allowing for armour (some bots only take part of every hit)
+const lethal = b => (b.hp + 1) / (b.t.dr || 1);
 function damageBot(bot, dmg, head, point, weaponName, dir, o = {}) {
   // Titan: armoured everywhere except the glowing core on its chest
   if (bot.t.titan) { dmg *= o.core ? 3 : o.blast ? .5 : head ? 1 : .35; if (o.core) head = true; }
   if (!o.helper) dmg *= (perk().dmg || 1) * (frenzyT > 0 ? 1.5 : 1);
-  if (floorMod.id === 'glass' && !bot.t.boss) dmg = Math.max(dmg, bot.hp + 1);
+  if ((floorMod.id === 'glass' && !bot.t.boss) || (adm.onehit && !o.helper)) dmg = Math.max(dmg, lethal(bot));
+  if (bot.puppet) bot.lastHit = { ...o, name: weaponName }; // co-op friend: remembered so the host's "you got it" credits the right gun
   const died = bot.damage(dmg, { dir, head, point: o.quiet ? null : point, blast: o.blast, force: o.force });
   if (!o.helper && !o.quiet) { hitmark(head, died); head ? SND.head() : SND.hit(); }
   if (o.quiet) { /* burn ticks: no numbers */ }
@@ -1189,13 +1193,12 @@ function trace(origin, dir, w, muzzle, pellet) {
     let dmg = w.dmg * thirst * fall * Math.pow(keep, pierced) * (head ? w.head * (w.apHead ? 1 : bot.t.head) : limb ? .75 : 1);
     // headshots are one-tap kills on everything except the Warden boss, which takes heavy headshot damage instead
     if (head) dmg = bot.t.boss ? dmg * 2 : Math.max(dmg, bot.hp + 1);
-    if (adm.onehit) dmg = Math.max(dmg, bot.hp + 1); // admin: one-hit kills
     // special gun traits: crits, momentum, heat ramp, last-round punch and executes
     if (w.crit && Math.random() < w.crit) { dmg *= w.critMul || 3; sparks(h.point, 0xffd34d, 8, 4); if (pellet === 0) medal('CRIT', '✦', 0); }
     if (w.airBonus && (!player.onGround || player.slideT > 0)) dmg *= w.airBonus;
     if (w.ramp) dmg *= 1 + player.ramp * (w.ramp - 1);
     if (w.lastShot && cur()?.mag === 0) dmg *= w.lastShot;
-    if (w.execute && !bot.t.boss && bot.hp - dmg < bot.t.hp * w.execute) { dmg = bot.hp + 1; sparks(h.point, 0xd6453d, 10, 5); }
+    if (w.execute && !bot.t.boss && bot.hp - dmg * (bot.t.dr || 1) < bot.t.hp * w.execute) { dmg = lethal(bot); sparks(h.point, 0xd6453d, 10, 5); }
     damageBot(bot, dmg, head, h.point, w.name, dir, { weaponId: w.id, force, ml, core: !!h.object.userData.core });
     if (w.lifesteal && floorMod.id !== 'blood') player.hp = Math.min(player.maxHp, player.hp + dmg * w.lifesteal);
     if (w.knock && pushable(bot)) bot.knock = { x: dir.x * w.knock, z: dir.z * w.knock, t: .22 };
@@ -1237,7 +1240,7 @@ function smite(w) {
   for (const b of [...bots]) {
     if (!b.alive || b.pos.distanceTo(player.pos) > 250) continue;
     const c = b.center(); if (n++ < 14) lightningBolt(b.pos.clone()); sparks(c, 0xfff1c0, 10, 6);
-    damageBot(b, b.t.boss ? w.dmg * 3 : b.hp + 1, true, c, w.name + ' ⚡', new V3(0, -1, 0), { weaponId: w.id, force: 4 });
+    damageBot(b, b.t.boss ? w.dmg * 3 : lethal(b), true, c, w.name + ' ⚡', new V3(0, -1, 0), { weaponId: w.id, force: 4 });
   }
   SND.thunder(20); lightningFlash(20); player.shake += .6;
   if (n) stats.hit++;
@@ -1582,11 +1585,11 @@ function enterDetail() {
     <div class="dt-row"><span>Kills this run</span><b>${it.mk}</b></div>
     ${w.muts.length ? `<div class="dt-h">Mutations</div><div class="ic-muts">${Object.entries(w.ml).map(([id, l]) => mchip(id, l)).join('')}</div>` : ''}
     <p class="dt-hint">Move the mouse to turn it · let go of ${keyLabel('inspect')} to put it away</p>`;
-  $('inspectDetail').classList.add('on'); $('hud').classList.add('detail'); SND.inspect?.(); SND.whoosh();
+  $('inspectDetail').classList.add('on'); $('hud').classList.add('inspecting'); SND.inspect?.(); SND.whoosh();
 }
 function endDetail() {
   if (!player.detail) return;
-  player.detail = false; $('inspectDetail').classList.remove('on'); $('hud').classList.remove('detail'); SND.click();
+  player.detail = false; $('inspectDetail').classList.remove('on'); $('hud').classList.remove('inspecting'); SND.click();
 }
 // sounds at set moments of each inspect
 const INS_SOUNDS = { spin: [[.5, () => SND.whoosh()], [1.25, () => SND.click()]], mag: [[.5, () => SND.magOut()], [1.75, () => SND.magIn()]], chamber: [[.7, () => SND.boltBack?.() || SND.click()], [1.25, () => SND.boltFwd?.() || SND.magIn()]], showcase: [[.2, () => SND.whoosh()]] };
@@ -1768,7 +1771,7 @@ function poseView(dt, it, w, speed, sliding) {
       raycaster.set(from, dir); raycaster.far = R;
       const wl = rayWall(from, dir, R); raycaster.far = wl ? wl.d : R;
       const hit = raycaster.intersectObjects(bots.filter(b => b.alive).map(b => b.group), true).find(h => h.object.isMesh && !h.object.userData.ui) || wl;
-      if (hit) { laserDot.position.copy(hit.point); laserDot.scale.setScalar(.7 + Math.min(1.6, hit.distance / R * 2)); laserDot.visible = true; }
+      if (hit) { laserDot.position.copy(hit.point); laserDot.scale.setScalar(.7 + Math.min(1.6, (hit.distance ?? hit.d) / R * 2)); laserDot.visible = true; }
     }
   } else laserDot.visible = false;
 }
@@ -1894,6 +1897,13 @@ function spawnPoint(taken = []) {
   best = best || openPoint(); taken.push(best);
   return best;
 }
+// the current door and weather change how bots look and fight (used for new waves and when a saved run is resumed)
+function tuneBot(b) {
+  const M = floorMod.id, X = WX_FX[weather];
+  if (M === 'over') b.t.speed *= 1.35; if (M === 'heads' && b.head) b.head.scale.multiplyScalar(1.9);
+  if (X?.botSpeed) b.t.speed *= X.botSpeed; if (X?.sight) b.t.view *= X.sight; if (X?.botAcc) b.t.acc *= X.botAcc;
+  return b;
+}
 function spawnWave(n) {
   wave = n; breakT = 0;
   for (const s of ["primary", "secondary"]) if (player.slots[s]) player.slots[s].thirst = 0;
@@ -1917,7 +1927,7 @@ function spawnWave(n) {
   const eliteP = R ? 0 : Math.min((n >= 6 ? .04 * (n - 5) + skill.eff * .2 : 0) + (tough - 1) * .5, .6);
   const type = () => R ? (Math.random() < .3 ? 'scout' : Math.random() < .25 ? 'brawler' : 'grunt') : M === 'alley' && Math.random() < .65 ? 'sniper' : titan ? (Math.random() < .5 ? 'drone' : 'grunt') : pickType(n + ahead);
   const taken = []; stragglerT = 0;
-  const add = b => { if (M === 'over') b.t.speed *= 1.35; if (M === 'heads' && b.head) b.head.scale.multiplyScalar(1.9); const X = WX_FX[weather]; if (X?.botSpeed) b.t.speed *= X.botSpeed; if (X?.sight) b.t.view *= X.sight; if (X?.botAcc) b.t.acc *= X.botAcc; bots.push(b); return b; };
+  const add = b => { bots.push(tuneBot(b)); return b; };
   for (let i = 0; i < count; i++) add(new Bot(type(), spawnPoint(taken), { elite: Math.random() < eliteP, hpMul }));
   if (titan) { const b = add(new Bot('titan', spawnPoint(taken), { hpMul: 1 + (fl / 10 - 1) * .6 })); b.phase = 1; b.stompT = 6; }
   else if (bossWave) add(new Bot('boss', spawnPoint(taken), { hpMul: (1 + .35 * (n / 5 - 1)) * (1 + (fl - 1) * .08) * (M === 'hard' ? 1.4 : 1) }));
@@ -1937,8 +1947,9 @@ function spawnWave(n) {
 }
 // ---------- the Titan: three phases ----------
 function titanPhase(b) {
+  if (b.puppet) return; // only the game running the fight calls in backup
   const f = b.hp / b.t.hp, want = f < .33 ? 3 : f < .66 ? 2 : 1;
-  if (want <= b.phase) return;
+  if (want <= (b.phase || 1)) return;
   b.phase = want; const taken = [b.pos.clone()];
   if (want === 2) {
     banner('TITAN: PHASE 2', 'IT CALLED FOR BACKUP · IT STOMPS NOW: JUMP!'); b.t.rate *= .7;
@@ -1952,7 +1963,7 @@ function titanPhase(b) {
 }
 function updateTitan(dt) {
   for (const b of bots) if (b.alive && b.t.titan && b.phase >= 2) {
-    b.stompT -= dt;
+    b.stompT = (b.stompT ?? 6) - dt;
     if (b.stompT <= .9 && !b.warned) { b.warned = true; beam(new V3(b.pos.x, 0, b.pos.z), new V3(b.pos.x, 14, b.pos.z), 0xff3b30, 1.2, .9); at3(b.pos, () => SND.boss()); }
     if (b.stompT <= 0) {
       b.warned = false; b.stompT = b.phase >= 3 ? 4.2 : 7;
@@ -1968,15 +1979,15 @@ function updateTitan(dt) {
 // ---------- training: a guided first floor ----------
 // [what to do, key hint, done check]. Bots only show up at the shooting step, and you can't die here.
 const TRAIN = [
-  ['Move around', 'W A S D · mouse to look', t => t.moved > 8],
-  ['Jump', 'Space', () => player.vel.y > 5 && !player.onGround],
-  ['Sprint, then slide', 'hold Shift, tap C', () => player.slideT > 0],
-  ['Dash', 'F (works in the air too)', () => player.dashT > 0],
-  ['Climb onto something', 'run at a ledge or crate holding W + Space', () => !!player.mantle],
-  ['Shoot the training bots', 'right-click to aim · left-click to fire · headshots one-tap', t => t.kills >= 3],
-  ['Reload', 'R', () => (cur()?.reloadT || 0) > 0],
-  ['Throw a frag', 'G (hold to cook it)', () => nades.length > 0],
-  ['Open the shop', 'B, then B again to close it', t => t.shopped],
+  ['Move around', () => `${['fwd', 'left', 'back', 'right'].map(keyLabel).join(' ')} · mouse to look`, t => t.moved > 8],
+  ['Jump', () => keyLabel('jump'), () => player.vel.y > 5 && !player.onGround],
+  ['Sprint, then slide', () => `hold ${keyLabel('sprint')}, tap ${keyLabel('crouch')}`, () => player.slideT > 0],
+  ['Dash', () => `${keyLabel('dash')} (works in the air too)`, () => player.dashT > 0],
+  ['Climb onto something', () => `run at a ledge or crate holding ${keyLabel('fwd')} + ${keyLabel('jump')}`, () => !!player.mantle],
+  ['Shoot the training bots', () => `${keyLabel('aim')} to aim · ${keyLabel('fire')} to fire · headshots one-tap`, t => t.kills >= 3],
+  ['Reload', () => keyLabel('reload'), () => (cur()?.reloadT || 0) > 0],
+  ['Throw a frag', () => `${keyLabel('nade')} (hold to cook it)`, () => nades.length > 0],
+  ['Open the shop', () => `${keyLabel('shop')}, then ${keyLabel('shop')} again to close it`, t => t.shopped],
 ];
 function startTraining() {
   training = { step: 0, moved: 0, last: player.pos.clone(), kills: 0, shopped: false, doneT: 0, k0: 0 };
@@ -1987,7 +1998,7 @@ function renderTraining() {
   let el = $('trainbox'); if (!el) { el = document.createElement('div'); el.id = 'trainbox'; $('hud').appendChild(el); }
   if (!training) { el.remove(); return; }
   el.innerHTML = `<div class="tb-h">TRAINING · ${Math.min(training.step, TRAIN.length)}/${TRAIN.length}</div>` + TRAIN.map(([what, how], i) =>
-    `<div class="tb-r${i < training.step ? ' done' : i === training.step ? ' cur' : ''}"><i>${i < training.step ? '✓' : i + 1}</i><div><b>${what}</b>${i === training.step ? `<span>${how}</span>` : ''}</div></div>`).join('');
+    `<div class="tb-r${i < training.step ? ' done' : i === training.step ? ' cur' : ''}"><i>${i < training.step ? '✓' : i + 1}</i><div><b>${what}</b>${i === training.step ? `<span>${how()}</span>` : ''}</div></div>`).join('');
 }
 function updateTraining(dt) {
   const t = training; t.moved += player.pos.distanceTo(t.last); t.last.copy(player.pos);
@@ -2019,7 +2030,7 @@ function nextWave() {
   const special = isTitanFloor(fl) ? { id: 'calm', name: 'Titan Floor', icon: '⚠', col: '#d6453d', twist: 'Something huge waits on wave 5. Its chest core is the weak spot.', cash: 1.5, special: true }
     : isRampage(fl) ? { id: 'calm', name: 'Rampage', icon: '✸', col: '#ff9ecf', twist: 'Weak bots, bottomless ammo, +50% damage. Go wild.', cash: 1, special: true } : null;
   doorOpts = special ? [special] : doorOffers(dailyRun ? mulberry(dailySeed() + fl * 977) : Math.random);
-  state = 'elevator'; trigger = adsHeld = false; document.exitPointerLock?.();
+  state = 'elevator'; trigger = adsHeld = false; stopCooking(); document.exitPointerLock?.();
   showDoors(fl, special);
   show('elevator', true); SND.ui(); saveRun();
   midAd(); // natural break between floors: game sites may show an ad here (at most every 3 minutes)
@@ -2039,7 +2050,7 @@ function pickDoor(i) {
   show('elevator', false); state = 'playing'; clock.getDelta(); lock(); SND.code();
   spawnWave(doorWave);
   if (m.id === 'gene') for (const k of ['primary', 'secondary']) { const it = player.slots[k]; if (it) it.pend++; }
-  if (m.id === 'gene') { lastSlotsKey = ''; medal('MUTAGEN: PRESS N TO MUTATE', '✦', 0, 'lv'); }
+  if (m.id === 'gene') { lastSlotsKey = ''; medal(`MUTAGEN: PRESS ${keyLabel('mutate')} TO MUTATE`, '✦', 0, 'lv'); }
   $('hud').dataset.mod = floorMod.id;
 }
 function banner(t, s) { const b = $('banner'); b.innerHTML = `<div class="t">${t}</div><span class="s">${s}</span>`; b.classList.add('on'); clearTimeout(banner.tm); banner.tm = setTimeout(() => b.classList.remove('on'), 2600); }
@@ -2067,7 +2078,7 @@ let lastSlotsKey = '', lastAbKey = '', lastRoundsKey = '', compassW = 0, lowBeat
 let aimCheck = 0;
 let lastTags = '', lastCE = '';
 function renderSlots() {
-  const s = player.slots, key = `${player.cur}|${s.melee?.w.id}|${s.primary?.w.id}|${s.secondary?.w.id}|${s.primary ? Object.values(s.primary.w.ml).join("") : ""}|${s.secondary ? Object.values(s.secondary.w.ml).join("") : ""}|${s.primary?.w.name}|${s.secondary?.w.name}|${s.primary?.pend}|${s.secondary?.pend}`;
+  const s = player.slots, key = `${player.cur}|${s.melee?.w.id}|${s.primary?.w.id}|${s.secondary?.w.id}|${s.primary ? Object.values(s.primary.w.ml).join("") : ""}|${s.secondary ? Object.values(s.secondary.w.ml).join("") : ""}|${s.primary?.w.name}|${s.secondary?.w.name}|${s.primary?.pend}|${s.secondary?.pend}|${['primary', 'secondary', 'melee', 'mutate', 'shop'].map(keyLabel)}`;
   if (key === lastSlotsKey) return; lastSlotsKey = key;
   $('slots').innerHTML = ['primary', 'secondary', 'melee'].map((k, i) => `<div class="slot${player.cur === k ? ' cur' : ''}"><kbd>${keyLabel(k)}</kbd>${s[k] ? `<canvas width="168" height="52" data-sil="${s[k].w.id}"></canvas>${s[k].w.name}${s[k].w.muts.length ? `<span class="mi">${mutIcons(s[k])}</span>` : ""}${s[k].pend ? `<em class="mp">${keyLabel('mutate')} ✦</em>` : ""}` : `<span style="opacity:.6">empty · press ${keyLabel('shop')}</span>`}</div>`).join('');
   $('slots').querySelectorAll('canvas').forEach(c => gunThumb(c, byId(c.dataset.sil)));
@@ -2075,6 +2086,8 @@ function renderSlots() {
 // co-op: everyone else's health under your score, and (in drawMinimap) where they are
 let lastTeamKey = '';
 const hexCol = n => '#' + ((Number(n) || 0xffffff) & 0xffffff).toString(16).padStart(6, '0'), escT = s => String(s || '').replace(/[<>&"']/g, '');
+// like escT, but keeps the characters (for sentences with apostrophes in them)
+const escH = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 function renderTeam() {
   const el = $('team'); if (!el) return;
   const list = coop && NET.net.on ? NET.peerStates() : [];
@@ -2114,12 +2127,12 @@ function renderAbilities() {
   const A = player.ab;
   // [id, key, icon, class, count, cooldown fraction]
   const items = [
-    ['dash', 'F', '»', player.dashCh > 0 ? 'ready' : '', AB(A, 'dash', 'charges') > 1 ? player.dashCh : '', player.dashCh > 0 ? 0 : player.dashCd / AB(A, 'dash', 'cd')],
-    A.grapple ? ['grap', 'H', '⚓', player.grapCd <= 0 ? 'ready' : '', '', player.grap ? 1 : Math.max(0, player.grapCd) / AB(A, 'grapple', 'cd')] : null,
-    A.slam ? ['slam', 'C', '⤓', player.slamCd <= 0 ? 'ready' : '', '', Math.max(0, player.slamCd) / AB(A, 'slam', 'cd')] : null,
+    ['dash', keyLabel('dash'), '»', player.dashCh > 0 ? 'ready' : '', AB(A, 'dash', 'charges') > 1 ? player.dashCh : '', player.dashCh > 0 ? 0 : player.dashCd / AB(A, 'dash', 'cd')],
+    A.grapple ? ['grap', keyLabel('grapple'), '⚓', player.grapCd <= 0 ? 'ready' : '', '', player.grap ? 1 : Math.max(0, player.grapCd) / AB(A, 'grapple', 'cd')] : null,
+    A.slam ? ['slam', keyLabel('crouch'), '⤓', player.slamCd <= 0 ? 'ready' : '', '', Math.max(0, player.slamCd) / AB(A, 'slam', 'cd')] : null,
     A.djump ? ['dj', '', '⇈', player.jumpsLeft > 0 || player.onGround ? 'ready' : '', '', 0] : null,
-    ['frag', 'G', '●', player.nades ? '' : 'off', player.nades, 0],
-    slv('scan') ? ['scan', 'K', '◎', support.scanT > 0 ? 'live' : owned('scan') ? 'ready' : 'off', support.scanT > 0 ? Math.ceil(support.scanT) : owned('scan'), 0] : null,
+    ['frag', keyLabel('nade'), '●', player.nades ? '' : 'off', player.nades, 0],
+    slv('scan') ? ['scan', keyLabel('scan'), '◎', support.scanT > 0 ? 'live' : owned('scan') ? 'ready' : 'off', support.scanT > 0 ? Math.ceil(support.scanT) : owned('scan'), 0] : null,
 
   ].filter(Boolean);
   const key = items.map(i => i.slice(0, 5).join(':')).join('|');
@@ -2165,7 +2178,7 @@ function updateHUD(dt) {
   $('enemies').textContent = bots.filter(b => b.alive).length;
   const sc = $('streakchip'); sc.classList.toggle('on', player.streak >= 3); $('streak').textContent = player.streak;
   const boss = bots.find(b => b.alive && b.t.boss), bb = $('bossbar');
-  bb.classList.toggle('on', !!boss); if (boss) { const f = Math.max(0, boss.hp / boss.t.hp * 100) + '%'; $('bossfill').style.width = f; $('bosslag').style.width = f; }
+  bb.classList.toggle('on', !!boss); if (boss) { bb.firstElementChild.textContent = `THE ${boss.t.name.toUpperCase()}`; const f = Math.max(0, boss.hp / boss.t.hp * 100) + '%'; $('bossfill').style.width = f; $('bosslag').style.width = f; }
   const spotted = bots.filter(b => b.alive && b.sees).length, heard = bots.some(b => b.alive && b.aware > .15);
   $('detect').textContent = spotted ? `SPOTTED BY ${spotted}` : heard ? 'SOMETHING HEARD YOU' : 'UNDETECTED';
   $('detect').className = spotted ? 'hot' : heard ? 'warm' : '';
@@ -2181,7 +2194,7 @@ function updateHUD(dt) {
   // weapon
   const L = levelOf(prog.xp[w.id] || 0);
   $('wname').textContent = w.name; $('wlvl').textContent = `LV ${L.level}`; $('wxp').firstChild.style.width = (L.need ? L.into / L.need * 100 : 100) + '%';
-  const tagsH = `<span>${modeName(w.modes[it.mode])}${w.modes.length > 1 ? ' · V' : ''}</span><span>${w.scope === 'iron' ? 'IRONS' : w.scope.toUpperCase()}</span><span>${w.wt} KG</span>` + (w.spin ? `<span>SPIN ${Math.round(player.spin * 100)}%</span>` : ''); if (tagsH !== lastTags) { lastTags = tagsH; $('wtags').innerHTML = tagsH; }
+  const tagsH = `<span>${modeName(w.modes[it.mode])}${w.modes.length > 1 ? ` · ${keyLabel('mode')}` : ''}</span><span>${w.scope === 'iron' ? 'IRONS' : w.scope.toUpperCase()}</span><span>${w.wt} KG</span>` + (w.spin ? `<span>SPIN ${Math.round(player.spin * 100)}%</span>` : ''); if (tagsH !== lastTags) { lastTags = tagsH; $('wtags').innerHTML = tagsH; }
   if (w.melee) { $('mag').textContent = '∞'; $('mag').style.color = ''; $('res').textContent = 'MELEE'; }
   else { $('mag').textContent = it.mag; $('mag').style.color = it.mag <= Math.ceil(w.mag * .2) ? '#d6453d' : ''; $('res').textContent = '/ ' + it.reserve; }
   renderTeam();
@@ -2189,8 +2202,8 @@ function updateHUD(dt) {
   $('rbar').style.opacity = it.reloadT > 0 ? 1 : 0; if (it.reloadT > 0) $('rfill').style.width = (1 - it.reloadT / it.reloadTotal) * 100 + '%';
   const pr = $('prompt');
   if (it.reloadT > 0) pr.className = '';
-  else if (it.mag === 0 && it.reserve === 0) { pr.textContent = 'NO AMMO · BUY AMMO (B)'; pr.className = 'on red'; }
-  else if (it.mag === 0) { pr.textContent = 'RELOAD [R]'; pr.className = 'on red'; }
+  else if (it.mag === 0 && it.reserve === 0) { pr.textContent = `NO AMMO · BUY AMMO (${keyLabel('shop')})`; pr.className = 'on red'; }
+  else if (it.mag === 0) { pr.textContent = `RELOAD [${keyLabel('reload')}]`; pr.className = 'on red'; }
   else if (it.mag <= Math.ceil(w.mag * .2) && w.mag > 2) { pr.textContent = 'LOW AMMO'; pr.className = 'on'; }
   else pr.className = '';
   $('breath').style.display = w.zoom < 15 ? 'block' : 'none';
@@ -2199,7 +2212,7 @@ function updateHUD(dt) {
   const pi = pendingItem();
   if (player.down) { h.textContent = player.revT > 0 ? `Reviving… ${Math.round(player.revT / 3 * 100)}%` : 'You are down. A friend has to stand next to you to revive you.'; h.classList.add('on'); }
   else if (pi) { h.textContent = `✦ ${pi.base.name} can mutate! Press ${keyLabel('mutate')} to pick a mutation`; h.classList.add("on"); }
-  else if (breakT > 0) { h.textContent = `Next wave in ${Math.ceil(breakT)}s · B to shop · Enter to start now`; h.classList.add("on"); }
+  else if (breakT > 0) { h.textContent = `Next wave in ${Math.ceil(breakT)}s · ${keyLabel('shop')} to shop · ${keyLabel('next')} to start now`; h.classList.add("on"); }
   else if (!player.slots.primary && wave === 1 && runTime < 25) { h.textContent = `You start with $800. Press ${keyLabel('shop')} to buy a primary weapon.`; h.classList.add('on'); }
   else h.classList.remove('on');
   renderSlots(); renderAbilities();
@@ -2271,7 +2284,7 @@ function drawMinimap() {
     mm.save(); mm.translate(a, b); mm.rotate(-s.yaw); mm.globalAlpha = edge ? .8 : 1;
     mm.fillStyle = s.dn ? '#d6453d' : hexCol(p.col); mm.strokeStyle = '#2b2d42'; mm.lineWidth = 1.8;
     mm.beginPath(); mm.moveTo(0, -7); mm.lineTo(5, 5.5); mm.lineTo(0, 2.5); mm.lineTo(-5, 5.5); mm.closePath(); mm.fill(); mm.stroke(); mm.restore();
-    if (big) { mm.font = 'bold 13px Futura, sans-serif'; mm.textAlign = 'center'; mm.lineWidth = 3; mm.strokeStyle = '#fffaf0'; mm.strokeText(escT(p.name), a, b - 12); mm.fillStyle = '#2b2d42'; mm.fillText(escT(p.name), a, b - 12); }
+    if (big) { mm.font = `bold 13px ${uiFont()}`; mm.textAlign = 'center'; mm.lineWidth = 3; mm.strokeStyle = '#fffaf0'; mm.strokeText(escT(p.name), a, b - 12); mm.fillStyle = '#2b2d42'; mm.fillText(escT(p.name), a, b - 12); }
   }
   // you
   const [ux, uz] = P(player.pos.x, player.pos.z);
@@ -2280,7 +2293,7 @@ function drawMinimap() {
   mm.fillStyle = '#2b2d42'; mm.strokeStyle = '#fffaf0'; mm.lineWidth = 1.5; mm.beginPath(); mm.moveTo(0, -7); mm.lineTo(5, 6); mm.lineTo(0, 3); mm.lineTo(-5, 6); mm.closePath(); mm.fill(); mm.stroke();
   mm.restore();
   // north marker rides the edge of the round minimap
-  mm.fillStyle = '#e07a5f'; mm.font = `bold ${big ? 16 : 11}px Futura, sans-serif`; mm.textAlign = 'center'; mm.textBaseline = 'middle';
+  mm.fillStyle = '#e07a5f'; mm.font = `bold ${big ? 16 : 11}px ${uiFont()}`; mm.textAlign = 'center'; mm.textBaseline = 'middle';
   if (big) mm.fillText('N', Sz / 2, 14);
   else { const a = -Math.PI / 2 + rot, r = Sz / 2 - 10; mm.fillText('N', Sz / 2 + Math.cos(a) * r, Sz / 2 + Math.sin(a) * r); }
   if (!big) { mm.strokeStyle = 'rgba(43,45,66,.5)'; mm.lineWidth = 2; mm.beginPath(); mm.arc(Sz / 2, Sz / 2, Sz / 2 - 1, 0, 7); mm.stroke(); }
@@ -2319,7 +2332,7 @@ function redeem(raw) {
   if (code === 'SLOWMO') { cheats.slow = !cheats.slow; if (cheats.slow) cheatRun = true; SND.code(); return cheats.slow ? 'Slow motion ON: the whole game runs at half speed.' : 'Slow motion OFF.'; }
   if (code === 'BOUNCY') { cheats.bouncy = !cheats.bouncy; if (cheats.bouncy) cheatRun = true; SND.code(); return cheats.bouncy ? 'Bouncy ON: low gravity, huge jumps.' : 'Bouncy OFF.'; }
   if (code === 'CONFETTI') { cheats.confetti = !cheats.confetti; SND.code(); return cheats.confetti ? 'Confetti ON: bots pop into pastel confetti.' : 'Confetti OFF.'; }
-  return `"${String(raw).trim().toUpperCase()}" isn't a valid code.`;
+  return `"${escH(String(raw).trim().toUpperCase())}" isn't a valid code.`;
 }
 $('pauseRedeem').onclick = () => { $('pauseMsg').textContent = redeem($('pauseCode').value); $('pauseCode').value = ''; };
 $('pauseCode').addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') $('pauseRedeem').click(); });
@@ -2436,7 +2449,7 @@ function previewLoop(el) {
   step();
 }
 // help screens and hints show the player's own keys
-function refreshKeyHints() { document.querySelectorAll('[data-act]').forEach(el => { el.textContent = keyLabel(el.dataset.act); }); }
+function refreshKeyHints() { document.querySelectorAll('[data-act]').forEach(el => { el.textContent = keyLabel(el.dataset.act); }); $('mmlabel').dataset.key = keyLabel('map'); }
 // "press a key" for Settings > Keybinds: grabs the next key or mouse button before the game sees it
 function startRebind(btn, host) {
   if (rebinding) return;
@@ -2484,7 +2497,7 @@ function applySave(d) {
   if (!confirm(`Load this save${d.from ? ` from ${d.from}` : ''}${d.at ? ` (${new Date(d.at).toLocaleDateString()})` : ''}?\n\nIt REPLACES the progress on this ${IS_MAC ? 'Mac' : 'computer'}. Export first if you want to keep it.`)) return;
   for (const k of Object.keys(localStorage)) if (SAVE_RX.test(k)) localStorage.removeItem(k);
   for (const [k, v] of Object.entries(d.data)) if (SAVE_RX.test(k) && typeof v === 'string') localStorage.setItem(k, v);
-  location.reload();
+  reloading = true; location.reload();
 }
 function importSave() {
   const box = document.createElement('div'); box.className = 'savebox';
@@ -2520,7 +2533,7 @@ async function cloudPush(data = saveData(), last = false) {
 function cloudLoad(cd) {
   for (const k of Object.keys(localStorage)) if (SAVE_RX.test(k)) localStorage.removeItem(k);
   for (const [k, v] of Object.entries(cd.data)) if (SAVE_RX.test(k) && typeof v === 'string') localStorage.setItem(k, v);
-  setSync({ uid: account.user.id, at: cd.at, sig: sig(JSON.stringify(cd.data)) }); location.reload();
+  setSync({ uid: account.user.id, at: cd.at, sig: sig(JSON.stringify(cd.data)) }); reloading = true; location.reload();
 }
 async function cloudSync() {
   if (!account.user) return;
@@ -2530,9 +2543,10 @@ async function cloudSync() {
   if (same && (cd.at || 0) <= (S.at || 0)) { account.syncedAt = S.at; account.status = 'synced'; renderAccount(); return changedHere ? cloudPush(mine) : undefined; }
   if (same && !changedHere && state === 'menu') return cloudLoad(cd);           // played on another computer since: take that
   if (!same && levelIn(mine) <= 1 && state === 'menu') return cloudLoad(cd);    // nothing worth keeping here
-  if (state === 'menu') chooseSave(cd, mine);
+  if (state === 'menu' && !emailBox) chooseSave(cd, mine);
 }
 function chooseSave(cd, mine) {
+  if ($('useCloud')) return; // already asking
   const box = document.createElement('div'); box.className = 'savebox';
   box.innerHTML = `<div class="savecard"><h3>Which save do you want?</h3><p>Your account and this ${IS_MAC ? 'Mac' : 'computer'} have different progress. The one you do not pick is replaced. (To be safe, you can Export the save on this computer from Settings first.)</p>
     <div class="savebtns"><button class="go" id="useCloud">ACCOUNT · LEVEL ${levelIn(cd.data)}${cd.at ? ` · ${new Date(cd.at).toLocaleDateString()}` : ''}</button><button class="go alt" id="useHere">THIS ${IS_MAC ? 'MAC' : 'COMPUTER'} · LEVEL ${levelIn(mine)}</button></div></div>`;
@@ -2543,7 +2557,7 @@ function chooseSave(cd, mine) {
 }
 setInterval(() => { if (account.user) cloudPush(); }, 20000);
 addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden' && account.user) cloudPush(saveData(), true); });
-const ago = t => { const s = (Date.now() - t) / 1000; return s < 60 ? 'just now' : s < 3600 ? `${Math.floor(s / 60)} min ago` : `${Math.floor(s / 3600)} h ago`; };
+const ago = t => { const s = (Date.now() - t) / 1000; return s < 60 ? 'just now' : s < 3600 ? `${Math.floor(s / 60)} min ago` : s < 172800 ? `${Math.floor(s / 3600)} h ago` : `${Math.floor(s / 86400)} days ago`; };
 // v93 setup: ranks (owner / admin / moderator / tester), kicking, and the global leaderboard. Safe to run more than once.
 const SETUP_SQL = `-- Pastel Siege setup (v95): ranks, kicking, chat mutes and the global leaderboard (safe to run again)
 alter table public.profiles add column if not exists is_tester boolean not null default false;
@@ -2759,19 +2773,20 @@ function sendScore() {
 function renderAccount() {
   const b = $('acctBtn'); if (!b) return;
   b.classList.toggle('in', !!account.user);
-  b.innerHTML = account.user ? `<i>👤</i><b>${account.name || 'Signed in'}${account.role ? ` <em>${ROLE_NAME[account.role]}</em>` : ''}</b><small>${account.status === 'offline' ? 'Offline · will sync later' : account.syncedAt ? `Saved online ${ago(account.syncedAt)}` : 'Syncing your save...'}</small>`
+  b.innerHTML = account.user ? `<i>👤</i><b>${escH(account.name || 'Signed in')}${account.role ? ` <em>${ROLE_NAME[account.role]}</em>` : ''}</b><small>${account.status === 'offline' ? 'Offline · will sync later' : account.syncedAt ? `Saved online ${ago(account.syncedAt)}` : 'Syncing your save...'}</small>`
     : `<i>👤</i><b>SIGN IN</b><small>Keep your progress online</small>`;
   const n = $('mpName'); if (n) { if (account.name) n.value = account.name; n.readOnly = !!account.name; n.title = account.name ? 'Your username (sign out to change it)' : ''; }
   const pa = $('pauseAdmin'); if (pa) pa.hidden = !staff();
   const an = $('adminNav'); if (an) { an.hidden = !account.mod; if (!account.mod && an.classList.contains('sel')) document.querySelector('#mnav [data-panel="play"]').click(); }
   lb.at = 0; if ($('panel-board')?.classList.contains('on')) loadBoard(); else renderGlobalBoard();
 }
-function openAccount() {
-  const box = document.createElement('div'); box.className = 'savebox'; let mode = 'in', busy = false;
+function openAccount(note = '', who = '') {
+  if (emailBox) return;
+  const box = document.createElement('div'); box.className = 'savebox'; let mode = 'in', busy = false, sent = null; // sent: { email, pass } while a new account waits to be confirmed
   const close = () => box.remove();
   const draw = () => {
     if (account.user) {
-      box.innerHTML = `<div class="savecard acctcard"><h3>Signed in as ${account.name}${account.role ? ` <em class="adm">${ROLE_NAME[account.role]}</em>` : ''}</h3>
+      box.innerHTML = `<div class="savecard acctcard"><h3>Signed in as ${escH(account.name)}${account.role ? ` <em class="adm">${ROLE_NAME[account.role]}</em>` : ''}</h3>
         <p>Your progress saves to your account automatically. ${account.status === 'offline' ? 'Right now the account server can\'t be reached, so it will catch up when it can.' : account.syncedAt ? `Last saved online ${ago(account.syncedAt)}.` : ''}</p>
         ${staff() ? `<p class="acnote">Press <kbd>&#96;</kbd> in a run to open the ${account.admin ? "admin" : "tester"} panel.</p>` : account.mod ? `<p class="acnote">You are a moderator: open ADMIN in the menu to kick players.</p>` : ""}
         ${account.admin ? `<h3 class="tsh">Bug testers</h3><p class="acnote">Testers can open the <kbd>&#96;</kbd> panel in their runs too. Type a username to add one.</p>
@@ -2779,42 +2794,140 @@ function openAccount() {
         <p class="palsmsg" id="tsMsg"></p><div class="tslist" id="tsList"></div>` : ""}
         <div class="savebtns"><button class="go" id="acSync">SAVE NOW</button><button class="go alt" id="acOut">SIGN OUT</button><button class="go ghost" id="acX">CLOSE</button></div><p class="saveerr" id="acErr"></p></div>`;
       box.querySelector('#acSync').onclick = async () => { SND.ui(); setSync({ ...syncInfo(), sig: '' }); await cloudPush(); draw(); };
-      box.querySelector('#acOut').onclick = async () => { SND.ui(); await cloudPush(); await signOut(); Object.assign(adm, ADM_OFF); admApply(); renderAccount(); loadPals(); toast('SIGNED OUT', 'Your progress stays on this computer too', 'Sign in again any time', '👤'); close(); };
+      box.querySelector('#acOut').onclick = async () => { SND.ui(); await leaveAccount(); close(); };
       if (account.admin) {
         const inp = box.querySelector('#tsName'), msg = box.querySelector('#tsMsg'), list = box.querySelector('#tsList');
-        const show = async () => { try { const L = await testerList(); list.innerHTML = L.length ? L.map(n => `<span>${n}<button class="x" data-untest="${n}" title="Remove tester">✕</button></span>`).join('') : '<small>No testers yet.</small>'; list.querySelectorAll('[data-untest]').forEach(b => b.onclick = async () => { SND.ui(); try { await setTester(b.dataset.untest, false); msg.textContent = `${b.dataset.untest} is not a tester any more.`; } catch (e) { msg.textContent = e.message; } show(); }); } catch (e) { list.innerHTML = '<small>Run the tester setup script in Supabase first.</small>'; } };
+        const show = async () => { try { const L = await testerList(); list.innerHTML = L.length ? L.map(n => `<span>${escH(n)}<button class="x" data-untest="${escH(n)}" title="Remove tester">✕</button></span>`).join('') : '<small>No testers yet.</small>'; list.querySelectorAll('[data-untest]').forEach(b => b.onclick = async () => { SND.ui(); try { await setTester(b.dataset.untest, false); msg.textContent = `${b.dataset.untest} is not a tester any more.`; } catch (e) { msg.textContent = e.message; } show(); }); } catch (e) { list.innerHTML = '<small>Run the tester setup script in Supabase first.</small>'; } };
         const add = async () => { SND.ui(); try { await setTester(inp.value, true); msg.textContent = `${inp.value.trim().toLowerCase()} is a tester now.`; inp.value = ''; } catch (e) { msg.textContent = e.message; SND.deny(); } show(); };
         box.querySelector('#tsAdd').onclick = add; inp.addEventListener('keydown', e => { if (e.key === 'Enter') add(); }); show();
       }
+    } else if (sent) {
+      box.innerHTML = `<div class="savecard acctcard"><h3>Check your email</h3>
+        <p>Open the confirmation link we sent to <b>${escH(sent.email)}</b>, then sign in. Look in spam too.</p>
+        <p class="acnote">No email? If that address already has an account, sign in with it instead.</p>
+        <div class="savebtns"><button class="go" id="acDone">I'VE CONFIRMED IT</button><button class="go alt" id="acAgain">SEND AGAIN</button><button class="go ghost" id="acBack">BACK</button><button class="go ghost" id="acX">CLOSE</button></div><p class="saveerr" id="acErr"></p></div>`;
+      const err = box.querySelector('#acErr');
+      box.querySelector('#acDone').onclick = () => run(box.querySelector('#acDone'), () => signIn(sent.email, sent.pass).then(signedIn));
+      box.querySelector('#acAgain').onclick = () => run(box.querySelector('#acAgain'), () => resendSignUp(sent.email).then(() => { err.textContent = 'Sent. It can take a minute.'; }));
+      box.querySelector('#acBack').onclick = () => { SND.ui(); who = sent.email; sent = null; mode = 'in'; draw(); };
     } else {
       const up = mode === 'up';
       box.innerHTML = `<div class="savecard acctcard"><h3>${up ? 'Create an account' : 'Sign in'}</h3>
         <div class="seg-btn actabs"><button data-m="in" class="${up ? '' : 'sel'}">SIGN IN</button><button data-m="up" class="${up ? 'sel' : ''}">CREATE ACCOUNT</button></div>
-        <label class="acf">Username<input id="acName" maxlength="16" autocomplete="username" spellcheck="false" placeholder="3 to 16 letters, numbers or _"></label>
+        ${note ? `<p>${escH(note)}</p>` : ''}
+        ${up ? '<label class="acf">Username<input id="acName" maxlength="16" autocomplete="nickname" spellcheck="false" placeholder="3 to 16 letters, numbers or _"></label>' : ''}
+        <label class="acf">${up ? 'Email' : 'Email (or username, if you haven\'t added an email yet)'}<input id="acEmail" type="${up ? 'email' : 'text'}" maxlength="254" autocomplete="${up ? 'email' : 'username'}" autocapitalize="off" spellcheck="false" placeholder="name@example.com" value="${escH(who)}"></label>
         <label class="acf">Password<input id="acPass" type="password" autocomplete="${up ? 'new-password' : 'current-password'}" placeholder="${up ? 'at least 6 characters' : ''}"></label>
-        <p class="acnote">${up ? 'No email needed. There\'s no "forgot password" email, so pick one you\'ll remember (and don\'t reuse a password from another site). Your progress on this computer comes with you.' : 'Signing in brings your progress with you to any computer.'}</p>
+        <p class="acnote">${up ? 'We send a link to your email to confirm it. Other players only see your username. There\'s no password reset yet, so pick one you\'ll remember (and don\'t reuse a password from another site). Your progress on this computer comes with you.' : 'Signing in brings your progress with you to any computer.'}</p>
         <div class="savebtns"><button class="go" id="acGo">${up ? 'CREATE ACCOUNT' : 'SIGN IN'}</button><button class="go ghost" id="acX">PLAY WITHOUT AN ACCOUNT</button></div><p class="saveerr" id="acErr"></p></div>`;
-      box.querySelectorAll('[data-m]').forEach(t => t.onclick = () => { SND.ui(); mode = t.dataset.m; draw(); });
-      const go = async () => {
-        if (busy) return; const err = box.querySelector('#acErr'), btn = box.querySelector('#acGo');
-        busy = true; btn.textContent = 'ONE MOMENT...'; err.textContent = '';
-        try { await (up ? signUp : signIn)(box.querySelector('#acName').value, box.querySelector('#acPass').value); SND.code(); renderAccount(); close(); toast(up ? 'ACCOUNT MADE' : 'SIGNED IN', `Hi, ${account.name}!`, 'Your progress now saves online', '👤'); cloudSync(); pingNow(); loadPals(); }
-        catch (e) { err.textContent = e.message; SND.deny(); btn.textContent = up ? 'CREATE ACCOUNT' : 'SIGN IN'; }
-        busy = false;
-      };
+      box.querySelectorAll('[data-m]').forEach(t => t.onclick = () => { SND.ui(); who = box.querySelector('#acEmail').value; note = ''; mode = t.dataset.m; draw(); });
+      const go = () => run(box.querySelector('#acGo'), async () => {
+        const email = box.querySelector('#acEmail').value, pass = box.querySelector('#acPass').value;
+        if (up) { sent = { email: await signUp(box.querySelector('#acName').value, email, pass), pass }; SND.code(); draw(); return; }
+        try { await signIn(email, pass); } catch (e) { if (!e.unconfirmed) throw e; sent = { email: email.trim().toLowerCase(), pass }; draw(); return; }
+        signedIn();
+      });
       box.querySelector('#acGo').onclick = go;
       box.querySelectorAll('input').forEach(i => i.addEventListener('keydown', e => { if (e.key === 'Enter') go(); }));
-      setTimeout(() => box.querySelector('#acName')?.focus(), 50);
+      setTimeout(() => box.querySelector(up ? '#acName' : '#acEmail')?.focus(), 50);
     }
     box.querySelector('#acX').onclick = () => { SND.ui(); close(); };
   };
+  // one request at a time, with errors shown under the buttons
+  const run = async (btn, job) => {
+    if (busy) return; const err = box.querySelector('#acErr'), label = btn.textContent;
+    busy = true; btn.textContent = 'ONE MOMENT...'; err.textContent = '';
+    try { await job(); } catch (e) { err.textContent = e.message; SND.deny(); }
+    btn.textContent = label; busy = false;
+  };
+  const signedIn = () => { SND.code(); renderAccount(); close(); startAccount(); if (!account.needsEmail) toast('SIGNED IN', `Hi, ${escH(account.name)}!`, 'Your progress now saves online', '👤'); };
   draw(); document.body.appendChild(box);
   for (const t of ['keydown', 'keyup', 'keypress', 'mousedown']) box.addEventListener(t, e => e.stopPropagation());
   box.onclick = e => { if (e.target === box) close(); };
 }
 $('acctBtn').onclick = () => { SND.ui(); openAccount(); };
+async function leaveAccount() {
+  await cloudPush(); await signOut(); Object.assign(adm, ADM_OFF); admApply(); renderAccount(); loadPals(); toast('SIGNED OUT', 'Your progress stays on this computer too', 'Sign in again any time', '👤');
+}
+function startAccount() { cloudSync(); pingNow(); loadPals(); checkEmailGate(); }
+// ---------- everyone with an account needs an email ----------
+// An older account with no real email gets a box it can't close (only signing out gets rid of it) until the link
+// sent to the new address has been opened. It only appears on the menu, never in the middle of a run.
+let emailBox = null, emailWanted = false, emailAsked = 0, emailCheck = 0;
+async function checkEmailGate() {
+  if (!account.user || !account.needsEmail) { emailWanted = false; return closeEmailGate(); }
+  if (!emailWanted) {
+    if (Date.now() - emailAsked < 60000) return;
+    try { emailWanted = await confirmsEmail(); emailAsked = Date.now(); } catch (e) { return; } // offline: ask again later
+  }
+  if (emailWanted && !emailBox && state === 'menu' && account.needsEmail) openEmailGate();
+}
+// true (and shows the box) if you have to add an email before playing
+function mustAddEmail() { if (!emailWanted || !account.needsEmail) return false; openEmailGate(); return true; }
+function openEmailGate() {
+  if (emailBox) return;
+  if (NET.net.on) NET.leave(true);
+  document.querySelectorAll('.savebox').forEach(b => { if (!b.querySelector('#useCloud')) b.remove(); });
+  const box = emailBox = document.createElement('div'); box.className = 'emailbox';
+  // nothing behind the box can be clicked or reached with Tab
+  const frozen = [...document.body.children].filter(el => !el.inert); frozen.forEach(el => { el.inert = true; });
+  box.thaw = () => frozen.forEach(el => { el.inert = false; });
+  let busy = false, editing = !account.newEmail;
+  const draw = (msg = '') => {
+    box.innerHTML = `<div class="savecard acctcard" role="dialog" aria-modal="true"><h3>${editing ? 'Add your email' : 'Confirm your email'}</h3>
+      ${editing ? `<p>Hi ${escH(account.name)}! Every account now needs an email. Add yours and confirm it to keep playing on this account. You'll sign in with it from now on.</p>
+      <label class="acf">Email<input id="emNew" type="email" maxlength="254" autocomplete="email" autocapitalize="off" spellcheck="false" placeholder="name@example.com"></label>
+      <p class="acnote">Other players only see your username.</p>
+      <div class="savebtns"><button class="go" id="emSend">SEND CONFIRMATION</button>${account.newEmail ? '<button class="go alt" id="emBack">BACK</button>' : ''}<button class="go ghost" id="emOut">SIGN OUT</button></div>`
+      : `<p>Open the confirmation link we sent to <b>${escH(account.newEmail)}</b>. Look in spam too. This box closes by itself once it's confirmed.</p>
+      <div class="savebtns"><button class="go" id="emDone">I'VE CONFIRMED IT</button><button class="go alt" id="emAgain">SEND AGAIN</button><button class="go alt" id="emEdit">DIFFERENT EMAIL</button><button class="go ghost" id="emOut">SIGN OUT</button></div>`}
+      <p class="saveerr" id="emErr">${escH(msg)}</p></div>`;
+    const on = (id, job) => { const b = box.querySelector(id); if (b) b.onclick = () => run(b, job); };
+    const send = async () => { await changeEmail(box.querySelector('#emNew').value); editing = false; draw(); };
+    on('#emSend', send);
+    on('#emAgain', async () => { await changeEmail(account.newEmail); draw('Sent. It can take a minute.'); });
+    on('#emDone', async () => { await pollEmail(); if (emailBox) draw('Not confirmed yet. Open the link in the email first.'); });
+    on('#emOut', async () => { await leaveAccount(); emailWanted = false; closeEmailGate(); });
+    const flip = (id, to) => { const b = box.querySelector(id); if (b) b.onclick = () => { SND.ui(); editing = to; draw(); }; };
+    flip('#emEdit', true); flip('#emBack', false);
+    const inp = box.querySelector('#emNew'); if (inp) { inp.addEventListener('keydown', e => { if (e.key === 'Enter') run(box.querySelector('#emSend'), send); }); setTimeout(() => inp.focus(), 50); }
+  };
+  const run = async (btn, job) => {
+    if (busy) return; SND.ui(); const label = btn.textContent;
+    busy = true; btn.textContent = 'ONE MOMENT...'; box.querySelector('#emErr').textContent = '';
+    try { await job(); } catch (e) { const err = box.querySelector('#emErr'); if (err) err.textContent = e.message; SND.deny(); }
+    btn.textContent = label; busy = false;
+  };
+  draw(); document.body.appendChild(box);
+  for (const t of ['keydown', 'keyup', 'keypress', 'mousedown']) box.addEventListener(t, e => e.stopPropagation());
+  emailCheck = setInterval(() => { if (!document.hidden && !busy) pollEmail().catch(() => { }); }, 5000);
+}
+// has the link been opened? (maybe in another tab or on a phone)
+async function pollEmail() {
+  try { await refreshUser(); } catch (e) { if (!account.user) closeEmailGate(); throw e; }
+  if (!account.user || account.needsEmail) return;
+  emailWanted = false; closeEmailGate(); SND.code(); renderAccount();
+  toast('EMAIL CONFIRMED', 'Thanks!', `Sign in with ${escH(account.email)} from now on`, '✓'); cloudSync();
+}
+function closeEmailGate() {
+  if (!account.user) renderAccount(); // signed out while the box was up
+  if (!emailBox) return;
+  clearInterval(emailCheck); emailBox.thaw(); emailBox.remove(); emailBox = null;
+}
+setInterval(() => { if (account.needsEmail || emailBox) checkEmailGate(); }, 5000);
+addEventListener('online', () => { if (account.user) resumeAccount().then(() => { renderAccount(); checkEmailGate(); }); });
 renderAccount(); setInterval(renderAccount, 30000);
-resumeAccount().then(ok => { renderAccount(); if (ok) { cloudSync(); pingNow(); loadPals(); } });
+// opening a link from one of our emails: say how it went
+finishLink().then(async link => {
+  const ok = await resumeAccount(); renderAccount(); if (ok) startAccount();
+  if (!link) return;
+  if (link.error && !ok) openAccount(`That email link didn't work: ${link.error}`);
+  else if (link.error) toast('EMAIL LINK', 'That link didn\'t work', escH(link.error), '✉');
+  else if (link.message) toast('EMAIL LINK', 'Link accepted', escH(link.message), '✉');
+  else if (link.signedIn) { if (!account.needsEmail) toast('EMAIL CONFIRMED', `Welcome, ${escH(account.name)}!`, 'Your progress saves online', '✓'); }
+  else if (!ok) openAccount('Email confirmed. Sign in to carry on.', link.email);
+  else toast('EMAIL CONFIRMED', 'Thanks!', escH(link.email), '✓');
+});
 // ---------- admin panel (the ` key in a run; only you and your bug testers can open it) ----------
 // Pauses a solo run (in co-op the game keeps going, like the normal pause). Friends in co-op can't open it: it checks
 // your role from your account, which only you can change in Supabase. Using anything here means the run won't count.
@@ -2851,7 +2964,7 @@ function admTick(dt) {
     auraT = .15;
     for (const b of [...bots]) if (b.alive && b.pos.distanceTo(player.pos) < 9) {
       const c = b.center(); beam(camera.position.clone().setY(camera.position.y - .4), c, 0xff5fa2, .02, .12);
-      damageBot(b, b.t.boss ? 400 : b.hp + 1, false, c, 'Kill aura', c.clone().sub(player.pos).normalize(), { force: 3 });
+      damageBot(b, b.t.boss ? 400 : lethal(b), false, c, 'Kill aura', c.clone().sub(player.pos).normalize(), { force: 3 });
     }
   }
 }
@@ -2880,7 +2993,7 @@ function closeAdmin() {
 function openAdmin() {
   if (admBox) return closeAdmin();
   if (!staff()) return;
-  admWas = state; if (state === 'playing') { state = 'paused'; trigger = adsHeld = false; for (const k in keys) keys[k] = false; document.exitPointerLock?.(); }
+  admWas = state; if (state === 'playing') { stopCooking(); state = 'paused'; trigger = adsHeld = false; for (const k in keys) keys[k] = false; document.exitPointerLock?.(); }
   admBox = document.createElement('div'); admBox.className = 'savebox admbox';
   const guest = NET.isGuest(), guns = WEAPONS.filter(w => w.admin || w.secret), tabs = [['cheats', 'Cheats'], ['guns', 'Admin guns'], ['world', 'Spawn & world']];
   if (account.admin) tabs.push(['people', 'Testers']);
@@ -2932,15 +3045,15 @@ function openAdmin() {
         if (hit && hit.normal.y > .5) t.y = hit.point.y + .05; else t.y = Math.max(0, t.y - player.eyeH);
         player.pos.copy(t); player.vel.set(0, 0, 0); closeAdmin(); return;
       }
-      if (a === 'kill') { let n = 0; for (const x of [...bots]) if (x.alive) { x.damage(Math.min(x.hp + 1, 20000), { dir: new V3(0, 1, 0) }); n++; } toast('ADMIN', `${n} bots down`, guest ? 'The host still checks every hit' : '', '🛠'); }
+      if (a === 'kill') { let n = 0; for (const x of [...bots]) if (x.alive) { x.damage(Math.min(lethal(x), 20000), { dir: new V3(0, 1, 0) }); n++; } toast('ADMIN', `${n} bots down`, guest ? 'The host still checks every hit' : '', '🛠'); }
       if ((a === 'floor' || a === 'goto') && !coop) {
         const to = a === 'floor' ? floorN + 1 : clamp(Math.round(+admBox.querySelector('#admFloor').value || 1), 1, 200);
-        closeAdmin(); clearBots(); wave = (to - 1) * 5; breakT = 0; nextWave(); return;
+        closeAdmin(); show('pause', false); clearBots(); wave = (to - 1) * 5; breakT = 0; nextWave(); return;
       }
     });
     if (admTab === 'people') {
       const inp = admBox.querySelector('#tsName'), msg = admBox.querySelector('#tsMsg'), list = admBox.querySelector('#tsList');
-      const show = async () => { try { const L = await testerList(); if (!admBox) return; list.innerHTML = L.length ? L.map(n => `<span>${n}<button class="x" data-untest="${n}" title="Remove tester">✕</button></span>`).join('') : '<small>No testers yet.</small>'; list.querySelectorAll('[data-untest]').forEach(b => b.onclick = async () => { SND.ui(); try { await setTester(b.dataset.untest, false); msg.textContent = `${b.dataset.untest} is not a tester any more.`; } catch (e) { msg.textContent = e.message; } show(); }); } catch (e) { list.innerHTML = '<small>Run the tester setup script in Supabase first (see the ADMIN page in the menu).</small>'; } };
+      const show = async () => { try { const L = await testerList(); if (!admBox) return; list.innerHTML = L.length ? L.map(n => `<span>${escH(n)}<button class="x" data-untest="${escH(n)}" title="Remove tester">✕</button></span>`).join('') : '<small>No testers yet.</small>'; list.querySelectorAll('[data-untest]').forEach(b => b.onclick = async () => { SND.ui(); try { await setTester(b.dataset.untest, false); msg.textContent = `${b.dataset.untest} is not a tester any more.`; } catch (e) { msg.textContent = e.message; } show(); }); } catch (e) { list.innerHTML = '<small>Run the tester setup script in Supabase first (see the ADMIN page in the menu).</small>'; } };
       const add = async () => { try { await setTester(inp.value, true); msg.textContent = `${inp.value.trim().toLowerCase()} is a tester now.`; inp.value = ''; SND.code(); } catch (e) { msg.textContent = e.message; SND.deny(); } show(); };
       admBox.querySelector('#tsAdd').onclick = add; inp.addEventListener('keydown', e => { if (e.key === 'Enter') add(); }); show();
     }
@@ -2973,7 +3086,7 @@ function renderAdminPage() {
   const gives = [['', 'Player'], ['tester', 'Tester'], ['mod', 'Moderator'], ['admin', 'Admin']].slice(0, P.setup ? 4 : 2).filter(([k]) => rank(k) < my);
   const below = r => r.username !== account.name && rank(roleOf(r)) < my;
   el.innerHTML = `${P.setup ? '' : account.role === 'owner' ? sqlBox('One step first, for ranks, kicking and the global leaderboard:') : '<p class="gnote">The owner still needs to run the new setup script. Until then some buttons will not work.</p>'}
-    <p class="palsmsg${P.err ? ' err' : ''}">${P.err || P.msg}</p>
+    <p class="palsmsg${P.err ? ' err' : ''}">${escH(P.err || P.msg)}</p>
     <div class="palsadd admtools"><input id="admQ" maxlength="16" placeholder="Search usernames" spellcheck="false" autocomplete="off" value="${escT(P.q)}">
       <label class="kicklen">Kick / mute for <select id="admMins">${KICK_MINS.map(([m, t]) => `<option value="${m}"${m === P.mins ? ' selected' : ''}>${t}</option>`).join('')}</select></label>
       <button class="go alt" id="admRe">REFRESH</button></div>
@@ -3057,14 +3170,14 @@ function renderPals() {
     el.innerHTML = `<div class="palsout"><p>Sign in to add friends and see when they're online.</p><button class="go" id="palsIn">SIGN IN</button></div>`;
     $('palsIn').onclick = () => { SND.ui(); openAccount(); }; return;
   }
-  const row = (f, note, btns) => `<div class="pal${online(f) && f.accepted ? ' on' : ''}"><i class="dot"></i><b>${f.username}</b><span>${note}</span>${btns}</div>`;
+  const row = (f, note, btns) => `<div class="pal${online(f) && f.accepted ? ' on' : ''}"><i class="dot"></i><b>${escH(f.username)}</b><span>${escH(note)}</span>${btns}</div>`;
   el.innerHTML = `<div class="palsadd"><input id="palsName" maxlength="16" placeholder="Their username" spellcheck="false" autocomplete="off"><button class="go" id="palsGo">ADD FRIEND</button></div>
-    <p class="palsmsg${palsErr ? ' err' : ''}">${palsErr || palsMsg}</p>
-    ${req.length ? `<h3>Friend requests</h3><div class="palslist">${req.map(f => row(f, 'wants to be friends', `<button class="buy" data-acc="${f.id}">ACCEPT</button><button class="x" data-rm="${f.id}" title="Decline">✕</button>`)).join('')}</div>` : ''}
+    <p class="palsmsg${palsErr ? ' err' : ''}">${escH(palsErr || palsMsg)}</p>
+    ${req.length ? `<h3>Friend requests</h3><div class="palslist">${req.map(f => row(f, 'wants to be friends', `<button class="buy" data-acc="${escH(f.id)}">ACCEPT</button><button class="x" data-rm="${escH(f.id)}" title="Decline">✕</button>`)).join('')}</div>` : ''}
     <h3>Friends${fr.length ? ` · ${fr.filter(online).length} online` : ''}</h3>
     <div class="palslist">${fr.length ? fr.map(f => row(f, online(f) ? (f.room ? 'Online · hosting a co-op game' : 'Online') : f.last_seen ? `Last on ${ago(new Date(f.last_seen).getTime())}` : 'Not on yet',
-      `${online(f) && f.room ? `<button class="buy" data-join="${f.room}">JOIN</button>` : ''}<button class="x" data-rm="${f.id}" title="Remove friend">✕</button>`)).join('') : '<p class="gnote">No friends yet. Add someone by their username above.</p>'}</div>
-    ${sent.length ? `<h3>Waiting for them to accept</h3><div class="palslist">${sent.map(f => row(f, 'request sent', `<button class="x" data-rm="${f.id}" title="Cancel request">✕</button>`)).join('')}</div>` : ''}`;
+      `${online(f) && f.room ? `<button class="buy" data-join="${escH(f.room)}">JOIN</button>` : ''}<button class="x" data-rm="${escH(f.id)}" title="Remove friend">✕</button>`)).join('') : '<p class="gnote">No friends yet. Add someone by their username above.</p>'}</div>
+    ${sent.length ? `<h3>Waiting for them to accept</h3><div class="palslist">${sent.map(f => row(f, 'request sent', `<button class="x" data-rm="${escH(f.id)}" title="Cancel request">✕</button>`)).join('')}</div>` : ''}`;
   const inp = $('palsName');
   for (const t of ['keydown', 'keyup', 'keypress', 'mousedown']) inp.addEventListener(t, e => e.stopPropagation());
   const add = async () => { try { palsMsg = await addFriend(inp.value); palsErr = ''; SND.code(); } catch (e) { palsErr = e.message; palsMsg = ''; SND.deny(); } await loadPals(); };
@@ -3106,11 +3219,11 @@ function renderSettings(host) {
     let g = '';
     for (const [id, label, , , grp] of ACTIONS) {
       if (grp !== g) { body += `<div class="bindgrp">${grp}</div>`; g = grp; }
-      const changed = settings.binds[id] && settings.binds[id] !== ACTIONS.find(a => a[0] === id)[3];
+      const changed = settings.binds[id] !== undefined && settings.binds[id] !== ACTIONS.find(a => a[0] === id)[3];
       body += `<div class="set"><span>${label}</span><button class="bindbtn${changed ? ' chg' : ''}" data-bind="${id}">${keyLabel(id)}</button><span></span></div>`;
     }
     body += `<p class="gnote" style="margin:6px 0 0">Click an action, then press a key or mouse button. Esc cancels, Backspace clears it. Picking a key that's already used swaps the two. Esc always pauses, and some browser shortcuts (like Ctrl + W) can't be used. Controllers have their own layout.</p>
-      <div style="text-align:right;margin-top:8px"><button class="x" data-bindreset style="padding:6px 12px;font-size:11px">RESET KEYBINDS</button></div>`;
+      <div style="text-align:right;margin-top:8px"><button class="x" data-bindreset>RESET KEYBINDS</button></div>`;
   }
   else if (setTab === 'audio') body = range('vol', 'Master volume', 0, 1, .05) + range('music', 'Music', 0, 1, .05)
     + choice('spatial', '3D audio', [['hrtf', 'Headphones'], ['speakers', 'Speakers']]) + `<p class="gnote" style="margin:-4px 0 2px 162px">Enemy shots, footsteps and explosions come from where they really are. Headphones mode also tells front from behind and above from below. Sounds behind walls are muffled.</p>`;
@@ -3126,7 +3239,7 @@ function renderSettings(host) {
   const body = setQ ? tabs.map(([k, n]) => `<div class="sgrp"><div class="bindgrp">${n}</div>${tabBody(k)}</div>`).join('') : tabBody(setTab);
   host.innerHTML = `<div class="ssearch"><input id="setSearch" type="search" placeholder="Search settings (sens, blood, fov...)" value="${setQ.replace(/"/g, '&quot;')}" autocomplete="off" spellcheck="false"></div>`
     + `<div class="stabs${setQ ? ' dim' : ''}">${tabs.map(([k, n]) => `<button data-stab="${k}" class="${setTab === k && !setQ ? 'sel' : ''}">${n}</button>`).join('')}</div><div class="settings${setQ ? ' searching' : ''}">${body}<p class="gnote snone" style="display:none">Nothing matches "${setQ.replace(/</g, '&lt;')}". Try a shorter word.</p></div>`
-    + `<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px"><span class="gnote" style="margin:0">Pastel Siege ${GAME_VERSION}${CHIP ? ` · ${CHIP}` : ""} · ${({ web: "website", crazygames: "CrazyGames", poki: "Poki", dev: "preview" })[window.PS_PLATFORM || "dev"] || window.PS_PLATFORM}</span><button class="x" data-reset style="padding:6px 12px;font-size:11px">RESET ALL SETTINGS</button></div>`;
+    + `<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px"><span class="gnote" style="margin:0">Pastel Siege ${GAME_VERSION}${CHIP ? ` · ${CHIP}` : ""} · ${({ web: "website", crazygames: "CrazyGames", poki: "Poki", dev: "preview" })[window.PS_PLATFORM || "dev"] || window.PS_PLATFORM}</span><button class="x" data-reset>RESET ALL SETTINGS</button></div>`;
   const stop = el => { el.onmousedown = e => e.stopPropagation(); el.onkeydown = e => e.stopPropagation(); };
   const prev = host.querySelector('.xprev-ch');
   const refreshPreview = () => { if (prev) { mountCrosshair(prev, settings.xh); prev._xh.last = -1; } const c = host.querySelector('#xhCode'); if (c) c.value = crosshairCode(settings.xh); };
@@ -3169,11 +3282,11 @@ function renderSettings(host) {
 }
 
 // ---------- main menu ----------
-const TIPS = ['Crouch to stay hidden. Gunfire and sprinting make noise.', 'Shoot a Titan in its glowing core for triple damage.', 'Jump when a Titan stomps: the shockwave only hits you on the ground.', 'Riskier elevator doors pay more cash.', 'A full paint meter gives you a 1.5× damage frenzy.', 'Upgrade the Medidrone a few times before you rely on it.', 'Jump while sliding to keep your speed.', 'Pull your aim down to pay back recoil.', 'Every third floor is a Rampage: bottomless ammo, weak bots.', 'Landing headshots makes the bots learn faster. Pick your moments.', 'Grapple onto a wall, then jump to fling yourself off it.', 'Try the Daily Tower: everyone gets the same run today.', 'Hold jump in the air to glide once you own the glider.'];
+const TIPS = ['Crouch to stay hidden. Gunfire and sprinting make noise.', 'Shoot a Titan in its glowing core for triple damage.', 'Jump when a Titan stomps: the shockwave only hits you on the ground.', 'Riskier elevator doors pay more cash.', 'A full paint meter gives you a 1.5× damage frenzy.', 'Jump while sliding to keep your speed.', 'Pull your aim down to pay back recoil.', 'Every third floor is a Rampage: bottomless ammo, weak bots.', 'Landing headshots makes the bots learn faster. Pick your moments.', 'Grapple onto a wall, then jump to fling yourself off it.', 'Try the Daily Tower: everyone gets the same run today.', 'Hold jump in the air to glide once you own the glider.'];
 function renderMenu() {
   if ($('tip')) $('tip').textContent = 'Tip: ' + TIPS[Math.floor(Math.random() * TIPS.length)];
   $('r-floor').textContent = prog.bestFloor; $('r-score').textContent = prog.bestScore.toLocaleString(); $('r-kills').textContent = prog.kills.toLocaleString();
-  $('armory').innerHTML = WEAPONS.filter(w => !w.secret).map(w => { const L = levelOf(prog.xp[w.id] || 0); return `<div class="arm-card"><canvas width="200" height="56" data-sil="${w.id}"></canvas><div class="wrow" style="justify-content:space-between"><b>${w.name}</b><span class="lvl"><b>LV ${L.level}</b></span></div>
+  $('armory').innerHTML = WEAPONS.filter(w => !w.secret).map(w => { const L = levelOf(prog.xp[w.id] || 0); return `<div class="arm-card"><canvas width="200" height="56" data-sil="${w.id}"></canvas><div class="arm-head"><b>${w.name}</b><span class="lvl"><b>LV ${L.level}</b></span></div>
     <div class="xpbar" style="height:8px;margin-top:5px"><u style="width:${L.need ? L.into / L.need * 100 : 100}%"></u></div><div class="gnote">${w.desc ? w.desc + " · " : ""}Skin: ${skinFor(w.id).name}</div></div>`; }).join('');
   $('armory').querySelectorAll('canvas').forEach(c => gunThumb(c, byId(c.dataset.sil)));
   const hex = n => '#' + n.toString(16).padStart(6, '0');
@@ -3262,7 +3375,7 @@ function renderMeta() {
       return `<div class="upgrow" style="--c:${T.col}"><i>${T.icon}</i><div class="ut"><b>${T.name}</b><span>${T.text(l)}${maxed ? ' · MAX' : ` → ${T.text(l + 1)}`}</span>
         <div class="upips">${Array.from({ length: T.max }, (_, i) => `<s class="${i < l ? 'on' : ''}"></s>`).join('')}</div></div>
         <button class="buy" data-upg="${T.id}" ${maxed || pts < cost ? 'disabled' : ''}>${maxed ? 'MAXED' : `UPGRADE · ${cost} PT${cost > 1 ? 'S' : ''}`}</button></div>`; }).join('')
-    + `<div style="text-align:right;margin-top:8px"><button class="x" data-upgreset style="padding:6px 12px;font-size:11px" ${U.hp || U.spd ? '' : 'disabled'}>REFUND ALL POINTS</button></div>`;
+    + `<div style="text-align:right;margin-top:8px"><button class="x" data-upgreset ${U.hp || U.spd ? '' : 'disabled'}>REFUND ALL POINTS</button></div>`;
   $('charList').querySelectorAll('[data-upg]').forEach(b => b.onclick = () => {
     const T = UPGRADES.find(x => x.id === b.dataset.upg), l = U[T.id] || 0;
     if (l >= T.max || upgPoints(plv, U) < upgCost(l)) return SND.deny();
@@ -3324,6 +3437,7 @@ fsLabel(); menuTitle();
 // Esc closes whatever is open, one layer at a time: a pop-up box, then the page list, then the shop or pause menu,
 // and on the main menu any page goes back to Play. (Runs before everything else, so pop-ups that swallow keys still close.)
 addEventListener('keydown', e => {
+  if (e.code === 'Escape' && emailBox) { e.preventDefault(); e.stopImmediatePropagation(); return; } // can't be closed
   if (e.code !== 'Escape' || rebinding || bench || admBox || e.repeat || e.target?.id === 'chatIn') return;
   const boxes = [...document.querySelectorAll('.savebox')], top = boxes[boxes.length - 1];
   const stop = () => { e.preventDefault(); e.stopImmediatePropagation(); };
@@ -3371,7 +3485,7 @@ function chatAdd(m) {
 function renderChat() {
   const on = NET.net.on, inMenu = state === 'menu', vis = on && (inMenu || state === 'playing');
   if (!on && chat.was) { chat.log = []; chat.open = false; } // a new game starts with an empty chat
-  if (on && !chat.was) chat.log.push({ sys: true, x: 'Co-op chat: press T in a game to talk.', at: Date.now() });
+  if (on && !chat.was) chat.log.push({ sys: true, x: `Co-op chat: press ${keyLabel('chat')} in a game to talk.`, at: Date.now() });
   chat.was = on;
   chatEl.classList.toggle('on', vis); chatEl.classList.toggle('menu', inMenu); chatEl.classList.toggle('typing', vis && (chat.open || inMenu));
   if (!vis) return;
@@ -3381,7 +3495,7 @@ function renderChat() {
 }
 function openChat() {
   if (!NET.net.on) return;
-  for (const k in keys) keys[k] = false; trigger = adsHeld = false; // stop walking and shooting while you type
+  for (const k in keys) keys[k] = false; trigger = adsHeld = false; stopCooking(); // stop walking and shooting while you type
   chat.open = true; renderChat(); chatIn.focus();
 }
 function closeChat() { chat.open = false; chatIn.blur(); renderChat(); }
@@ -3482,7 +3596,7 @@ function coopGuestJoin(d) {
   start('run');
   coop = { role: 'guest', lastBt: 0 }; coopGuestStart = null; wave = d.w || 0; renderPips();
   applyWeather(d.wx || 'clear');
-  if (d.late && d.w > 0) { const c = lateCash(d.w); player.cash += c; SND.cash(); banner('JOINED MID-RUN', `FLOOR ${d.floor} · WAVE ${d.w} · +$${c.toLocaleString()} TO CATCH UP · B TO SHOP`); }
+  if (d.late && d.w > 0) { const c = lateCash(d.w); player.cash += c; SND.cash(); banner('JOINED MID-RUN', `FLOOR ${d.floor} · WAVE ${d.w} · +$${c.toLocaleString()} TO CATCH UP · ${keyLabel('shop')} TO SHOP`); }
   else banner('CO-OP RUN', 'YOU JOINED YOUR FRIEND · YOUR KILLS AND CASH ARE YOUR OWN');
 }
 function coopEnd(hostLeft) {
@@ -3605,8 +3719,8 @@ function coopMsg(d, from) {
     if (d.t === 'hit') {
       if (!hitOk(from, d)) return;
       const b = botByNid(d.n); if (!b || !b.alive || b.puppet) return;
-      const died = b.damage(d.d, { head: !!d.h, blast: !!d.bl, point: b.center() });
-      if (died) NET.toFriend(from, { t: 'kill', n: b.nid, h: d.h ? 1 : 0 });
+      const died = b.damage(+d.d, { head: !!d.h, blast: !!d.bl, point: b.center() });
+      if (died) NET.toFriend(from, { t: 'kill', n: b.nid, h: d.h ? 1 : 0 }); else if (b.t.titan) titanPhase(b);
     }
     return;
   }
@@ -3614,11 +3728,11 @@ function coopMsg(d, from) {
   if (d.t === 'snap') coopSnap(d);
   else if (d.t === 'cfloor') coopFloor(d);
   else if (d.t === 'zap') zapAt(new V3(d.x, 0, d.z), true);
-  else if (d.t === 'acwarn') banner('🛡 ANTI-CHEAT', `${String(d.name).slice(0, 14)} MAY BE CHEATING (${String(d.why).slice(0, 24).toUpperCase()}) · THE HOST IS BLOCKING IT`);
+  else if (d.t === 'acwarn') banner('🛡 ANTI-CHEAT', `${escH(String(d.name).slice(0, 14))} MAY BE CHEATING (${escH(String(d.why).slice(0, 24).toUpperCase())}) · THE HOST IS BLOCKING IT`);
   else if (d.t === 'bd') { const b = botByNid(d.n); if (b && b.alive) { b.hp = 0; b.die({ head: !!d.h, blast: !!d.bl }); } }
   else if (d.t === 'bb') ghostBolt(new V3(...d.f), new V3(...d.v), d.c, !!d.r, !!d.hv);
   else if (d.t === 'hurt') { if (!player.down) hurt(d.d, { x: d.x, z: d.z }, false); if (d.h && state === 'playing') medalHead(); }
-  else if (d.t === 'kill') { const b = botByNid(d.n); if (b) { try { onKill(b, !!d.h, cur()?.w.name || 'Gun', {}); } catch (e) { console.warn(e); } } }
+  else if (d.t === 'kill') { const b = botByNid(d.n); if (b) { try { const o = b.lastHit || { weaponId: cur()?.base.id, name: cur()?.w.name }; onKill(b, !!d.h, o.name || 'Gun', o); } catch (e) { console.warn(e); } } }
   else if (d.t === 'over') { if (state !== 'dead' && state !== 'menu') { banner('EVERYONE IS DOWN', 'The co-op run is over'); gameOver(); } }
 }
 // guest: make the host's bots appear, move and disappear
@@ -3744,15 +3858,15 @@ function openMutate() {
   if (it.mo) mutOffers = it.mo.map(([id, lvl]) => ({ m: mutById(id), lvl })).filter(o => o.m && (it.ml[o.m.id] || 0) < o.lvl);
   if (!it.mo || !mutOffers.length) { mutOffers = offers(it.w.ml, !!it.w.projectile); it.mo = mutOffers.map(o => [o.m.id, o.lvl]); }
   if (!mutOffers.length) { it.pend = 0; it.mo = null; return; }
-  state = 'mutate'; trigger = adsHeld = false; document.exitPointerLock?.();
+  state = 'mutate'; trigger = adsHeld = false; stopCooking(); document.exitPointerLock?.();
   const nx = nextStep(it.mk), have = Object.entries(it.w.ml);
   $('mutate').innerHTML = `<div class="card mutcard"><div class="stamp" style="background:var(--coral)">MUTATION</div>
     <h2>${it.w.name} is evolving</h2><p class="sub">${it.mk} kills this run. Pick one: a new mutation, or level up one you have. Each goes up to level III.${it.pend > 1 ? ` <b>${it.pend} picks waiting.</b>` : ''}${nx ? ` Next pick at ${nx} kills.` : ''}</p>
     <div class="mutcards">${mutOffers.map(({ m, lvl }, i) => `<button class="mut${lvl > 1 ? ' up' : ''}" data-i="${i}" style="--c:${m.col}">
       <div class="mtop"><i>${m.icon}</i><div><span class="mkind">${m.spell ? 'SPELL · ' : ''}${lvl > 1 ? `LEVEL UP · ${ROMAN[lvl - 1]} → ${ROMAN[lvl]}` : 'NEW'}</span>${pips(lvl)}</div></div>
-      <b>${m.name} ${ROMAN[lvl]}</b><span class="md">${m.d(lvl)}</span>${lvl > 1 ? `<span class="mwas">was: ${m.d(lvl - 1)}</span>` : ''}<kbd>${i + 1}</kbd></button>`).join('')}</div>
+      <b>${m.name} ${ROMAN[lvl]}</b><span class="mdesc">${m.d(lvl)}</span>${lvl > 1 ? `<span class="mwas">was: ${m.d(lvl - 1)}</span>` : ''}<kbd>${i + 1}</kbd></button>`).join('')}</div>
     ${have.length ? `<p class="gnote" style="margin-top:14px">On this gun: ${have.map(([id, l]) => mchip(id, l)).join(' ')}</p>` : ''}
-    <p class="note">1 2 3 to pick · N or Esc to decide later (the same 3 will be waiting)</p></div>`;
+    <p class="note">1 2 3 to pick · ${keyLabel('mutate')} or Esc to decide later (the same 3 will be waiting)</p></div>`;
   $('mutate').querySelectorAll('.mut').forEach(b => { b.onmousedown = e => e.stopPropagation(); b.onclick = () => pickMutation(+b.dataset.i); });
   show('mutate', true); SND.levelUp();
 }
@@ -3776,16 +3890,19 @@ function itemLoad(s) {
   it.w = computeW(it.base, it.att, it.ml); it.mag = Math.min(s.mag ?? it.w.mag, it.w.mag + 1); it.reserve = s.reserve ?? it.w.reserve; it.mode = Math.min(it.mode, it.w.modes.length - 1);
   return it;
 }
+// guestRun: this run is a friend's co-op game, so it never touches your own saved run. reloading: a different save is being
+// loaded, so the run in memory must not be written over it on the way out.
+let guestRun = false, reloading = false;
 function saveRun() {
-  if (!['playing', 'paused', 'shop', 'mutate', 'elevator'].includes(state) || player.hp <= 0 || !mapDef || training || coop) return; // co-op runs can't be continued later
+  if (!['playing', 'paused', 'shop', 'mutate', 'elevator'].includes(state) || player.hp <= 0 || !mapDef || training || coop || guestRun || reloading) return; // co-op runs can't be continued later
   const p = player, data = {
-    v: 1, when: Date.now(), diff: diffKey, floorN, wave, breakT, seed: mapDef.seed, score, runTime, stragglerT, cheat: cheatRun, skill: skill.target, pipTier: player.pipTier || 0, stats: { ...stats }, runXP: { ...runXP },
+    v: 1, when: Date.now(), diff: diffKey, floorN, wave, breakT, seed: mapDef.seed, score, runTime, stragglerT, cheat: cheatRun, skill: skill.target, pipTier: player.pipTier || 0, stats: { ...stats }, runXP: { ...runXP }, runPXP, night: nightWave, floorHit: !!player.floorHit,
     p: { hp: p.hp, armor: p.armor, cash: p.cash, nades: p.nades, nvg: !!p.nvg, x: p.pos.x, y: p.pos.y, z: p.pos.z, yaw: p.yaw, pitch: p.pitch, cur: p.cur, prev: p.prev },
     slots: { primary: itemSave(p.slots.primary), secondary: itemSave(p.slots.secondary), melee: itemSave(p.slots.melee) },
     locker: Object.fromEntries(Object.entries(p.locker).map(([k, it]) => [k, itemSave(it)])), hadPrimary: !!p.hadPrimary,
     sup: { lv: { ...support.lv }, stock: { ...support.stock }, scanT: support.scanT }, ab: { ...player.ab },
     mod: floorMod.id, wx: weather, modCash: floorMod.cash, paint, paintFills, char: runChar, daily: dailyRun ? todayKey() : null,
-    bots: bots.filter(b => b.alive).map(b => ({ type: b.type, x: b.pos.x, z: b.pos.z, hp: b.hp, elite: b.elite, hpMul: b.hpMul, revealed: !!b.revealed })),
+    bots: bots.filter(b => b.alive).map(b => ({ type: b.type, x: b.pos.x, z: b.pos.z, hp: b.hp, elite: b.elite, hpMul: b.hpMul, revealed: !!b.revealed, phase: b.phase || 0 })),
   };
   try { sealSave(RUN_KEY, data); } catch (e) { }
 }
@@ -3810,7 +3927,7 @@ function renderContinue() {
 }
 function resetPlayer() {
   player.down = false; player.revT = 0; Object.assign(player, { mc: 0, mcT: -9, mcStill: 0, slamBounce: 0, slideBuf: 0, coyote: 0, jumpBuf: 0, sinceDash: 9, groundT: 0 }); cheatRun = acHit || admOn(); cheats.slow = cheats.bouncy = cheats.confetti = false;
-  player.detail = false; player.jCharge = 0; $('hud').classList.remove('detail'); $('inspectDetail').classList.remove('on');
+  player.detail = false; player.jCharge = 0; $('hud').classList.remove('inspecting'); $('inspectDetail').classList.remove('on');
   Object.assign(player, { maxHp: upgHp(), spdMul: upgSpd(), hp: upgHp(), armor: 0, cash: 800, nades: 1, nvg: false, nvgOn: true, yaw: 0, pitch: 0, adsT: 0, recoilDebt: 0, yawDebt: 0, bloom: 0, kick: 0, shake: 0, spin: 0, crouch: 0, crouchOn: false,
     cur: 'secondary', prev: 'primary', switchT: 0, burstLeft: 0, semiReady: true, cooking: false, cookT: 0, breath: 4, exhale: 0, camOff: 0, lean: 0, slideT: 0, slideCd: 0, slideQ: false,
     dashT: 0, dashCd: 0, dashQ: false, jumpQ: false, wallT: 0, lastWall: 0, wallBudget: 1.4, mantle: null, roll: 0, fovKick: 0, streak: 0, inspectT: 0, landDip: 0,
@@ -3821,21 +3938,22 @@ function resetPlayer() {
 }
 function continueRun() {
   if (isKicked()) { showKick(); return; }
+  if (mustAddEmail()) return;
   const d = loadRun(); if (!d) return;
   try { ac(); musicStart(); } catch (e) { report('Audio', e); }
   try {
-    clearAll(); clearSupport(); resetPlayer();
+    guestRun = false; clearAll(); clearSupport(); resetPlayer();
     diffKey = DIFF[d.diff] ? d.diff : 'normal'; diff = ctx.diff = DIFF[diffKey];
     document.querySelectorAll('#diff button').forEach(x => x.classList.toggle('sel', x.dataset.d === diffKey));
     floorN = d.floorN; mapDef = generateMap(floorN, d.seed); loadMap(mapDef); floorMod = MODS[0];
     resetSkill(d.skill); player.pipTier = d.pipTier || 0;
     applyHeat(Math.max(1, d.wave)); $("hud").classList.toggle("rampage", !!diff.rampage);
-    $('mmlabel').textContent = `${mapDef.name.toUpperCase()} · ${mapDef.size * 2}M`;
+    $('mmlabel').textContent = `${mapDef.name.toUpperCase()} · ${mapDef.sizeLabel || ''} · ${mapDef.size * 2}M`;
     placePlayer(); camera.fov = settings.fov;
     const P = d.p; Object.assign(player, { hp: P.hp, armor: P.armor, cash: P.cash, nades: P.nades, nvg: !!P.nvg, nvgOn: true, yaw: P.yaw, pitch: P.pitch || 0, cur: P.cur, prev: P.prev });
     player.pos.set(P.x, P.y || 0, P.z);
     player.slots = { primary: itemLoad(d.slots.primary), secondary: itemLoad(d.slots.secondary) || inst('pip'), melee: itemLoad(d.slots.melee) || inst('knife') };
-    player.locker = {}; for (const k in d.locker || {}) { const it = itemLoad(d.locker[k]); if (it) player.locker[k] = it; } player.hadPrimary = !!d.hadPrimary;
+    player.locker = {}; for (const k in d.locker || {}) { const it = itemLoad(d.locker[k]); if (it) player.locker[k] = it; } player.hadPrimary = !!d.hadPrimary; player.floorHit = !!d.floorHit; runPXP = d.runPXP || 0;
     clearSpellFx();
     if (!player.slots[player.cur]) player.cur = 'secondary';
     Object.keys(stats).forEach(k => stats[k] = d.stats?.[k] || 0); Object.keys(runXP).forEach(k => delete runXP[k]); Object.assign(runXP, d.runXP || {});
@@ -3848,8 +3966,13 @@ function continueRun() {
     for (const s of d.bots) {
       if (!TYPES[s.type]) continue;
       const b = new Bot(s.type, new V3(s.x, 0, s.z), { elite: s.elite, hpMul: s.hpMul }); b.spawnT = .99;
-      b.hp = Math.min(s.hp, b.t.hp); if (b.hp < b.t.hp) { b.setBar(); b.bar.visible = true; } b.revealed = s.revealed; bots.push(b);
+      b.hp = Math.min(s.hp, b.t.hp); if (b.hp < b.t.hp) { b.setBar(); b.bar.visible = true; } b.revealed = s.revealed; bots.push(tuneBot(b));
+      if (b.t.titan) { // put the Titan back in the phase it had reached
+        const f = b.hp / b.t.hp; b.phase = s.phase || (f < .33 ? 3 : f < .66 ? 2 : 1); b.stompT = 6;
+        if (b.phase === 2) b.t.rate *= .7; if (b.phase >= 3) { b.t.rate *= .6; b.t.speed *= 1.5; }
+      }
     }
+    nightWave = !!d.night; applyNight();
     breakT = d.bots.length ? 0 : Math.max(d.breakT || 0, 4);
     equipView(); renderPips(); updateHUD(0);
   } catch (e) { report('Loading saved run', e); return; }
@@ -3875,7 +3998,7 @@ function lockFailed() {
   if (lockRetry || looking()) return; // the promise and the error event both report the same failure
   if (++lockFails >= 5) { fallback = true; if (aimWait) { aimHint(false); if (state === 'paused') { state = 'playing'; clock.getDelta(); } } return; }
   if (padSeen) return; // controller players don't need the mouse
-  if (state === 'playing') { state = 'paused'; trigger = adsHeld = false; for (const k in keys) keys[k] = false; }
+  if (state === 'playing') { state = 'paused'; stopCooking(); trigger = adsHeld = false; for (const k in keys) keys[k] = false; }
   if (state === 'paused' && !$('pause').classList.contains('on')) aimHint(true);
   lockRetry = setTimeout(() => { lockRetry = 0; if (aimWait && performance.now() - lockAsk < 4500) lock(); }, 1100); // still counts as your click for a few seconds
 }
@@ -3894,12 +4017,15 @@ function lockGot() {
   if (aimWait) { aimHint(false); if (state === 'paused' && !$('pause').classList.contains('on')) { state = 'playing'; clock.getDelta(); } }
 }
 function clearAll() {
-  clearBots(); pickups.forEach(p => scene.remove(p.mesh)); pickups.length = 0; nades.forEach(n => scene.remove(n.mesh)); nades.length = 0; clearStrikes();
+  clearBots(); pickups.forEach(p => scene.remove(p.mesh)); pickups.length = 0; nades.forEach(n => scene.remove(n.mesh)); nades.length = 0; clearStrikes(); clearSpellFx();
 }
 function reset(mode = 'run') {
   dailyRun = mode === 'daily'; training = null; runChar = charUnlocked(charById(prog.char), prog.life) ? prog.char : 'rookie';
   floorMod = MODS[0]; paint = paintFills = frenzyT = 0; $('hud').dataset.mod = 'calm'; $('hud').classList.remove('frenzy');
-  if (dailyRun) diffKey = 'normal', diff = ctx.diff = DIFF.normal;
+  guestRun = !!coopGuestStart; nightWave = false;
+  // the difficulty is the one picked on Play (a Daily Tower or a friend's game must not leave theirs behind)
+  if (dailyRun) diffKey = 'normal'; else if (!coopGuestStart) { const d = document.querySelector('#diff button.sel')?.dataset.d; if (DIFF[d]) diffKey = d; }
+  diff = ctx.diff = DIFF[diffKey];
   clearAll(); clearSupport(); floorN = coopGuestStart?.floor || 1; mapDef = coopGuestStart ? generateMap(coopGuestStart.floor, coopGuestStart.seed) : mode === 'train' ? generateMap(1, 4242) : dailyRun ? generateMap(1, dailySeed() + 7919) : generateMap(1); loadMap(mapDef);
   applyWeather('clear', true);
   if (coopGuestStart?.mod) floorMod = modById(coopGuestStart.mod) || MODS[0];
@@ -3924,13 +4050,14 @@ function reset(mode = 'run') {
 }
 function start(mode = 'run') {
   if (isKicked()) { showKick(); return; }
+  if (mustAddEmail()) return;
   try { ac(); musicStart(); } catch (e) { report("Audio", e); }
-  if (mode !== 'train') clearRun(); try { reset(mode); } catch (e) { report("Starting game", e); return; }
+  if (mode !== 'train' && !coopGuestStart) clearRun(); try { reset(mode); } catch (e) { report("Starting game", e); return; }
   if (mode === 'daily') life('dailies');
   state = 'playing'; ['menu', 'over', 'pause'].forEach(s => show(s, false)); $('hud').classList.add('on'); lock();  if (mode === 'run' && !coop && NET.isHost() && NET.net.peers.size) coopHostBegin(); // friends on the Friends screen come along
 }
 function pause() {
-  if (state !== 'playing') return; endDetail(); state = 'paused'; trigger = adsHeld = false; show('pause', true); saveRun();
+  if (state !== 'playing') return; endDetail(); stopCooking(); state = 'paused'; trigger = adsHeld = false; show('pause', true); saveRun();
   $('pauseInfo').textContent = `Floor ${floorN} · wave ${wave} · ${bots.filter(b => b.alive).length} bots left · $${Math.floor(player.cash).toLocaleString()} · playing as ${charById(runChar).name}${floorMod.id !== 'calm' ? ` · door: ${floorMod.name}` : ''}${training ? ' · training' : ''}. ${coop ? 'CO-OP: the game keeps going while you are paused, so find cover first!' : 'The bots are frozen too.'}`;
   renderSettings($('settingsPause'));
 }
@@ -3939,14 +4066,14 @@ function toMenu() {
   if (coop) { if (coop.role === "host") NET.toFriends({ t: "over" }); coopEnd(false); } // quitting a co-op run ends it (for everyone, if you host)
   saveRun(); show('mutate', false); show('elevator', false); bigMap = false; $('minimap').classList.remove('big'); if (training) { training = null; renderTraining(); }
   applyWeather('clear', true);
-  state = 'menu'; ['pause', 'over'].forEach(s => show(s, false)); show('menu', true); $('hud').classList.remove('on');
+  state = 'menu'; nightWave = false; ['pause', 'over'].forEach(s => show(s, false)); show('menu', true); $('hud').classList.remove('on');
   if (view) { gunCam.remove(view.group); view = null; }
   clearSupport(); document.exitPointerLock?.(); setupMenuScene(); renderMenu(); renderContinue();
 }
 function gameOver() {
   if (state === "shop") shop.close(); show("pause", false); show("mutate", false); show("elevator", false);
   if (coop) { if (coop.role === "host") NET.toFriends({ t: "over" }); coopEnd(false); }
-  state = 'dead'; trigger = adsHeld = false; document.exitPointerLock?.(); clearRun();
+  state = 'dead'; trigger = adsHeld = false; document.exitPointerLock?.(); if (!guestRun) clearRun();
   const newBest = score > prog.bestScore;
   prog.bestScore = Math.max(prog.bestScore, score); prog.bestFloor = Math.max(prog.bestFloor, floorN); prog.kills += stats.kills; prog.runs++;
   const dk = todayKey(), dBest = dailyRun && score > (prog.daily[dk]?.score || 0); if (dBest) prog.daily[dk] = { score, floor: floorN, char: runChar };
@@ -4137,6 +4264,7 @@ let padPrev = [], padSprint = false, aimOnEnemy = false, padSeen = false;
 const PAD_KEYS = { 0: 'Space', 1: 'KeyC', 2: 'KeyR', 3: 'KeyX', 4: 'KeyG', 5: 'KeyF', 11: 'KeyI', 12: 'KeyH', 13: 'KeyN', 14: 'KeyK', 15: 'KeyL', 8: 'KeyB' };
 const keyEv = (type, code) => { const ev = new KeyboardEvent(type, { code, bubbles: true }); padEvs.add(ev); dispatchEvent(ev); }; // controller presses skip the key bindings
 function pollPad(dt) {
+  if (emailBox) return; // the email box has to be answered first
   const pads = navigator.getGamepads ? navigator.getGamepads() : [], gp = [...pads].find(p => p && p.connected);
   if (!gp) return;
   if (!padSeen) { padSeen = true; toast('CONTROLLER CONNECTED', gp.id.split('(')[0].trim().slice(0, 40) || 'Gamepad', 'Menu button pauses · View opens the shop', '🎮'); }
@@ -4164,7 +4292,7 @@ function pollPad(dt) {
   } else if (state === 'mutate' || state === 'elevator') {
     if (press(2)) keyEv('keydown', 'Digit1'); if (press(0)) keyEv('keydown', elevN === 1 && state === 'elevator' ? 'Enter' : 'Digit2'); if (press(1)) keyEv('keydown', 'Digit3');
     if (press(3) && state === 'mutate') keyEv('keydown', 'KeyN');
-  } else if (state === 'menu') { if (press(0)) start(); }
+  } else if (state === 'menu') { if (press(0)) { if (loadRun()) continueRun(); else start(); } } // never throws away a saved run
   else if (state === 'dead') { if (press(0)) start(dailyRun ? 'daily' : 'run'); if (press(1)) toMenu(); }
   padPrev = Object.assign(gp.buttons.map(x => x.pressed), { mv: padPrev.mv, rt: padPrev.rt, lt: padPrev.lt });
 }
@@ -4274,7 +4402,7 @@ function frame() {
         if (nightWave) { nightWave = false; applyNight(); }
         if (player.down) revive(30); // co-op: everyone gets back up between waves
         breakT = 12; const bonus = 400 + wave * 100 + (wave % 5 === 0 ? 1500 * floorN : 0); earn(bonus); if (floorMod.id !== 'blood') player.hp = Math.min(player.maxHp, player.hp + 15);
-        banner(`WAVE ${wave} CLEARED`, wave % 5 === 0 ? `+$${bonus} · NEXT WAVE CLIMBS TO FLOOR ${floorN + 1}` : `+$${bonus} BONUS · B TO SHOP`);
+        banner(`WAVE ${wave} CLEARED`, wave % 5 === 0 ? `+$${bonus} · NEXT WAVE CLIMBS TO FLOOR ${floorN + 1}` : `+$${bonus} BONUS · ${keyLabel('shop')} TO SHOP`);
         renderPips(); saveProg(); saveRun();
       }
       const before = Math.ceil(breakT); breakT -= dt; if (breakT > 0 && breakT <= 3 && Math.ceil(breakT) < before) SND.click(); if (breakT <= 0) { if (me || floorOf(wave + 1) === floorN) nextWave(); else breakT = .01; } // co-op: the elevator waits until you leave the shop
