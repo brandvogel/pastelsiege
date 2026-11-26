@@ -1,11 +1,11 @@
-import { WEAPONS, CATS, GEAR, drawSilhouette, PIP_TIERS, ttk } from './weapons_v96.js';
-export { ttk }; // the weapon card uses it, and weapons_v96 keeps it testable without the 3D imports
-import { ATTACH, SLOT_NAMES, compatible, slotsFor, describe, attById, computeWeapon, LASER_COLS, LASER_LV } from './attachments_v96.js';
-import { SKINS, TIER_COL, PERKS, MAX_LEVEL, levelOf, prog, skinUnlocked, drawSwatch, skinById } from './skins_v96.js';
-import { SUPPORT } from './helpers_v96.js';
-import { ABILITIES } from './abilities_v96.js';
-import { CHARMS } from './charms_v96.js';
-import { keyLabel } from './controls_v96.js';
+import { WEAPONS, CATS, GEAR, drawSilhouette, PIP_TIERS, ttk } from './weapons_v97.js';
+export { ttk }; // the weapon card uses it, and weapons_v97 keeps it testable without the 3D imports
+import { ATTACH, SLOT_NAMES, compatible, slotsFor, describe, attById, computeWeapon, LASER_COLS, LASER_LV } from './attachments_v97.js';
+import { SKINS, TIER_COL, PERKS, MAX_LEVEL, levelOf, prog, skinUnlocked, drawSwatch, skinById } from './skins_v97.js';
+import { SUPPORT } from './helpers_v97.js';
+import { ABILITIES } from './abilities_v97.js';
+import { CHARMS } from './charms_v97.js';
+import { keyLabel } from './controls_v97.js';
 
 // The buy menu. Left: sections. Middle: a list of everything in the section. Right: a big detail panel for the
 // selected item, compared against what you're carrying now, with one big buy button.

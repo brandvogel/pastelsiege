@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { WEAPONS, byId, PIP_TIERS, applyPipTier, ttk } from '../weapons_v96.js';
-import { ATTACH, SLOTS, attById, compatible, computeWeapon, describe } from '../attachments_v96.js';
+import { WEAPONS, byId, PIP_TIERS, applyPipTier, ttk } from '../weapons_v97.js';
+import { ATTACH, SLOTS, attById, compatible, computeWeapon, describe } from '../attachments_v97.js';
 
 test('weapon ids are unique', () => {
   const ids = WEAPONS.map(w => w.id);

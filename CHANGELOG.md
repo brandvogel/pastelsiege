@@ -1,8 +1,13 @@
 # Changelog
 
-## v96 (unreleased)
+## v97 (unreleased)
 
-`npm test` passes. Not yet played in a browser. Supabase needs email sending set up before this is deployed.
+### Fixed: "Which save do you want?"
+
+- It no longer appears when progress is the same, when only settings or daily quests differ, or after signing out and back in.
+- Nothing uploads while the question is unanswered, or before your account save has been checked, so it can't be overwritten first.
+
+## v96
 
 ### Changed: accounts use real emails
 

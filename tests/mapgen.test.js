@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { generateMap, makeBuilder } from '../mapgen_v96.js';
+import { generateMap, makeBuilder } from '../mapgen_v97.js';
 
 const build = def => {
   const b = makeBuilder(def.seed);

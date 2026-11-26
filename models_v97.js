@@ -1,8 +1,8 @@
 // First-person gun models. Each returns anchor points (grip, fore hand, mag well, sight line) so hands and attachments line up.
-import { kit, materials, frontPost, rearSight, redDot, holo, acog, scope, birdcage, slantBrake, arms } from './gunkit_v96.js';
-import { applySkin } from './skins_v96.js';
-import { pistol, revolver, minigun, launcher, railgun, doubleBarrel } from './models2_v96.js';
-export { makeEnv } from './gunkit_v96.js';
+import { kit, materials, frontPost, rearSight, redDot, holo, acog, scope, birdcage, slantBrake, arms } from './gunkit_v97.js';
+import { applySkin } from './skins_v97.js';
+import { pistol, revolver, minigun, launcher, railgun, doubleBarrel } from './models2_v97.js';
+export { makeEnv } from './gunkit_v97.js';
 
 // L receiver length, H height, B barrel, up upper style, hg handguard, st stock, mg magazine, mz muzzle device, irons [front, rear]
 const S = {

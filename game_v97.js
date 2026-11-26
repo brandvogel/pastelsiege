@@ -1,27 +1,27 @@
 import { uiFont, THREE, renderer, scene, camera, world, loadMap, resolveCircle, groundAt, ceilingAt, lineOfSight, boxAt, insideSolid, openPoint, clamp, rand,
-  tracer, beam, sparks, shell, decal, smoke, explosionFx, flashLight, updateFx, updateAtmos, fxSettings, SND, ac, setQuality, SUN_DIR, setWeather, lightningBolt, skyFlash, WEATHER, underCover, rayWall, collidersNear, followShadow, updatePads, updateEdges, setNight, followGlow, setResScale, getResScale, setResPct, renderPct, QUALITY, quality, IS_MAC, RETINA, APPLE_SI, CHIP, goreBurst, gibs, splat, bloodColor } from './world_v96.js';
-import { setVolume, musicStart, musicLevel, musicSong, setMusicVolume, at3, setListener, audioSettings, setAmbience, ambienceLevel, ambienceTick, ambienceCover, setStepSurface, audioClock } from './audio_v96.js';
-import { makePost } from './post_v96.js';
-import { XH_STYLES, XH_COLORS, XH_DEFAULT, XH_PRESETS, mountCrosshair, spreadCrosshair, crosshairSVG, crosshairCode, parseCrosshair } from './crosshair_v96.js';
-import { generateMap } from './mapgen_v96.js';
-import { byId, WEAPONS, drawSilhouette, PIP_TIERS, applyPipTier } from './weapons_v96.js';
-import { buildGun, addArms, decorateGun, makeEnv } from './models_v96.js';
-import { muzzleFlash } from './gunkit_v96.js';
-import { Bot, bots, ctx, guardProps, updateShots, clearBots, updateDebris, updateLOD, TYPES, SPAWN_EXTRA, mates, botByNid, ghostBolt, puppetStep, laserOf as botLaser } from './bots_v96.js';
-import { Shop, compareBars, fineStats, ttk } from './shop_v96.js';
-import { computeWeapon, attById, SLOT_NAMES, LASER_COLS, LASER_LV, laserCol } from './attachments_v96.js';
-import { SKINS, skinById, prog, saveProg, sealSave, openSave, dropSave, tamper, levelOf, gunLevel, applyLevel, xpForLevel, MAX_LEVEL, TIER_COL } from './skins_v96.js';
-import { CHARMS, charmById, buildCharm, updateCharm } from './charms_v96.js';
+  tracer, beam, sparks, shell, decal, smoke, explosionFx, flashLight, updateFx, updateAtmos, fxSettings, SND, ac, setQuality, SUN_DIR, setWeather, lightningBolt, skyFlash, WEATHER, underCover, rayWall, collidersNear, followShadow, updatePads, updateEdges, setNight, followGlow, setResScale, getResScale, setResPct, renderPct, QUALITY, quality, IS_MAC, RETINA, APPLE_SI, CHIP, goreBurst, gibs, splat, bloodColor } from './world_v97.js';
+import { setVolume, musicStart, musicLevel, musicSong, setMusicVolume, at3, setListener, audioSettings, setAmbience, ambienceLevel, ambienceTick, ambienceCover, setStepSurface, audioClock } from './audio_v97.js';
+import { makePost } from './post_v97.js';
+import { XH_STYLES, XH_COLORS, XH_DEFAULT, XH_PRESETS, mountCrosshair, spreadCrosshair, crosshairSVG, crosshairCode, parseCrosshair } from './crosshair_v97.js';
+import { generateMap } from './mapgen_v97.js';
+import { byId, WEAPONS, drawSilhouette, PIP_TIERS, applyPipTier } from './weapons_v97.js';
+import { buildGun, addArms, decorateGun, makeEnv } from './models_v97.js';
+import { muzzleFlash } from './gunkit_v97.js';
+import { Bot, bots, ctx, guardProps, updateShots, clearBots, updateDebris, updateLOD, TYPES, SPAWN_EXTRA, mates, botByNid, ghostBolt, puppetStep, laserOf as botLaser } from './bots_v97.js';
+import { Shop, compareBars, fineStats, ttk } from './shop_v97.js';
+import { computeWeapon, attById, SLOT_NAMES, LASER_COLS, LASER_LV, laserCol } from './attachments_v97.js';
+import { SKINS, skinById, prog, saveProg, sealSave, openSave, dropSave, tamper, levelOf, gunLevel, applyLevel, xpForLevel, MAX_LEVEL, TIER_COL } from './skins_v97.js';
+import { CHARMS, charmById, buildCharm, updateCharm } from './charms_v97.js';
 prog.charms = prog.charms || ['none']; prog.charmOf = prog.charmOf || {};
-import { SUPPORT, support, hctx, buySupport, buyCharge, setSupport, useScan, slv, supById, supNextPrice, owned, deployTurret, launchStriker, updateSupport, floorChange, clearSupport } from './helpers_v96.js';
-import { ABILITIES, abById, abNextPrice, abMax, AB } from './abilities_v96.js';
-import { MUTATIONS, mutById, MUT_STEPS, nextStep, applyMuts, offers, MV, mutDesc, ROMAN, MAX_MLV } from './mutations_v96.js';
-import { levelInfo, levelPerks, LEVEL_REWARDS, nextReward, XP_FOR, xpForFloor, ensureDaily, questById, markPlayed, streakXp, questTick, recordRun } from './meta_v96.js';
-import { ACTIONS, NOBIND, setBinds, bindIn, rebind, keyLabel } from './controls_v96.js';
-import { PLATFORM, allowed, enforce, sdkInit, sdkLoaded, playState, midAd, happy, audioGate, adBusy } from './platform_v96.js';
-import * as NET from './net_v96.js';
-import { account, staff, sig, signIn, signUp, resendSignUp, changeEmail, refreshUser, confirmsEmail, finishLink, signOut, resume as resumeAccount, cloudGet, cloudPut, syncInfo, setSync, friendList, ping, addFriend, acceptFriend, removeFriend, testerList, setTester, playerList, giveRole, kick as kickPlayer, mute as mutePlayer, muteInfo, submitScore, topScores, clearScores, rank, ROLE_NAME, roleOf } from './account_v96.js';
-import { MODS, modById, doorOffers, CHARS, charById, charUnlocked, PERK, UPGRADES, upgCost, upgPoints, ACH, todayKey, dailySeed, mulberry, paintGoal } from './run_v96.js';
+import { SUPPORT, support, hctx, buySupport, buyCharge, setSupport, useScan, slv, supById, supNextPrice, owned, deployTurret, launchStriker, updateSupport, floorChange, clearSupport } from './helpers_v97.js';
+import { ABILITIES, abById, abNextPrice, abMax, AB } from './abilities_v97.js';
+import { MUTATIONS, mutById, MUT_STEPS, nextStep, applyMuts, offers, MV, mutDesc, ROMAN, MAX_MLV } from './mutations_v97.js';
+import { levelInfo, levelPerks, LEVEL_REWARDS, nextReward, XP_FOR, xpForFloor, ensureDaily, questById, markPlayed, streakXp, questTick, recordRun } from './meta_v97.js';
+import { ACTIONS, NOBIND, setBinds, bindIn, rebind, keyLabel } from './controls_v97.js';
+import { PLATFORM, allowed, enforce, sdkInit, sdkLoaded, playState, midAd, happy, audioGate, adBusy } from './platform_v97.js';
+import * as NET from './net_v97.js';
+import { account, staff, saveSig, progressSig, signIn, signUp, resendSignUp, changeEmail, refreshUser, confirmsEmail, finishLink, signOut, resume as resumeAccount, cloudGet, cloudPut, syncInfo, setSync, friendList, ping, addFriend, acceptFriend, removeFriend, testerList, setTester, playerList, giveRole, kick as kickPlayer, mute as mutePlayer, muteInfo, submitScore, topScores, clearScores, rank, ROLE_NAME, roleOf } from './account_v97.js';
+import { MODS, modById, doorOffers, CHARS, charById, charUnlocked, PERK, UPGRADES, upgCost, upgPoints, ACH, todayKey, dailySeed, mulberry, paintGoal } from './run_v97.js';
 
 const $ = id => document.getElementById(id);
 const V3 = THREE.Vector3, lerp = THREE.MathUtils.lerp;
@@ -39,7 +39,7 @@ let frozenDrawn = false; // solo menus show one still frame (see the end of fram
 const stats = { kills: 0, fired: 0, hit: 0, heads: 0, earned: 0, bestStreak: 0 };
 const runXP = {};
 
-// version shown at the bottom of Settings, taken from this file's name (game_v96.js -> v34) so it can't go out of date
+// version shown at the bottom of Settings, taken from this file's name (game_v97.js -> v34) so it can't go out of date
 const GAME_VERSION = (import.meta.url.match(/_(v\d+)\.js/) || [, 'dev'])[1];
 // ---------- settings (saved) ----------
 const SET_KEY = 'pastelSiegeSettings12';
@@ -2517,31 +2517,34 @@ function importSave() {
 }
 // ---------- accounts and online saves ----------
 // Signed in, your whole save (the same things Export packs up) is kept on your account: it uploads a few seconds after it
-// changes, and when you close the tab. Opening the game on another computer pulls down the newest one. If this computer
-// and your account both have different progress, you pick which to keep.
+// changes, and when you close the tab. Opening the game on another computer pulls down the newest one. You're only asked
+// which to keep when this computer and your account have each made different progress.
 const saveData = () => { const data = {}; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (SAVE_RX.test(k)) data[k] = localStorage.getItem(k); } return data; };
 const levelIn = data => { try { const r = JSON.parse(data.pastelSiegeProgress9 || 'null'), p = r?.d || r; return p ? levelInfo(p.pxp || 0).lvl : 1; } catch (e) { return 1; } };
-let pushing = false;
+let pushing = false, syncedFor = null; // nothing uploads until this account's save has been compared with this computer's
 async function cloudPush(data = saveData(), last = false) {
-  if (!account.user || pushing) return;
-  const s = sig(JSON.stringify(data)), S = syncInfo(); if (S.uid === account.user.id && S.sig === s) return;
+  if (!account.user || pushing || syncedFor !== account.user.id) return;
+  const s = saveSig(data), S = syncInfo(); if (S.uid === account.user.id && S.sig === s) return;
   pushing = true;
-  try { const at = Date.now(); await cloudPut({ v: 1, at, ver: GAME_VERSION, data }, last); setSync({ uid: account.user.id, at, sig: s }); account.syncedAt = at; account.status = 'synced'; }
+  try { const at = Date.now(); await cloudPut({ v: 1, at, ver: GAME_VERSION, data }, last); setSync({ uid: account.user.id, at, sig: s, prog: progressSig(data) }); account.syncedAt = at; account.status = 'synced'; }
   catch (e) { account.status = 'offline'; }
   pushing = false; renderAccount();
 }
 function cloudLoad(cd) {
   for (const k of Object.keys(localStorage)) if (SAVE_RX.test(k)) localStorage.removeItem(k);
   for (const [k, v] of Object.entries(cd.data)) if (SAVE_RX.test(k) && typeof v === 'string') localStorage.setItem(k, v);
-  setSync({ uid: account.user.id, at: cd.at, sig: sig(JSON.stringify(cd.data)) }); reloading = true; location.reload();
+  syncedFor = null; setSync({ uid: account.user.id, at: cd.at, sig: saveSig(cd.data), prog: progressSig(cd.data) }); reloading = true; location.reload();
 }
 async function cloudSync() {
-  if (!account.user) return;
+  if (!account.user || reloading) return;
   let cd; try { cd = await cloudGet(); } catch (e) { account.status = 'offline'; renderAccount(); return; }
-  const mine = saveData(), S = syncInfo(), same = S.uid === account.user.id, changedHere = sig(JSON.stringify(mine)) !== S.sig;
-  if (!cd || !cd.data) return cloudPush(mine);                                  // a new account takes this computer's progress
-  if (same && (cd.at || 0) <= (S.at || 0)) { account.syncedAt = S.at; account.status = 'synced'; renderAccount(); return changedHere ? cloudPush(mine) : undefined; }
-  if (same && !changedHere && state === 'menu') return cloudLoad(cd);           // played on another computer since: take that
+  if (!account.user) return;
+  const uid = account.user.id, mine = saveData(), S = syncInfo(), same = S.uid === uid, upload = () => { syncedFor = uid; return cloudPush(mine); };
+  if (!cd || !cd.data) return upload();                                         // a new account takes this computer's progress
+  const here = progressSig(mine), there = progressSig(cd.data), behind = levelIn(mine) < levelIn(cd.data);
+  if (here === there) { account.syncedAt = cd.at; account.status = 'synced'; renderAccount(); return upload(); } // same progress: nothing to choose
+  if (same && !behind && ((cd.at || 0) <= (S.at || 0) || there === S.prog)) return upload(); // only this computer moved on
+  if (same && here === S.prog && state === 'menu') return cloudLoad(cd);        // only the account moved on: take that
   if (!same && levelIn(mine) <= 1 && state === 'menu') return cloudLoad(cd);    // nothing worth keeping here
   if (state === 'menu' && !emailBox) chooseSave(cd, mine);
 }
@@ -2553,9 +2556,9 @@ function chooseSave(cd, mine) {
   document.body.appendChild(box);
   for (const t of ['keydown', 'keyup', 'keypress', 'mousedown']) box.addEventListener(t, e => e.stopPropagation());
   box.querySelector('#useCloud').onclick = () => { SND.ui(); cloudLoad(cd); };
-  box.querySelector('#useHere').onclick = () => { SND.ui(); box.remove(); setSync({}); cloudPush(mine); };
+  box.querySelector('#useHere').onclick = () => { SND.ui(); box.remove(); syncedFor = account.user?.id; setSync({}); cloudPush(); };
 }
-setInterval(() => { if (account.user) cloudPush(); }, 20000);
+setInterval(() => { if (account.user) syncedFor === account.user.id ? cloudPush() : cloudSync(); }, 20000);
 addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden' && account.user) cloudPush(saveData(), true); });
 const ago = t => { const s = (Date.now() - t) / 1000; return s < 60 ? 'just now' : s < 3600 ? `${Math.floor(s / 60)} min ago` : s < 172800 ? `${Math.floor(s / 3600)} h ago` : `${Math.floor(s / 86400)} days ago`; };
 // v93 setup: ranks (owner / admin / moderator / tester), kicking, and the global leaderboard. Safe to run more than once.
@@ -2793,7 +2796,7 @@ function openAccount(note = '', who = '') {
         <div class="palsadd"><input id="tsName" maxlength="16" placeholder="Their username" spellcheck="false" autocomplete="off"><button class="go" id="tsAdd">MAKE TESTER</button></div>
         <p class="palsmsg" id="tsMsg"></p><div class="tslist" id="tsList"></div>` : ""}
         <div class="savebtns"><button class="go" id="acSync">SAVE NOW</button><button class="go alt" id="acOut">SIGN OUT</button><button class="go ghost" id="acX">CLOSE</button></div><p class="saveerr" id="acErr"></p></div>`;
-      box.querySelector('#acSync').onclick = async () => { SND.ui(); setSync({ ...syncInfo(), sig: '' }); await cloudPush(); draw(); };
+      box.querySelector('#acSync').onclick = async () => { SND.ui(); setSync({ ...syncInfo(), sig: '' }); await (syncedFor === account.user?.id ? cloudPush() : cloudSync()); draw(); };
       box.querySelector('#acOut').onclick = async () => { SND.ui(); await leaveAccount(); close(); };
       if (account.admin) {
         const inp = box.querySelector('#tsName'), msg = box.querySelector('#tsMsg'), list = box.querySelector('#tsList');
@@ -2847,7 +2850,7 @@ function openAccount(note = '', who = '') {
 }
 $('acctBtn').onclick = () => { SND.ui(); openAccount(); };
 async function leaveAccount() {
-  await cloudPush(); await signOut(); Object.assign(adm, ADM_OFF); admApply(); renderAccount(); loadPals(); toast('SIGNED OUT', 'Your progress stays on this computer too', 'Sign in again any time', '👤');
+  await cloudPush(); await signOut(); syncedFor = null; Object.assign(adm, ADM_OFF); admApply(); renderAccount(); loadPals(); toast('SIGNED OUT', 'Your progress stays on this computer too', 'Sign in again any time', '👤');
 }
 function startAccount() { cloudSync(); pingNow(); loadPals(); checkEmailGate(); }
 // ---------- everyone with an account needs an email ----------

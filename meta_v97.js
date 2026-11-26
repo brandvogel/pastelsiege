@@ -1,6 +1,6 @@
 // Things that keep you coming back: a player level that carries across runs, three daily quests with a streak,
 // and a personal leaderboard of your best runs. Everything lives in the saved progress object (prog).
-import { todayKey, yesterdayKey } from './run_v96.js';
+import { todayKey, yesterdayKey } from './run_v97.js';
 
 // ---- player level ----
 export const xpNeed = l => 400 + l * 200;                 // XP to go from level l to l + 1

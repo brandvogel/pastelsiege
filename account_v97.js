@@ -40,6 +40,16 @@ export function checkEmail(e) {
 }
 // a short fingerprint of a save, to tell if it changed since the last upload
 export function sig(s) { let h = 5381; for (let i = 0; i < s.length; i++) h = (Math.imul(h, 33) ^ s.charCodeAt(i)) >>> 0; return h.toString(36) + ':' + s.length; }
+// the same things in a different order must give the same fingerprint (the browser and the database reorder them)
+const ordered = v => Array.isArray(v) ? v.map(ordered) : v && typeof v === 'object' ? Object.fromEntries(Object.keys(v).sort().map(k => [k, ordered(v[k])])) : v;
+export const saveSig = data => sig(JSON.stringify(ordered(data)));
+// A fingerprint of just your progress and saved run. Settings, backups and the daily quest list are left out: they
+// differ between computers (or change just by opening the game) and aren't worth asking about.
+export function progressSig(data) {
+  const read = k => { try { const r = JSON.parse(data[k] || 'null'); return r?.d || r; } catch (e) { return data[k]; } };
+  const { dq, ...progress } = read('pastelSiegeProgress9') || {};
+  return saveSig({ progress, run: read('pastelSiegeRun1') });
+}
 
 // ---------- talking to Supabase ----------
 let sess = null; try { sess = JSON.parse(localStorage.getItem(STORE)); } catch (e) { }
@@ -182,7 +192,7 @@ export async function changeEmail(email) {
 }
 export async function signOut() {
   try { if (sess) await call('/auth/v1/logout', { method: 'POST', auth: true }); } catch (e) { }
-  keep(null); clear(); try { localStorage.removeItem(SYNC); } catch (e) { }
+  keep(null); clear(); // the sync record stays, so signing back in doesn't ask which save to keep
 }
 // on page load: pick up where you left off. Offline, you stay signed in with your saved name and sync later.
 export async function resume() {
