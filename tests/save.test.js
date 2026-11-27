@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-// skins_v0.97.0.js reads localStorage as soon as it loads (to build `prog`), so install a fake one first.
+// skins_v0.98.0.js reads localStorage as soon as it loads (to build `prog`), so install a fake one first.
 const store = new Map();
 globalThis.localStorage = {
   get length() { return store.size; },
@@ -12,7 +12,7 @@ globalThis.localStorage = {
   clear: () => store.clear(),
 };
 
-const { sealSave, openSave, dropSave, tamper } = await import('../skins_v0.97.0.js');
+const { sealSave, openSave, dropSave, tamper } = await import('../skins_v0.98.0.js');
 
 const KEY = 'testSave';
 const reset = () => { store.clear(); tamper.keys.length = 0; };

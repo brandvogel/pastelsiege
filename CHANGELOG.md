@@ -1,6 +1,25 @@
 # Changelog
 
-## v0.97.0 (unreleased)
+## v0.98.0 (unreleased)
+
+### Changed: the menus are redesigned
+
+Same colours, fonts and chunky look, with one set of parts for every page.
+
+- **Pages down the left.** Every page is always one click away in a side list, instead of hidden behind the ☰ button. On small windows the list slides out from the left.
+- **A title bar on every page** with the page name, what it's for, fullscreen and your account.
+- **Play** puts difficulty first, then one big DEPLOY, then Daily Tower and Training side by side. Your level, records and today's quests sit in their own column, with your streak and next level reward.
+- **Settings**: on/off options are switches, every help note sits under its setting, and rows line up.
+- **Armory** groups guns by type, with shorter cards.
+- **Help** splits the controls into Moving, Shooting and Gear and menus, and lists every key you can rebind. The other help is split into cards.
+- **Multiplayer, Records, Character, Awards and Bestiary** use the same card layout.
+- **Pop-ups** (sign in, saves, email) have one title size, full-width fields and tidy button rows.
+- **New icons.** Every button uses one hand-drawn icon set in the game's outline style, instead of a mix of emoji and symbols that looked different on each computer. That includes the page list, top bar, account, buy menu sections, pause, game over and close buttons.
+- **New buttons.** Every button has one shape: an ink outline, a raised shadow and a soft bevel, and it sinks in when pressed. There are three sizes and an icon on every button. The top-bar **Sign in** button is now a solid navy button, and once you sign in it shows your initial, name and save status. Daily Tower, Training and "Which save do you want?" use large icon tiles.
+- **More room around text.** Help notes, hints and messages no longer sit right against buttons and their shadows.
+- **Pause** has a wider layout with settings beside the buttons, and **Game over** shows its stats in three even rows with Play again and Main menu side by side.
+
+## v0.97.0
 
 Versions now use semantic versioning: v97 is 0.97.0. Older entries are renumbered the same way.
 

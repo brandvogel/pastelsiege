@@ -1,27 +1,27 @@
 import { uiFont, THREE, renderer, scene, camera, world, loadMap, resolveCircle, groundAt, ceilingAt, lineOfSight, boxAt, insideSolid, openPoint, clamp, rand,
-  tracer, beam, sparks, shell, decal, smoke, explosionFx, flashLight, updateFx, updateAtmos, fxSettings, SND, ac, setQuality, SUN_DIR, setWeather, lightningBolt, skyFlash, WEATHER, underCover, rayWall, collidersNear, followShadow, updatePads, updateEdges, setNight, followGlow, setResScale, getResScale, setResPct, renderPct, QUALITY, quality, IS_MAC, RETINA, APPLE_SI, CHIP, goreBurst, gibs, splat, bloodColor } from './world_v0.97.0.js';
-import { setVolume, musicStart, musicLevel, musicSong, setMusicVolume, at3, setListener, audioSettings, setAmbience, ambienceLevel, ambienceTick, ambienceCover, setStepSurface, audioClock } from './audio_v0.97.0.js';
-import { makePost } from './post_v0.97.0.js';
-import { XH_STYLES, XH_COLORS, XH_DEFAULT, XH_PRESETS, mountCrosshair, spreadCrosshair, crosshairSVG, crosshairCode, parseCrosshair } from './crosshair_v0.97.0.js';
-import { generateMap } from './mapgen_v0.97.0.js';
-import { byId, WEAPONS, drawSilhouette, PIP_TIERS, applyPipTier } from './weapons_v0.97.0.js';
-import { buildGun, addArms, decorateGun, makeEnv } from './models_v0.97.0.js';
-import { muzzleFlash } from './gunkit_v0.97.0.js';
-import { Bot, bots, ctx, guardProps, updateShots, clearBots, updateDebris, updateLOD, TYPES, SPAWN_EXTRA, mates, botByNid, ghostBolt, puppetStep, laserOf as botLaser } from './bots_v0.97.0.js';
-import { Shop, compareBars, fineStats, ttk } from './shop_v0.97.0.js';
-import { computeWeapon, attById, SLOT_NAMES, LASER_COLS, LASER_LV, laserCol } from './attachments_v0.97.0.js';
-import { SKINS, skinById, prog, saveProg, sealSave, openSave, dropSave, tamper, levelOf, gunLevel, applyLevel, xpForLevel, MAX_LEVEL, TIER_COL } from './skins_v0.97.0.js';
-import { CHARMS, charmById, buildCharm, updateCharm } from './charms_v0.97.0.js';
+  tracer, beam, sparks, shell, decal, smoke, explosionFx, flashLight, updateFx, updateAtmos, fxSettings, SND, ac, setQuality, SUN_DIR, setWeather, lightningBolt, skyFlash, WEATHER, underCover, rayWall, collidersNear, followShadow, updatePads, updateEdges, setNight, followGlow, setResScale, getResScale, setResPct, renderPct, QUALITY, quality, IS_MAC, RETINA, APPLE_SI, CHIP, goreBurst, gibs, splat, bloodColor } from './world_v0.98.0.js';
+import { setVolume, musicStart, musicLevel, musicSong, setMusicVolume, at3, setListener, audioSettings, setAmbience, ambienceLevel, ambienceTick, ambienceCover, setStepSurface, audioClock } from './audio_v0.98.0.js';
+import { makePost } from './post_v0.98.0.js';
+import { XH_STYLES, XH_COLORS, XH_DEFAULT, XH_PRESETS, mountCrosshair, spreadCrosshair, crosshairSVG, crosshairCode, parseCrosshair } from './crosshair_v0.98.0.js';
+import { generateMap } from './mapgen_v0.98.0.js';
+import { byId, WEAPONS, drawSilhouette, PIP_TIERS, applyPipTier } from './weapons_v0.98.0.js';
+import { buildGun, addArms, decorateGun, makeEnv } from './models_v0.98.0.js';
+import { muzzleFlash } from './gunkit_v0.98.0.js';
+import { Bot, bots, ctx, guardProps, updateShots, clearBots, updateDebris, updateLOD, TYPES, SPAWN_EXTRA, mates, botByNid, ghostBolt, puppetStep, laserOf as botLaser } from './bots_v0.98.0.js';
+import { Shop, compareBars, fineStats, ttk } from './shop_v0.98.0.js';
+import { computeWeapon, attById, SLOT_NAMES, LASER_COLS, LASER_LV, laserCol } from './attachments_v0.98.0.js';
+import { SKINS, skinById, prog, saveProg, sealSave, openSave, dropSave, tamper, levelOf, gunLevel, applyLevel, xpForLevel, MAX_LEVEL, TIER_COL } from './skins_v0.98.0.js';
+import { CHARMS, charmById, buildCharm, updateCharm } from './charms_v0.98.0.js';
 prog.charms = prog.charms || ['none']; prog.charmOf = prog.charmOf || {};
-import { SUPPORT, support, hctx, buySupport, buyCharge, setSupport, useScan, slv, supById, supNextPrice, owned, deployTurret, launchStriker, updateSupport, floorChange, clearSupport } from './helpers_v0.97.0.js';
-import { ABILITIES, abById, abNextPrice, abMax, AB } from './abilities_v0.97.0.js';
-import { MUTATIONS, mutById, MUT_STEPS, nextStep, applyMuts, offers, MV, mutDesc, ROMAN, MAX_MLV } from './mutations_v0.97.0.js';
-import { levelInfo, levelPerks, LEVEL_REWARDS, nextReward, XP_FOR, xpForFloor, ensureDaily, questById, markPlayed, streakXp, questTick, recordRun } from './meta_v0.97.0.js';
-import { ACTIONS, NOBIND, setBinds, bindIn, rebind, keyLabel } from './controls_v0.97.0.js';
-import { PLATFORM, allowed, enforce, sdkInit, sdkLoaded, playState, midAd, happy, audioGate, adBusy } from './platform_v0.97.0.js';
-import * as NET from './net_v0.97.0.js';
-import { account, staff, saveSig, progressSig, signIn, signUp, resendSignUp, changeEmail, refreshUser, confirmsEmail, finishLink, signOut, resume as resumeAccount, cloudGet, cloudPut, syncInfo, setSync, friendList, ping, addFriend, acceptFriend, removeFriend, testerList, setTester, playerList, giveRole, kick as kickPlayer, mute as mutePlayer, muteInfo, submitScore, topScores, clearScores, rank, ROLE_NAME, roleOf } from './account_v0.97.0.js';
-import { MODS, modById, doorOffers, CHARS, charById, charUnlocked, PERK, UPGRADES, upgCost, upgPoints, ACH, todayKey, dailySeed, mulberry, paintGoal } from './run_v0.97.0.js';
+import { SUPPORT, support, hctx, buySupport, buyCharge, setSupport, useScan, slv, supById, supNextPrice, owned, deployTurret, launchStriker, updateSupport, floorChange, clearSupport } from './helpers_v0.98.0.js';
+import { ABILITIES, abById, abNextPrice, abMax, AB } from './abilities_v0.98.0.js';
+import { MUTATIONS, mutById, MUT_STEPS, nextStep, applyMuts, offers, MV, mutDesc, ROMAN, MAX_MLV } from './mutations_v0.98.0.js';
+import { levelInfo, levelPerks, LEVEL_REWARDS, nextReward, XP_FOR, xpForFloor, ensureDaily, questById, markPlayed, streakXp, questTick, recordRun } from './meta_v0.98.0.js';
+import { ACTIONS, NOBIND, setBinds, bindIn, rebind, keyLabel } from './controls_v0.98.0.js';
+import { PLATFORM, allowed, enforce, sdkInit, sdkLoaded, playState, midAd, happy, audioGate, adBusy } from './platform_v0.98.0.js';
+import * as NET from './net_v0.98.0.js';
+import { account, staff, saveSig, progressSig, signIn, signUp, resendSignUp, changeEmail, refreshUser, confirmsEmail, finishLink, signOut, resume as resumeAccount, cloudGet, cloudPut, syncInfo, setSync, friendList, ping, addFriend, acceptFriend, removeFriend, testerList, setTester, playerList, giveRole, kick as kickPlayer, mute as mutePlayer, muteInfo, submitScore, topScores, clearScores, rank, ROLE_NAME, roleOf } from './account_v0.98.0.js';
+import { MODS, modById, doorOffers, CHARS, charById, charUnlocked, PERK, UPGRADES, upgCost, upgPoints, ACH, todayKey, dailySeed, mulberry, paintGoal } from './run_v0.98.0.js';
 
 const $ = id => document.getElementById(id);
 const V3 = THREE.Vector3, lerp = THREE.MathUtils.lerp;
@@ -39,7 +39,7 @@ let frozenDrawn = false; // solo menus show one still frame (see the end of fram
 const stats = { kills: 0, fired: 0, hit: 0, heads: 0, earned: 0, bestStreak: 0 };
 const runXP = {};
 
-// version shown at the bottom of Settings, taken from this file's name (game_v0.97.0.js -> v0.97.0) so it can't go out of date
+// version shown at the bottom of Settings, taken from this file's name (game_v0.98.0.js -> v0.97.0) so it can't go out of date
 const GAME_VERSION = (import.meta.url.match(/_(v\d+\.\d+\.\d+)\.js/) || [, 'dev'])[1];
 // ---------- settings (saved) ----------
 const SET_KEY = 'pastelSiegeSettings12';
@@ -2087,6 +2087,7 @@ function renderSlots() {
 let lastTeamKey = '';
 const hexCol = n => '#' + ((Number(n) || 0xffffff) & 0xffffff).toString(16).padStart(6, '0'), escT = s => String(s || '').replace(/[<>&"']/g, '');
 // like escT, but keeps the characters (for sentences with apostrophes in them)
+const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`; // an icon from the set at the top of index.html
 const escH = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 function renderTeam() {
   const el = $('team'); if (!el) return;
@@ -2503,7 +2504,7 @@ function importSave() {
   const box = document.createElement('div'); box.className = 'savebox';
   box.innerHTML = `<div class="savecard"><h3>Import save</h3><p>Paste the save code, or pick the save file you downloaded.</p>
     <textarea id="saveIn" placeholder="PSAVE1:..." spellcheck="false"></textarea>
-    <div class="savebtns"><button class="go" id="saveLoad">LOAD SAVE</button><label class="go alt">PICK FILE<input type="file" id="saveFile" accept=".txt,text/plain" hidden></label><button class="go ghost" id="saveX">CANCEL</button></div>
+    <div class="savebtns"><button class="go" id="saveLoad">${ic('upload')}LOAD SAVE</button><label class="go alt">${ic('paste')}PICK FILE<input type="file" id="saveFile" accept=".txt,text/plain" hidden></label><button class="go ghost" id="saveX">${ic('close')}CANCEL</button></div>
     <p class="saveerr" id="saveErr"></p></div>`;
   document.body.appendChild(box);
   const ta = box.querySelector('#saveIn'), err = box.querySelector('#saveErr'), close = () => box.remove();
@@ -2552,7 +2553,7 @@ function chooseSave(cd, mine) {
   if ($('useCloud')) return; // already asking
   const box = document.createElement('div'); box.className = 'savebox';
   box.innerHTML = `<div class="savecard"><h3>Which save do you want?</h3><p>Your account and this ${IS_MAC ? 'Mac' : 'computer'} have different progress. The one you do not pick is replaced. (To be safe, you can Export the save on this computer from Settings first.)</p>
-    <div class="savebtns"><button class="go" id="useCloud">ACCOUNT · LEVEL ${levelIn(cd.data)}${cd.at ? ` · ${new Date(cd.at).toLocaleDateString()}` : ''}</button><button class="go alt" id="useHere">THIS ${IS_MAC ? 'MAC' : 'COMPUTER'} · LEVEL ${levelIn(mine)}</button></div></div>`;
+    <div class="savebtns"><button class="go tile" id="useCloud"><i>${ic('cloud')}</i><span><b>ACCOUNT SAVE</b><small>Level ${levelIn(cd.data)}${cd.at ? ` · saved ${new Date(cd.at).toLocaleDateString()}` : ''}</small></span></button><button class="go alt tile" id="useHere"><i>${ic('monitor')}</i><span><b>THIS ${IS_MAC ? 'MAC' : 'COMPUTER'}</b><small>Level ${levelIn(mine)}</small></span></button></div></div>`;
   document.body.appendChild(box);
   for (const t of ['keydown', 'keyup', 'keypress', 'mousedown']) box.addEventListener(t, e => e.stopPropagation());
   box.querySelector('#useCloud').onclick = () => { SND.ui(); cloudLoad(cd); };
@@ -2723,7 +2724,7 @@ end $$;
 grant execute on function public.clear_scores(text) to authenticated;
 notify pgrst, 'reload schema';`;
 // the yellow "run this in Supabase" box, used on the ADMIN page and the leaderboard
-const sqlBox = title => `<div class="admsql"><b>${title}</b> Open Supabase → SQL Editor → New query, paste this, and press Run (running it again later is fine):<pre>${SETUP_SQL.replace(/</g, '&lt;')}</pre><button class="go alt" data-copy="1">COPY SQL</button></div>`;
+const sqlBox = title => `<div class="admsql"><b>${title}</b> Open Supabase → SQL Editor → New query, paste this, and press Run (running it again later is fine):<pre>${SETUP_SQL.replace(/</g, '&lt;')}</pre><button class="go alt" data-copy="1">${ic('paste')}COPY SQL</button></div>`;
 const wireCopy = (el, done) => el.querySelectorAll('[data-copy]').forEach(b => b.onclick = () => navigator.clipboard?.writeText(SETUP_SQL).then(done));
 const roleTag = r => ROLE_NAME[r] ? `<em class="adm r-${r}">${ROLE_NAME[r]}</em>` : '';
 // ---------- the global leaderboard (Records page) ----------
@@ -2744,7 +2745,7 @@ function renderGlobalBoard() {
   document.querySelectorAll('#lbTabs [data-lb]').forEach(b => b.classList.toggle('sel', b.dataset.lb === lb.tab));
   $('lbAll').hidden = lb.tab !== 'all'; $('lbMine').hidden = lb.tab !== 'mine';
   if (!account.user) {
-    el.innerHTML = `<div class="lbgate"><b>🔒 Sign in to see the leaderboard</b><span>Everyone's best runs show up here for signed-in players. An account is free and keeps your progress online too.</span><button class="go" id="lbSignIn">SIGN IN</button></div>`;
+    el.innerHTML = `<div class="lbgate"><b>${ic('lock')} Sign in to see the leaderboard</b><span>Everyone's best runs show up here for signed-in players. An account is free and keeps your progress online too.</span><button class="go" id="lbSignIn">${ic('login')}SIGN IN</button></div>`;
     $('lbSignIn').onclick = () => { SND.ui(); openAccount(); }; return;
   }
   if (!lb.ready) {
@@ -2752,12 +2753,12 @@ function renderGlobalBoard() {
     wireCopy(el, () => { lb.msg = 'Copied. Paste it into the Supabase SQL Editor and press Run, then open this page again.'; renderGlobalBoard(); }); return;
   }
   const me = lb.rows.findIndex(r => r.username === account.name);
-  el.innerHTML = `<div class="lbmodes">${LB_MODES.map(([k, t]) => `<button class="tab${lb.mode === k ? ' sel' : ''}" data-lbm="${k}">${t}</button>`).join('')}<button class="tab" id="lbRe" title="Refresh">↻</button></div>
+  el.innerHTML = `<div class="lbmodes">${LB_MODES.map(([k, t]) => `<button class="tab${lb.mode === k ? ' sel' : ''}" data-lbm="${k}">${t}</button>`).join('')}<button class="tab" id="lbRe" title="Refresh">${ic('refresh')}</button></div>
     <p class="palsmsg${lb.err ? ' err' : ''}">${lb.err || (lb.busy ? 'Loading...' : me >= 0 ? `You're #${me + 1} of ${lb.rows.length}.` : lb.rows.length ? 'Finish a run without cheats to get on the board.' : '')}</p>
     <div class="board">${lb.rows.length ? lb.rows.map((r, i) => `<div class="brow g${i === 0 ? ' top' : ''}${r.username === account.name ? ' me' : ''}"><div class="rk">${['🥇', '🥈', '🥉'][i] || '#' + (i + 1)}</div>
       <div><b>${escT(r.username)} ${roleTag(r.role)}</b><span>${r.score.toLocaleString()} points · Floor ${r.floor} · ${r.kills} kills</span></div>
       <em>${String(r.mode).toUpperCase()}</em><em>${ago(new Date(r.created_at).getTime())}</em>
-      ${account.admin && r.username !== account.name && rank(r.role) < rank(account.role) ? `<button class="x" data-wipe="${escT(r.username)}" title="Delete their scores">✕</button>` : '<span></span>'}</div>`).join('')
+      ${account.admin && r.username !== account.name && rank(r.role) < rank(account.role) ? `<button class="x" data-wipe="${escT(r.username)}" title="Delete their scores">${ic('close')}</button>` : '<span></span>'}</div>`).join('')
       : lb.busy ? '' : '<p class="gnote">No runs yet. Be the first on the board!</p>'}</div>`;
   el.querySelectorAll('[data-lbm]').forEach(b => b.onclick = () => { SND.ui(); lb.mode = b.dataset.lbm; loadBoard(); });
   $('lbRe').onclick = () => { SND.ui(); loadBoard(true); };
@@ -2775,9 +2776,11 @@ function sendScore() {
 // the menu button, and your username in co-op
 function renderAccount() {
   const b = $('acctBtn'); if (!b) return;
-  b.classList.toggle('in', !!account.user);
-  b.innerHTML = account.user ? `<i>👤</i><b>${escH(account.name || 'Signed in')}${account.role ? ` <em>${ROLE_NAME[account.role]}</em>` : ''}</b><small>${account.status === 'offline' ? 'Offline · will sync later' : account.syncedAt ? `Saved online ${ago(account.syncedAt)}` : 'Syncing your save...'}</small>`
-    : `<i>👤</i><b>SIGN IN</b><small>Keep your progress online</small>`;
+  b.classList.toggle('in', !!account.user); b.classList.toggle('out', !account.user);
+  const nm = account.name || 'Signed in';
+  b.title = account.user ? 'Your account' : 'Sign in to keep your progress online';
+  b.innerHTML = account.user ? `<span class="av">${escH([...nm][0].toUpperCase())}</span><span class="tx"><b>${escH(nm)}${account.role ? ` <em>${ROLE_NAME[account.role]}</em>` : ''}</b><small${account.status === 'offline' ? ' class="off"' : ''}>${account.status === 'offline' ? 'Offline · will sync later' : account.syncedAt ? `Saved ${ago(account.syncedAt)}` : 'Syncing...'}</small></span>`
+    : `<span class="av">${ic('login')}</span><span class="tx"><b>SIGN IN</b><small>Save your progress online</small></span>`;
   const n = $('mpName'); if (n) { if (account.name) n.value = account.name; n.readOnly = !!account.name; n.title = account.name ? 'Your username (sign out to change it)' : ''; }
   const pa = $('pauseAdmin'); if (pa) pa.hidden = !staff();
   const an = $('adminNav'); if (an) { an.hidden = !account.mod; if (!account.mod && an.classList.contains('sel')) document.querySelector('#mnav [data-panel="play"]').click(); }
@@ -2793,14 +2796,14 @@ function openAccount(note = '', who = '') {
         <p>Your progress saves to your account automatically. ${account.status === 'offline' ? 'Right now the account server can\'t be reached, so it will catch up when it can.' : account.syncedAt ? `Last saved online ${ago(account.syncedAt)}.` : ''}</p>
         ${staff() ? `<p class="acnote">Press <kbd>&#96;</kbd> in a run to open the ${account.admin ? "admin" : "tester"} panel.</p>` : account.mod ? `<p class="acnote">You are a moderator: open ADMIN in the menu to kick players.</p>` : ""}
         ${account.admin ? `<h3 class="tsh">Bug testers</h3><p class="acnote">Testers can open the <kbd>&#96;</kbd> panel in their runs too. Type a username to add one.</p>
-        <div class="palsadd"><input id="tsName" maxlength="16" placeholder="Their username" spellcheck="false" autocomplete="off"><button class="go" id="tsAdd">MAKE TESTER</button></div>
+        <div class="palsadd"><input id="tsName" maxlength="16" placeholder="Their username" spellcheck="false" autocomplete="off"><button class="go" id="tsAdd">${ic('plus')}MAKE TESTER</button></div>
         <p class="palsmsg" id="tsMsg"></p><div class="tslist" id="tsList"></div>` : ""}
-        <div class="savebtns"><button class="go" id="acSync">SAVE NOW</button><button class="go alt" id="acOut">SIGN OUT</button><button class="go ghost" id="acX">CLOSE</button></div><p class="saveerr" id="acErr"></p></div>`;
+        <div class="savebtns"><button class="go" id="acSync">${ic('save')}SAVE NOW</button><button class="go alt" id="acOut">${ic('exit')}SIGN OUT</button><button class="go ghost" id="acX">${ic('close')}CLOSE</button></div><p class="saveerr" id="acErr"></p></div>`;
       box.querySelector('#acSync').onclick = async () => { SND.ui(); setSync({ ...syncInfo(), sig: '' }); await (syncedFor === account.user?.id ? cloudPush() : cloudSync()); draw(); };
       box.querySelector('#acOut').onclick = async () => { SND.ui(); await leaveAccount(); close(); };
       if (account.admin) {
         const inp = box.querySelector('#tsName'), msg = box.querySelector('#tsMsg'), list = box.querySelector('#tsList');
-        const show = async () => { try { const L = await testerList(); list.innerHTML = L.length ? L.map(n => `<span>${escH(n)}<button class="x" data-untest="${escH(n)}" title="Remove tester">✕</button></span>`).join('') : '<small>No testers yet.</small>'; list.querySelectorAll('[data-untest]').forEach(b => b.onclick = async () => { SND.ui(); try { await setTester(b.dataset.untest, false); msg.textContent = `${b.dataset.untest} is not a tester any more.`; } catch (e) { msg.textContent = e.message; } show(); }); } catch (e) { list.innerHTML = '<small>Run the tester setup script in Supabase first.</small>'; } };
+        const show = async () => { try { const L = await testerList(); list.innerHTML = L.length ? L.map(n => `<span>${escH(n)}<button class="x" data-untest="${escH(n)}" title="Remove tester">${ic('close')}</button></span>`).join('') : '<small>No testers yet.</small>'; list.querySelectorAll('[data-untest]').forEach(b => b.onclick = async () => { SND.ui(); try { await setTester(b.dataset.untest, false); msg.textContent = `${b.dataset.untest} is not a tester any more.`; } catch (e) { msg.textContent = e.message; } show(); }); } catch (e) { list.innerHTML = '<small>Run the tester setup script in Supabase first.</small>'; } };
         const add = async () => { SND.ui(); try { await setTester(inp.value, true); msg.textContent = `${inp.value.trim().toLowerCase()} is a tester now.`; inp.value = ''; } catch (e) { msg.textContent = e.message; SND.deny(); } show(); };
         box.querySelector('#tsAdd').onclick = add; inp.addEventListener('keydown', e => { if (e.key === 'Enter') add(); }); show();
       }
@@ -2808,7 +2811,7 @@ function openAccount(note = '', who = '') {
       box.innerHTML = `<div class="savecard acctcard"><h3>Check your email</h3>
         <p>Open the confirmation link we sent to <b>${escH(sent.email)}</b>, then sign in. Look in spam too.</p>
         <p class="acnote">No email? If that address already has an account, sign in with it instead.</p>
-        <div class="savebtns"><button class="go" id="acDone">I'VE CONFIRMED IT</button><button class="go alt" id="acAgain">SEND AGAIN</button><button class="go ghost" id="acBack">BACK</button><button class="go ghost" id="acX">CLOSE</button></div><p class="saveerr" id="acErr"></p></div>`;
+        <div class="savebtns"><button class="go" id="acDone">${ic('check')}I'VE CONFIRMED IT</button><button class="go alt" id="acAgain">${ic('mail')}SEND AGAIN</button><button class="go ghost" id="acBack">${ic('back')}BACK</button><button class="go ghost" id="acX">${ic('close')}CLOSE</button></div><p class="saveerr" id="acErr"></p></div>`;
       const err = box.querySelector('#acErr');
       box.querySelector('#acDone').onclick = () => run(box.querySelector('#acDone'), () => signIn(sent.email, sent.pass).then(signedIn));
       box.querySelector('#acAgain').onclick = () => run(box.querySelector('#acAgain'), () => resendSignUp(sent.email).then(() => { err.textContent = 'Sent. It can take a minute.'; }));
@@ -2822,7 +2825,7 @@ function openAccount(note = '', who = '') {
         <label class="acf">${up ? 'Email' : 'Email (or username, if you haven\'t added an email yet)'}<input id="acEmail" type="${up ? 'email' : 'text'}" maxlength="254" autocomplete="${up ? 'email' : 'username'}" autocapitalize="off" spellcheck="false" placeholder="name@example.com" value="${escH(who)}"></label>
         <label class="acf">Password<input id="acPass" type="password" autocomplete="${up ? 'new-password' : 'current-password'}" placeholder="${up ? 'at least 6 characters' : ''}"></label>
         <p class="acnote">${up ? 'We send a link to your email to confirm it. Other players only see your username. There\'s no password reset yet, so pick one you\'ll remember (and don\'t reuse a password from another site). Your progress on this computer comes with you.' : 'Signing in brings your progress with you to any computer.'}</p>
-        <div class="savebtns"><button class="go" id="acGo">${up ? 'CREATE ACCOUNT' : 'SIGN IN'}</button><button class="go ghost" id="acX">PLAY WITHOUT AN ACCOUNT</button></div><p class="saveerr" id="acErr"></p></div>`;
+        <div class="savebtns"><button class="go" id="acGo">${up ? `${ic('plus')}CREATE ACCOUNT` : `${ic('login')}SIGN IN`}</button><button class="go ghost" id="acX">PLAY WITHOUT AN ACCOUNT${ic('next')}</button></div><p class="saveerr" id="acErr"></p></div>`;
       box.querySelectorAll('[data-m]').forEach(t => t.onclick = () => { SND.ui(); who = box.querySelector('#acEmail').value; note = ''; mode = t.dataset.m; draw(); });
       const go = () => run(box.querySelector('#acGo'), async () => {
         const email = box.querySelector('#acEmail').value, pass = box.querySelector('#acPass').value;
@@ -2881,9 +2884,9 @@ function openEmailGate() {
       ${editing ? `<p>Hi ${escH(account.name)}! Every account now needs an email. Add yours and confirm it to keep playing on this account. You'll sign in with it from now on.</p>
       <label class="acf">Email<input id="emNew" type="email" maxlength="254" autocomplete="email" autocapitalize="off" spellcheck="false" placeholder="name@example.com"></label>
       <p class="acnote">Other players only see your username.</p>
-      <div class="savebtns"><button class="go" id="emSend">SEND CONFIRMATION</button>${account.newEmail ? '<button class="go alt" id="emBack">BACK</button>' : ''}<button class="go ghost" id="emOut">SIGN OUT</button></div>`
+      <div class="savebtns"><button class="go" id="emSend">${ic('mail')}SEND CONFIRMATION</button>${account.newEmail ? `<button class="go alt" id="emBack">${ic('back')}BACK</button>` : ''}<button class="go ghost" id="emOut">${ic('exit')}SIGN OUT</button></div>`
       : `<p>Open the confirmation link we sent to <b>${escH(account.newEmail)}</b>. Look in spam too. This box closes by itself once it's confirmed.</p>
-      <div class="savebtns"><button class="go" id="emDone">I'VE CONFIRMED IT</button><button class="go alt" id="emAgain">SEND AGAIN</button><button class="go alt" id="emEdit">DIFFERENT EMAIL</button><button class="go ghost" id="emOut">SIGN OUT</button></div>`}
+      <div class="savebtns"><button class="go" id="emDone">${ic('check')}I'VE CONFIRMED IT</button><button class="go alt" id="emAgain">${ic('mail')}SEND AGAIN</button><button class="go alt" id="emEdit">${ic('back')}DIFFERENT EMAIL</button><button class="go ghost" id="emOut">${ic('exit')}SIGN OUT</button></div>`}
       <p class="saveerr" id="emErr">${escH(msg)}</p></div>`;
     const on = (id, job) => { const b = box.querySelector(id); if (b) b.onclick = () => run(b, job); };
     const send = async () => { await changeEmail(box.querySelector('#emNew').value); editing = false; draw(); };
@@ -3012,7 +3015,7 @@ function openAdmin() {
         <button class="go alt" data-spawn="horde" ${hostOnly}>HORDE OF 12</button><button class="go alt" data-spawn="elite" ${hostOnly}>5 ELITES</button></div>
       <h3 class="tsh">Floors</h3><div class="palsadd"><input id="admFloor" type="number" min="1" max="200" value="${floorN + 1}"><button class="go" data-act="goto" ${solo}>GO TO FLOOR</button><button class="go alt" data-act="floor" ${solo}>NEXT FLOOR</button></div>`;
     if (admTab === 'people') return `<p class="acnote">Testers get this panel too, but not this tab. You can also manage everyone from the ADMIN page in the menu.</p>
-      <div class="palsadd"><input id="tsName" maxlength="16" placeholder="Their username" spellcheck="false" autocomplete="off"><button class="go" id="tsAdd">MAKE TESTER</button></div>
+      <div class="palsadd"><input id="tsName" maxlength="16" placeholder="Their username" spellcheck="false" autocomplete="off"><button class="go" id="tsAdd">${ic('plus')}MAKE TESTER</button></div>
       <p class="palsmsg" id="tsMsg"></p><div class="tslist" id="tsList"><small>Loading...</small></div>`;
     return `<div class="admgrid">${ADM_SW.map(([k, n, d]) => `<button class="admsw${adm[k] ? ' on' : ''}" data-sw="${k}"><b>${n}</b><span>${d}</span></button>`).join('')}
         <button class="admsw${adm.speed > 1 ? ' on' : ''}" data-speed><b>Speed ×${adm.speed}</b><span>Click to change (×1 to ×5)</span></button></div>`;
@@ -3056,7 +3059,7 @@ function openAdmin() {
     });
     if (admTab === 'people') {
       const inp = admBox.querySelector('#tsName'), msg = admBox.querySelector('#tsMsg'), list = admBox.querySelector('#tsList');
-      const show = async () => { try { const L = await testerList(); if (!admBox) return; list.innerHTML = L.length ? L.map(n => `<span>${escH(n)}<button class="x" data-untest="${escH(n)}" title="Remove tester">✕</button></span>`).join('') : '<small>No testers yet.</small>'; list.querySelectorAll('[data-untest]').forEach(b => b.onclick = async () => { SND.ui(); try { await setTester(b.dataset.untest, false); msg.textContent = `${b.dataset.untest} is not a tester any more.`; } catch (e) { msg.textContent = e.message; } show(); }); } catch (e) { list.innerHTML = '<small>Run the tester setup script in Supabase first (see the ADMIN page in the menu).</small>'; } };
+      const show = async () => { try { const L = await testerList(); if (!admBox) return; list.innerHTML = L.length ? L.map(n => `<span>${escH(n)}<button class="x" data-untest="${escH(n)}" title="Remove tester">${ic('close')}</button></span>`).join('') : '<small>No testers yet.</small>'; list.querySelectorAll('[data-untest]').forEach(b => b.onclick = async () => { SND.ui(); try { await setTester(b.dataset.untest, false); msg.textContent = `${b.dataset.untest} is not a tester any more.`; } catch (e) { msg.textContent = e.message; } show(); }); } catch (e) { list.innerHTML = '<small>Run the tester setup script in Supabase first (see the ADMIN page in the menu).</small>'; } };
       const add = async () => { try { await setTester(inp.value, true); msg.textContent = `${inp.value.trim().toLowerCase()} is a tester now.`; inp.value = ''; SND.code(); } catch (e) { msg.textContent = e.message; SND.deny(); } show(); };
       admBox.querySelector('#tsAdd').onclick = add; inp.addEventListener('keydown', e => { if (e.key === 'Enter') add(); }); show();
     }
@@ -3092,7 +3095,7 @@ function renderAdminPage() {
     <p class="palsmsg${P.err ? ' err' : ''}">${escH(P.err || P.msg)}</p>
     <div class="palsadd admtools"><input id="admQ" maxlength="16" placeholder="Search usernames" spellcheck="false" autocomplete="off" value="${escT(P.q)}">
       <label class="kicklen">Kick / mute for <select id="admMins">${KICK_MINS.map(([m, t]) => `<option value="${m}"${m === P.mins ? ' selected' : ''}>${t}</option>`).join('')}</select></label>
-      <button class="go alt" id="admRe">REFRESH</button></div>
+      <button class="go alt" id="admRe">${ic('refresh')}REFRESH</button></div>
     <h3>${P.rows.length} players${P.live ? ` · ${nOn} online` : ''} · ${nStaff} staff · you are ${ROLE_NAME[account.role]}</h3>
     <div class="palslist admlist">${rows.length ? rows.map(r => `<div class="pal${P.live && online(r) ? ' on' : ''}${kicked(r) ? ' kicked' : ''}"><i class="dot"></i><b>${escT(r.username)}</b><span>${roleTag(roleOf(r))} ${note(r)}</span>
       <div class="admbtns">${account.admin && P.live && online(r) && r.room && r.username !== account.name ? `<button class="buy" data-join="${escT(r.room)}">JOIN</button>` : ''}
@@ -3167,20 +3170,20 @@ function renderPals() {
   const el = $('palsBody'), nav = $('palsNav'); if (!el) return;
   const req = pals.filter(f => !f.accepted && f.incoming), sent = pals.filter(f => !f.accepted && !f.incoming);
   const fr = pals.filter(f => f.accepted).sort((a, b) => (online(b) - online(a)) || a.username.localeCompare(b.username));
-  if (nav) nav.innerHTML = `<i>☻</i><span>FRIENDS${req.length ? ` <em class="navbadge">${req.length}</em>` : ''}<small>Who is online</small></span>`;
+  if (nav) nav.innerHTML = `<i>${ic('friends')}</i><span>FRIENDS${req.length ? ` <em class="navbadge">${req.length}</em>` : ''}<small>Who is online</small></span>`;
   const mb = $('menuBadge'); if (mb) { mb.hidden = !req.length; mb.textContent = req.length; } // friend requests show on the ☰ button too
   if (!account.user) {
-    el.innerHTML = `<div class="palsout"><p>Sign in to add friends and see when they're online.</p><button class="go" id="palsIn">SIGN IN</button></div>`;
+    el.innerHTML = `<div class="palsout"><p>Sign in to add friends and see when they're online.</p><button class="go" id="palsIn">${ic('login')}SIGN IN</button></div>`;
     $('palsIn').onclick = () => { SND.ui(); openAccount(); }; return;
   }
   const row = (f, note, btns) => `<div class="pal${online(f) && f.accepted ? ' on' : ''}"><i class="dot"></i><b>${escH(f.username)}</b><span>${escH(note)}</span>${btns}</div>`;
-  el.innerHTML = `<div class="palsadd"><input id="palsName" maxlength="16" placeholder="Their username" spellcheck="false" autocomplete="off"><button class="go" id="palsGo">ADD FRIEND</button></div>
+  el.innerHTML = `<div class="palsadd"><input id="palsName" maxlength="16" placeholder="Their username" spellcheck="false" autocomplete="off"><button class="go" id="palsGo">${ic('plus')}ADD FRIEND</button></div>
     <p class="palsmsg${palsErr ? ' err' : ''}">${escH(palsErr || palsMsg)}</p>
-    ${req.length ? `<h3>Friend requests</h3><div class="palslist">${req.map(f => row(f, 'wants to be friends', `<button class="buy" data-acc="${escH(f.id)}">ACCEPT</button><button class="x" data-rm="${escH(f.id)}" title="Decline">✕</button>`)).join('')}</div>` : ''}
+    ${req.length ? `<h3>Friend requests</h3><div class="palslist">${req.map(f => row(f, 'wants to be friends', `<button class="buy" data-acc="${escH(f.id)}">ACCEPT</button><button class="x" data-rm="${escH(f.id)}" title="Decline">${ic('close')}</button>`)).join('')}</div>` : ''}
     <h3>Friends${fr.length ? ` · ${fr.filter(online).length} online` : ''}</h3>
     <div class="palslist">${fr.length ? fr.map(f => row(f, online(f) ? (f.room ? 'Online · hosting a co-op game' : 'Online') : f.last_seen ? `Last on ${ago(new Date(f.last_seen).getTime())}` : 'Not on yet',
-      `${online(f) && f.room ? `<button class="buy" data-join="${escH(f.room)}">JOIN</button>` : ''}<button class="x" data-rm="${escH(f.id)}" title="Remove friend">✕</button>`)).join('') : '<p class="gnote">No friends yet. Add someone by their username above.</p>'}</div>
-    ${sent.length ? `<h3>Waiting for them to accept</h3><div class="palslist">${sent.map(f => row(f, 'request sent', `<button class="x" data-rm="${escH(f.id)}" title="Cancel request">✕</button>`)).join('')}</div>` : ''}`;
+      `${online(f) && f.room ? `<button class="buy" data-join="${escH(f.room)}">JOIN</button>` : ''}<button class="x" data-rm="${escH(f.id)}" title="Remove friend">${ic('close')}</button>`)).join('') : '<p class="gnote">No friends yet. Add someone by their username above.</p>'}</div>
+    ${sent.length ? `<h3>Waiting for them to accept</h3><div class="palslist">${sent.map(f => row(f, 'request sent', `<button class="x" data-rm="${escH(f.id)}" title="Cancel request">${ic('close')}</button>`)).join('')}</div>` : ''}`;
   const inp = $('palsName');
   for (const t of ['keydown', 'keyup', 'keypress', 'mousedown']) inp.addEventListener(t, e => e.stopPropagation());
   const add = async () => { try { palsMsg = await addFriend(inp.value); palsErr = ''; SND.code(); } catch (e) { palsErr = e.message; palsMsg = ''; SND.deny(); } await loadPals(); };
@@ -3197,27 +3200,28 @@ setInterval(() => { if (state === 'menu' && $('panel-pals')?.classList.contains(
 function renderSettings(host) {
   const range = (k, label, min, max, step) => `<div class="set"><span>${label}</span><input type="range" data-k="${k}" min="${min}" max="${max}" step="${step}" value="${getS(k)}"><output>${FMT[k](getS(k))}</output></div>`;
   const choice = (k, label, opts) => `<div class="set"><span>${label}</span><div class="seg-btn">${opts.map(([v, n]) => `<button data-k="${k}" data-v="${v}" class="${String(getS(k)) === String(v) ? 'sel' : ''}">${n}</button>`).join('')}</div><span></span></div>`;
-  const onoff = (k, label) => choice(k, label, [[true, 'On'], [false, 'Off']]);
+  const onoff = (k, label) => { const on = String(getS(k)) === 'true';
+    return `<div class="set"><span>${label}</span><div><button class="switch${on ? ' on' : ''}" data-k="${k}" data-v="${!on}" role="switch" aria-checked="${on}" aria-label="${label}" title="${on ? 'On' : 'Off'}"></button></div><span></span></div>`; };
   const swatches = (k, label, cols, custom) => `<div class="set"><span>${label}</span><div class="swatches">${cols.map(c => `<button class="sw${getS(k) === c ? ' sel' : ''}" data-k="${k}" data-v="${c}" style="--c:${c}" title="${c}"></button>`).join('')}${custom ? `<label class="sw pick" title="Custom colour"><input type="color" data-color="${k}" value="${getS(k)}"></label>` : ''}</div><span></span></div>`;
   const tabs = [['game', 'Game'], ['controls', 'Keybinds'], ['hud', 'HUD'], ['graphics', 'Graphics'], ['crosshair', 'Crosshair'], ['audio', 'Audio']];
   // one tab's rows (setTab is shadowed so the same code can build any tab)
   const tabBody = setTab => { let body = '';
   if (setTab === 'game') body =range('sens', 'Mouse sensitivity', .2, 3, .05) + range('adsSens', 'Aim sensitivity', .3, 1.5, .05) + range('padSens', 'Controller look', .3, 2.5, .05) + onoff('invertY', 'Invert look')
     + choice('toggleAds', `Aim (${keyLabel('aim')})`, [[false, 'Hold'], [true, 'Toggle']]) + choice('crouchHold', `Crouch (${keyLabel('crouch')})`, [[false, 'Toggle'], [true, 'Hold']]) + range('fov', 'Field of view', 65, 110, 1)
-    + range('bob', 'Weapon bob', 0, 1, .05) + range('wobble', 'Weapon wobble', 0, 2, .05) + onoff('shake', 'Screen shake') + range('hurtFx', 'Damage flash', 0, 1, .05) + `<p class="gnote" style="margin:-4px 0 2px 162px">How strongly the screen flashes red when you get hit. Lower it if it's too much.</p>`
-    + `<div class="set"><span>Your save</span><div class="savebtns"><button class="go" data-save="export">EXPORT SAVE</button><button class="go alt" data-save="import">IMPORT SAVE</button></div><span></span></div><p class="gnote" style="margin:-4px 0 2px 162px">Moves everything (levels, skins, badges, settings, keybinds and a run in progress) to another site or laptop. Export copies a save code and downloads a save file; Import takes either.</p>`;
-  else if (setTab === 'hud') body = (FONTS.forEach(loadFont), `<div class="set"><span>Font</span><div class="seg-btn fontpick">${FONTS.map(f => `<button data-k="font" data-v="${f[0]}" class="${(settings.font || 'futura') === f[0] ? 'sel' : ''}" style='font-family:${fontFam(f)}'>${f[1]}</button>`).join('')}</div><span></span></div><p class="gnote" style="margin:-4px 0 6px 162px">Changes every menu and the HUD straight away. Futura only exists on Macs; the others look the same on every computer.</p>`) + range('hud', 'HUD size', .75, 1.25, .05) + onoff('minimap', 'Minimap') + `<p class="gnote" style="margin:-4px 0 2px 162px">M still opens the full map when it's off.</p>`
-    + onoff('killfeed', 'Kill feed') + onoff('toasts', 'Pop-ups') + `<p class="gnote" style="margin:-4px 0 2px 162px">Achievement and unlock banners at the top of the screen.</p>`
+    + range('bob', 'Weapon bob', 0, 1, .05) + range('wobble', 'Weapon wobble', 0, 2, .05) + onoff('shake', 'Screen shake') + range('hurtFx', 'Damage flash', 0, 1, .05) + `<p class="shelp">How strongly the screen flashes red when you get hit. Lower it if it's too much.</p>`
+    + `<div class="set"><span>Your save</span><div class="savebtns"><button class="go" data-save="export"><span class="gol">${ic('download')}EXPORT SAVE</span></button><button class="go alt" data-save="import"><span class="gol">${ic('upload')}IMPORT SAVE</span></button></div><span></span></div><p class="shelp">Moves everything (levels, skins, badges, settings, keybinds and a run in progress) to another site or laptop. Export copies a save code and downloads a save file; Import takes either.</p>`;
+  else if (setTab === 'hud') body = (FONTS.forEach(loadFont), `<div class="set"><span>Font</span><div class="seg-btn fontpick">${FONTS.map(f => `<button data-k="font" data-v="${f[0]}" class="${(settings.font || 'futura') === f[0] ? 'sel' : ''}" style='font-family:${fontFam(f)}'>${f[1]}</button>`).join('')}</div><span></span></div><p class="shelp">Changes every menu and the HUD straight away. Futura only exists on Macs; the others look the same on every computer.</p>`) + range('hud', 'HUD size', .75, 1.25, .05) + onoff('minimap', 'Minimap') + `<p class="shelp">M still opens the full map when it's off.</p>`
+    + onoff('killfeed', 'Kill feed') + onoff('toasts', 'Pop-ups') + `<p class="shelp">Achievement and unlock banners at the top of the screen.</p>`
     + onoff('dmgNums', 'Damage numbers') + onoff('hitmarkers', 'Hit markers') + swatches('hmColor', 'Hit marker colour', HM_COLORS) + onoff('fps', 'FPS counter');
-  else if (setTab === 'graphics') body = choice('quality', 'Quality', [['potato', 'Potato'], ['low', 'Low'], ['medium', 'Medium'], ['high', 'High'], ['ultra', 'Ultra'], ['superultra', 'SUPER ULTRA'], ...(settings.customQ ? [['custom', 'Custom']] : [])]) + `<p class="gnote" style="margin:-4px 0 2px 162px">${settings.quality === 'custom' ? customNote() : QUALITY_NOTE[settings.quality]}</p>`
-    + `<div class="set"><span>Auto-tune</span><div><button class="go benchbtn" data-bench="1">${settings.customQ ? 'RE-TEST' : 'TEST'} THIS ${IS_MAC ? 'MAC' : 'COMPUTER'} &amp; BUILD CUSTOM</button></div><span></span></div><p class="gnote" style="margin:-4px 0 2px 162px">${state === 'menu' ? 'Takes 15 to 60 seconds. It tries the settings one by one on the menu with extra bots, and keeps the best picture your screen can keep up with. Press Esc to stop.' : 'Quit to the main menu to run the test.'}</p>`
-    + choice('res', 'Resolution', [['auto', 'Preset'], [50, '50%'], [67, '67%'], [75, '75%'], [85, '85%'], [100, '100%']]) + `<p class="gnote" style="margin:-4px 0 2px 162px">How much of your screen's real resolution the game draws. 100% is pin-sharp but heaviest. Now drawing at ${renderPct()}%.</p>`
-    + choice('sharpen', 'Sharpen', [[0, 'Off'], [0.2, 'Low'], [0.35, 'Medium'], [0.6, 'High']]) + `<p class="gnote" style="margin:-4px 0 2px 162px">Crisps up the picture. Almost free. Not used on Potato or Low.</p>`
-    + onoff('autoRes', 'Auto resolution') + `<p class="gnote" style="margin:-4px 0 2px 162px">Lowers the resolution a little (never below 75%) when the game gets slow, so it stays smooth.</p>`
+  else if (setTab === 'graphics') body = choice('quality', 'Quality', [['potato', 'Potato'], ['low', 'Low'], ['medium', 'Medium'], ['high', 'High'], ['ultra', 'Ultra'], ['superultra', 'SUPER ULTRA'], ...(settings.customQ ? [['custom', 'Custom']] : [])]) + `<p class="shelp">${settings.quality === 'custom' ? customNote() : QUALITY_NOTE[settings.quality]}</p>`
+    + `<div class="set"><span>Auto-tune</span><div><button class="go benchbtn" data-bench="1">${settings.customQ ? 'RE-TEST' : 'TEST'} THIS ${IS_MAC ? 'MAC' : 'COMPUTER'} &amp; BUILD CUSTOM</button></div><span></span></div><p class="shelp">${state === 'menu' ? 'Takes 15 to 60 seconds. It tries the settings one by one on the menu with extra bots, and keeps the best picture your screen can keep up with. Press Esc to stop.' : 'Quit to the main menu to run the test.'}</p>`
+    + choice('res', 'Resolution', [['auto', 'Preset'], [50, '50%'], [67, '67%'], [75, '75%'], [85, '85%'], [100, '100%']]) + `<p class="shelp">How much of your screen's real resolution the game draws. 100% is pin-sharp but heaviest. Now drawing at ${renderPct()}%.</p>`
+    + choice('sharpen', 'Sharpen', [[0, 'Off'], [0.2, 'Low'], [0.35, 'Medium'], [0.6, 'High']]) + `<p class="shelp">Crisps up the picture. Almost free. Not used on Potato or Low.</p>`
+    + onoff('autoRes', 'Auto resolution') + `<p class="shelp">Lowers the resolution a little (never below 75%) when the game gets slow, so it stays smooth.</p>`
     + onoff('bloom', 'Glow (bloom)') + onoff('vignette', 'Vignette') + onoff('grain', 'Film grain') + choice('blood', 'Blood', allowed('blood', [['red', 'Red'], ['oil', 'Oil'], ['paint', 'Paint'], ['off', 'Off']]))
     + choice('gore', 'Gore', allowed('gore', [['bath', 'Bloodbath'], ['extreme', 'Over the top'], ['normal', 'Normal']]))
     + choice('fpsCap', 'Frame rate', [['0', 'Monitor (smoothest)'], ['uncapped', 'Unlimited'], ['240', '240'], ['144', '144'], ['120', '120'], ['60', '60'], ['30', '30']])
-    + `<p class="gnote" style="margin:-4px 0 2px 162px">Monitor draws one frame per screen refresh, which is the smoothest. Unlimited draws as many as it can, so the counter goes higher, but the extra frames never reach your screen and motion can look uneven.</p>`;
+    + `<p class="shelp">Monitor draws one frame per screen refresh, which is the smoothest. Unlimited draws as many as it can, so the counter goes higher, but the extra frames never reach your screen and motion can look uneven.</p>`;
   else if (setTab === 'controls') {
     let g = '';
     for (const [id, label, , , grp] of ACTIONS) {
@@ -3225,11 +3229,11 @@ function renderSettings(host) {
       const changed = settings.binds[id] !== undefined && settings.binds[id] !== ACTIONS.find(a => a[0] === id)[3];
       body += `<div class="set"><span>${label}</span><button class="bindbtn${changed ? ' chg' : ''}" data-bind="${id}">${keyLabel(id)}</button><span></span></div>`;
     }
-    body += `<p class="gnote" style="margin:6px 0 0">Click an action, then press a key or mouse button. Esc cancels, Backspace clears it. Picking a key that's already used swaps the two. Esc always pauses, and some browser shortcuts (like Ctrl + W) can't be used. Controllers have their own layout.</p>
-      <div style="text-align:right;margin-top:8px"><button class="x" data-bindreset>RESET KEYBINDS</button></div>`;
+    body += `<p class="shelp wide">Click an action, then press a key or mouse button. Esc cancels, Backspace clears it. Picking a key that's already used swaps the two. Esc always pauses, and some browser shortcuts (like Ctrl + W) can't be used. Controllers have their own layout.</p>
+      <div class="setfoot"><span></span><button class="x" data-bindreset>RESET KEYBINDS</button></div>`;
   }
   else if (setTab === 'audio') body = range('vol', 'Master volume', 0, 1, .05) + range('music', 'Music', 0, 1, .05)
-    + choice('spatial', '3D audio', [['hrtf', 'Headphones'], ['speakers', 'Speakers']]) + `<p class="gnote" style="margin:-4px 0 2px 162px">Enemy shots, footsteps and explosions come from where they really are. Headphones mode also tells front from behind and above from below. Sounds behind walls are muffled.</p>`;
+    + choice('spatial', '3D audio', [['hrtf', 'Headphones'], ['speakers', 'Speakers']]) + `<p class="shelp">Enemy shots, footsteps and explosions come from where they really are. Headphones mode also tells front from behind and above from below. Sounds behind walls are muffled.</p>`;
   else body = `<div class="xhed"><div class="xprev"><div class="xprev-ch"></div><span>LIVE PREVIEW</span></div>
       <div><div class="lbl" style="margin-bottom:6px">Presets</div><div class="seg-btn">${Object.keys(XH_PRESETS).map(p => `<button data-preset="${p}">${p}</button>`).join('')}</div></div></div>`
     + choice('xh.style', 'Style', XH_STYLES) + swatches('xh.color', 'Colour', XH_COLORS, true)
@@ -3242,7 +3246,7 @@ function renderSettings(host) {
   const body = setQ ? tabs.map(([k, n]) => `<div class="sgrp"><div class="bindgrp">${n}</div>${tabBody(k)}</div>`).join('') : tabBody(setTab);
   host.innerHTML = `<div class="ssearch"><input id="setSearch" type="search" placeholder="Search settings (sens, blood, fov...)" value="${setQ.replace(/"/g, '&quot;')}" autocomplete="off" spellcheck="false"></div>`
     + `<div class="stabs${setQ ? ' dim' : ''}">${tabs.map(([k, n]) => `<button data-stab="${k}" class="${setTab === k && !setQ ? 'sel' : ''}">${n}</button>`).join('')}</div><div class="settings${setQ ? ' searching' : ''}">${body}<p class="gnote snone" style="display:none">Nothing matches "${setQ.replace(/</g, '&lt;')}". Try a shorter word.</p></div>`
-    + `<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px"><span class="gnote" style="margin:0">Pastel Siege ${GAME_VERSION}${CHIP ? ` · ${CHIP}` : ""} · ${({ web: "website", crazygames: "CrazyGames", poki: "Poki", dev: "preview" })[window.PS_PLATFORM || "dev"] || window.PS_PLATFORM}</span><button class="x" data-reset>RESET ALL SETTINGS</button></div>`;
+    + `<div class="setfoot"><span class="gnote">Pastel Siege ${GAME_VERSION}${CHIP ? ` · ${CHIP}` : ""} · ${({ web: "website", crazygames: "CrazyGames", poki: "Poki", dev: "preview" })[window.PS_PLATFORM || "dev"] || window.PS_PLATFORM}</span><button class="x" data-reset>RESET ALL SETTINGS</button></div>`;
   const stop = el => { el.onmousedown = e => e.stopPropagation(); el.onkeydown = e => e.stopPropagation(); };
   const prev = host.querySelector('.xprev-ch');
   const refreshPreview = () => { if (prev) { mountCrosshair(prev, settings.xh); prev._xh.last = -1; } const c = host.querySelector('#xhCode'); if (c) c.value = crosshairCode(settings.xh); };
@@ -3254,7 +3258,7 @@ function renderSettings(host) {
     host.querySelectorAll('.sgrp').forEach(g => {
       let n = 0;
       g.querySelectorAll('.set').forEach(r => { const t = r.textContent.toLowerCase(), ok = words.every(w => t.includes(w)); r.style.display = ok ? '' : 'none'; if (ok) n++; });
-      g.querySelectorAll('.gnote, .xhed, .bindgrp:not(:first-child), [data-bindreset]').forEach(el => { el.style.display = 'none'; });
+      g.querySelectorAll('.gnote, .shelp, .setfoot, .xhed, .bindgrp:not(:first-child), [data-bindreset]').forEach(el => { el.style.display = 'none'; });
       g.style.display = n ? '' : 'none'; hits += n;
     });
     host.querySelector('.snone').style.display = hits ? 'none' : '';
@@ -3289,8 +3293,12 @@ const TIPS = ['Crouch to stay hidden. Gunfire and sprinting make noise.', 'Shoot
 function renderMenu() {
   if ($('tip')) $('tip').textContent = 'Tip: ' + TIPS[Math.floor(Math.random() * TIPS.length)];
   $('r-floor').textContent = prog.bestFloor; $('r-score').textContent = prog.bestScore.toLocaleString(); $('r-kills').textContent = prog.kills.toLocaleString();
-  $('armory').innerHTML = WEAPONS.filter(w => !w.secret).map(w => { const L = levelOf(prog.xp[w.id] || 0); return `<div class="arm-card"><canvas width="200" height="56" data-sil="${w.id}"></canvas><div class="arm-head"><b>${w.name}</b><span class="lvl"><b>LV ${L.level}</b></span></div>
-    <div class="xpbar" style="height:8px;margin-top:5px"><u style="width:${L.need ? L.into / L.need * 100 : 100}%"></u></div><div class="gnote">${w.desc ? w.desc + " · " : ""}Skin: ${skinFor(w.id).name}</div></div>`; }).join('');
+  const armCats = []; for (const w of WEAPONS) if (!w.secret && !armCats.includes(w.cat)) armCats.push(w.cat);
+  const armCard = w => { const L = levelOf(prog.xp[w.id] || 0);
+    return `<div class="arm-card${L.need ? '' : ' max'}" title="${escH(w.desc || w.name)}"><canvas width="200" height="56" data-sil="${w.id}"></canvas><div class="arm-head"><b>${w.name}</b><em class="lvtag">LV ${L.level}</em></div>
+      <div class="xpbar"><u style="width:${L.need ? L.into / L.need * 100 : 100}%"></u></div>${w.desc ? `<p>${w.desc}</p>` : ''}<small>Skin · ${skinFor(w.id).name}</small></div>`; };
+  $('armory').innerHTML = armCats.map(cat => { const list = WEAPONS.filter(w => !w.secret && w.cat === cat);
+    return `<h4 class="grp">${cat}<small>${list.length}</small></h4><div class="armory">${list.map(armCard).join('')}</div>`; }).join('');
   $('armory').querySelectorAll('canvas').forEach(c => gunThumb(c, byId(c.dataset.sil)));
   const hex = n => '#' + n.toString(16).padStart(6, '0');
   $('enemyList').innerHTML = Object.entries(TYPES).map(([, t]) => `<div><i style="background:${hex(t.color)}"></i><div><b>${t.name}</b><span>${t.blurb}</span></div></div>`).join('');
@@ -3370,7 +3378,7 @@ function renderMeta() {
   checkAch();
   prog.char = 'rookie';
   const c = charById(), U = prog.upg, plv = levelInfo(prog.pxp).lvl, pts = upgPoints(plv, U);
-  $('charPick').innerHTML = `<button class="charchip" id="charChip" style="--c:${c.col}"><i>${c.name[0]}</i><div><small>PLAYING AS</small><b>${c.name}</b><span>${upgHp()} max HP · +${Math.round((upgSpd() - 1) * 100)}% speed${pts ? ` · <b style="color:var(--coral)">${pts} point${pts > 1 ? 's' : ''} to spend</b>` : ''}</span></div><em>UPGRADE ▸</em></button>`;
+  $('charPick').innerHTML = `<button class="charchip" id="charChip" style="--c:${c.col}"><i>${c.name[0]}</i><div><small>PLAYING AS</small><b>${c.name}</b><span>${upgHp()} max HP · +${Math.round((upgSpd() - 1) * 100)}% speed${pts ? ` · <b style="color:var(--coral)">${pts} point${pts > 1 ? 's' : ''} to spend</b>` : ''}</span></div><em>UPGRADE ${ic('next')}</em></button>`;
   $('charChip').onclick = () => document.querySelector('#mnav [data-panel="chars"]').click();
   // upgrade tracks: 10 pips each, the next level's cost on the button
   $('charList').innerHTML = `<div class="upgpts"><b>${pts}</b><span>upgrade point${pts === 1 ? '' : 's'} to spend<small>You get 1 for every player level (you're level ${plv}). Upgrades start working on your next run.</small></span></div>`
@@ -3416,7 +3424,8 @@ function openDrawer(on = !drawerOpen()) { document.body.classList.toggle('drawer
 function menuTitle() {
   const sel = document.querySelector('#mnav button.sel'), name = sel?.dataset.panel || 'play';
   const label = sel?.querySelector('span')?.firstChild?.textContent?.trim() || '';
-  $('mtitle').innerHTML = name === 'play' ? '' : `<small>Pastel Siege</small>${label}`;
+  const desc = sel?.querySelector('small')?.textContent || '';
+  $('mtitle').innerHTML = `<h1>${label.charAt(0)}${label.slice(1).toLowerCase()}</h1>${desc ? `<p>${desc}</p>` : ''}`;
   $('backPlay').hidden = name === 'play';
 }
 $('menuBtn').onclick = () => openDrawer();
@@ -3431,7 +3440,7 @@ function toggleFullscreen() {
 function fsLabel() {
   const on = !!(document.fullscreenElement || document.webkitFullscreenElement);
   $('fsBtn').querySelector('span').textContent = on ? 'EXIT FULLSCREEN' : 'FULLSCREEN'; $('fsBtn').title = on ? 'Exit fullscreen' : 'Fullscreen';
-  $('pauseFs').textContent = on ? '⛶ EXIT FULLSCREEN' : '⛶ FULLSCREEN';
+  $('pauseFs').innerHTML = `<span class="gol">${ic('expand')}${on ? 'EXIT FULLSCREEN' : 'FULLSCREEN'}</span>`;
 }
 $('fsBtn').onclick = toggleFullscreen; $('pauseFs').onclick = toggleFullscreen;
 document.addEventListener('fullscreenchange', fsLabel); document.addEventListener('webkitfullscreenchange', fsLabel);
@@ -3920,11 +3929,11 @@ function loadRun() {
 function clearRun() { dropSave(RUN_KEY); }
 function renderContinue() {
   const d = loadRun(), box = $('continueBox'); if (!box) return;
-  $('start').textContent = d ? 'NEW RUN ▸' : 'DEPLOY ▸';
+  $('start').innerHTML = `<span class="gol">${ic('play')}${d ? 'NEW RUN' : 'DEPLOY'}</span>`;
   if (!d) { box.innerHTML = ''; return; }
   const mins = Math.round((Date.now() - d.when) / 60000), ago = mins < 1 ? 'just now' : mins < 60 ? `${mins} min ago` : mins < 1440 ? `${Math.round(mins / 60)} h ago` : `${Math.round(mins / 1440)} days ago`;
   const guns = [d.slots.primary, d.slots.secondary].filter(Boolean).map(s => `${byId(s.id)?.name || s.id}${Object.keys(s.ml || {}).length ? " " + Object.keys(s.ml).map(id => mutById(id)?.icon || "").join("") : ""}`).join(' + ');
-  box.innerHTML = `<div class="contcard"><div><div class="lbl" style="color:var(--coral);opacity:1">Saved run · ${ago}</div><b>Floor ${d.floorN} · Wave ${d.wave}</b><span>$${Math.round(d.p.cash).toLocaleString()} · ${Math.ceil(d.p.hp)} HP · ${d.bots.length} bots left · ${d.diff}</span><span>${guns}</span></div><button class="go" id="continue">CONTINUE ▸</button></div>
+  box.innerHTML = `<div class="contcard"><div><div class="lbl" style="color:var(--coral);opacity:1">Saved run · ${ago}</div><b>Floor ${d.floorN} · Wave ${d.wave}</b><span>$${Math.round(d.p.cash).toLocaleString()} · ${Math.ceil(d.p.hp)} HP · ${d.bots.length} bots left · ${d.diff}</span><span>${guns}</span></div><button class="go" id="continue"><span class="gol">${ic('play')}CONTINUE</span></button></div>
     <p class="note" style="margin-top:6px">Starting a new run replaces this save.</p>`;
   $('continue').onclick = continueRun;
 }

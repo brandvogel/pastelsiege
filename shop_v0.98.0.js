@@ -1,11 +1,11 @@
-import { WEAPONS, CATS, GEAR, drawSilhouette, PIP_TIERS, ttk } from './weapons_v0.97.0.js';
-export { ttk }; // the weapon card uses it, and weapons_v0.97.0 keeps it testable without the 3D imports
-import { ATTACH, SLOT_NAMES, compatible, slotsFor, describe, attById, computeWeapon, LASER_COLS, LASER_LV } from './attachments_v0.97.0.js';
-import { SKINS, TIER_COL, PERKS, MAX_LEVEL, levelOf, prog, skinUnlocked, drawSwatch, skinById } from './skins_v0.97.0.js';
-import { SUPPORT } from './helpers_v0.97.0.js';
-import { ABILITIES } from './abilities_v0.97.0.js';
-import { CHARMS } from './charms_v0.97.0.js';
-import { keyLabel } from './controls_v0.97.0.js';
+import { WEAPONS, CATS, GEAR, drawSilhouette, PIP_TIERS, ttk } from './weapons_v0.98.0.js';
+export { ttk }; // the weapon card uses it, and weapons_v0.98.0 keeps it testable without the 3D imports
+import { ATTACH, SLOT_NAMES, compatible, slotsFor, describe, attById, computeWeapon, LASER_COLS, LASER_LV } from './attachments_v0.98.0.js';
+import { SKINS, TIER_COL, PERKS, MAX_LEVEL, levelOf, prog, skinUnlocked, drawSwatch, skinById } from './skins_v0.98.0.js';
+import { SUPPORT } from './helpers_v0.98.0.js';
+import { ABILITIES } from './abilities_v0.98.0.js';
+import { CHARMS } from './charms_v0.98.0.js';
+import { keyLabel } from './controls_v0.98.0.js';
 
 // The buy menu. Left: sections. Middle: a list of everything in the section. Right: a big detail panel for the
 // selected item, compared against what you're carrying now, with one big buy button.
@@ -28,7 +28,9 @@ export function fineStats(w) {
   ];
 }
 const modeName = m => ({ auto: 'Auto', semi: 'Semi', burst: 'Burst', bolt: 'Bolt', pump: 'Pump', lever: 'Lever' }[m]);
-const ICON = { Locker: '🎒', Melee: '🗡', Pistol: '⌐', SMG: '≡', Shotgun: '⁂', Rifle: '➶', Marksman: '◎', Sniper: '⊕', LMG: '▦', Special: '✦', Gear: '⛨', Support: '🛸', Abilities: '⚡', Upgrade: '⬆', Gunsmith: '🔧' };
+// icons from the set at the top of index.html
+const ic = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
+const ICON = Object.fromEntries(Object.entries({ Locker: 'locker', Melee: 'melee', Pistol: 'pistol', SMG: 'smg', Shotgun: 'shotgun', Rifle: 'rifle', Marksman: 'marksman', Sniper: 'sniper', LMG: 'lmg', Special: 'special', Gear: 'gearkit', Support: 'support', Abilities: 'bolt', Upgrade: 'up', Gunsmith: 'wrench' }).map(([k, v]) => [k, ic(v)]));
 // Run locker: every gun you have this run (in your hands or swapped out), at the top so swapping back is one click
 const SECTIONS = [['Weapons', ['Locker', ...CATS]], ['Equipment', ['Gear', 'Support', 'Abilities']], ['Workshop', ['Upgrade', 'Gunsmith']]];
 const LABEL = { Locker: 'Run locker', Upgrade: 'Sidearm Workshop', Gear: 'Gear', Support: 'Support', Special: 'Special' };
@@ -97,7 +99,7 @@ export class Shop {
     const nums = [['Damage', w.projectile ? w.projectile.dmg : w.pellets > 1 ? `${Math.round(w.dmg)}×${w.pellets}` : Math.round(w.dmg)], ['RPM', Math.round(w.rpm)], ['Mag', w.mag], ['Reload', `${w.reload.toFixed(1)} s`], ['Range', w.projectile ? '—' : `${Math.round(w.range)} m`]];
     const detail = `<aside class="detail">
       <div class="dhero"><canvas width="520" height="150" data-sil="${w.id}" class="big"></canvas><div class="dlvl">${lvlBadge(w.id)}</div></div>
-      <div class="dname"><span class="dcat">${ICON[w.cat] || '✦'} ${w.cat}</span><h3>${w.name}</h3></div>
+      <div class="dname"><span class="dcat">${ICON[w.cat] || ICON.Special} ${w.cat}</span><h3>${w.name}</h3></div>
       ${w.desc ? `<p class="ddesc">${w.desc}</p>` : ""}
       <div class="tags">${tags.map(t => `<span>${t}</span>`).join('')}${w.innate ? w.innate.map(id => `<span class="innate">✦ ${id}</span>`).join('') : ''}</div>
       <div class="ttk"><div><small>TIME TO KILL · 100 HP</small><b>${T.text}</b></div><span>${T.sub}</span></div>
@@ -224,7 +226,7 @@ export class Shop {
     this.root.innerHTML = `<div class="shopcard s2${this.opened ? " still" : ""}">
       <header class="s2head"><div class="st"><div class="eyebrow">Armoury · Floor ${a.floor()}</div><h2>Buy menu</h2></div>
         <div class="loadout">${load}</div>
-        <div class="cash${spent ? " spent" : ""}"><small>CASH</small>${money(cash)}</div><button class="x" data-close>CLOSE <kbd>${keyLabel('shop')}</kbd></button></header>
+        <div class="cash${spent ? " spent" : ""}"><small>CASH</small>${money(cash)}</div><button class="x" data-close><span class="gol">${ic('close')}CLOSE</span> <kbd>${keyLabel('shop')}</kbd></button></header>
       <div class="s2body"><nav class="s2nav">${nav}
         <div class="codewrap"><div class="codebox"><input id="shopCode" placeholder="Code" maxlength="20" autocomplete="off"><button data-redeem>OK</button></div><div class="codemsg">${this.msg || ''}</div></div></nav>
         <main class="s2main">${main}</main></div>

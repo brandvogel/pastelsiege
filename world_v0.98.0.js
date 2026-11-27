@@ -1,9 +1,9 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
-import { makeBuilder } from './mapgen_v0.97.0.js';
-import { Nav } from './nav_v0.97.0.js';
-import { SND, ac, sfx } from './audio_v0.97.0.js';
-import { makeEnv } from './gunkit_v0.97.0.js';
-import { surfaces, ground } from './textures_v0.97.0.js';
+import { makeBuilder } from './mapgen_v0.98.0.js';
+import { Nav } from './nav_v0.98.0.js';
+import { SND, ac, sfx } from './audio_v0.98.0.js';
+import { makeEnv } from './gunkit_v0.98.0.js';
+import { surfaces, ground } from './textures_v0.98.0.js';
 export { THREE, SND, ac, sfx };
 
 export const clamp = (v, a, b) => Math.max(a, Math.min(b, v));

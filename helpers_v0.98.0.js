@@ -1,7 +1,7 @@
 // Things you can buy that fight for you: orbiting sentry drones, a medic drone, deployable turrets and one-shot strike drones.
-import { THREE, scene, camera, world, lineOfSight, groundAt, insideSolid, rand, tracer, sparks, flashLight, SND } from './world_v0.97.0.js';
-import { at3 } from './audio_v0.97.0.js';
-import { bots } from './bots_v0.97.0.js';
+import { THREE, scene, camera, world, lineOfSight, groundAt, insideSolid, rand, tracer, sparks, flashLight, SND } from './world_v0.98.0.js';
+import { at3 } from './audio_v0.98.0.js';
+import { bots } from './bots_v0.98.0.js';
 const V3 = THREE.Vector3;
 
 // Every support item has levels. Level 1 is cheap and weak; each upgrade costs more and does more.
