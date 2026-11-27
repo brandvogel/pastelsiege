@@ -106,3 +106,27 @@ export function ground(THREE, theme) {
     }
   });
 }
+
+// ---------- surface relief ----------
+// A normal map worked out from a painted texture's brightness (darker reads as lower), so mortar lines, plank gaps,
+// corrugation, paving seams and sand ripples catch the sun and throw tiny shadows. Made once per texture and shared.
+export function normalFrom(THREE, src, strength = 2) {
+  const key = 'n' + strength; src.userData.nm ||= {};
+  if (src.userData.nm[key]) return src.userData.nm[key];
+  const c = src.image, N = c.width, M = c.height, d = c.getContext('2d').getImageData(0, 0, N, M).data, h = new Float32Array(N * M);
+  for (let i = 0; i < N * M; i++) h[i] = (d[i * 4] * .3 + d[i * 4 + 1] * .59 + d[i * 4 + 2] * .11) / 255;
+  // one soft blur pass so the bumps are rounded rather than pixel-sharp
+  const b = new Float32Array(N * M), at = (x, y) => h[((y + M) % M) * N + ((x + N) % N)];
+  for (let y = 0; y < M; y++) for (let x = 0; x < N; x++) b[y * N + x] = (at(x, y) * 4 + at(x - 1, y) + at(x + 1, y) + at(x, y - 1) + at(x, y + 1)) / 8;
+  const bt = (x, y) => b[((y + M) % M) * N + ((x + N) % N)];
+  const [oc, ox] = canvas(N), img = ox.createImageData(N, M), o = img.data;
+  for (let y = 0; y < M; y++) for (let x = 0; x < N; x++) {
+    const gx = (bt(x + 1, y) - bt(x - 1, y)) * strength, gy = (bt(x, y + 1) - bt(x, y - 1)) * strength, l = Math.hypot(gx, gy, 1), i = (y * N + x) * 4;
+    o[i] = (-gx / l * .5 + .5) * 255; o[i + 1] = (gy / l * .5 + .5) * 255; o[i + 2] = (1 / l * .5 + .5) * 255; o[i + 3] = 255;
+  }
+  ox.putImageData(img, 0, 0);
+  const t = new THREE.CanvasTexture(oc); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 8; t.colorSpace = THREE.NoColorSpace;
+  return (src.userData.nm[key] = t);
+}
+// how bumpy each surface is
+export const RELIEF = { plaster: 1.4, brick: 5, planks: 3.2, metal: 5.5, concrete: 1.8, ground: { city: 3.5, garden: 2.2, desert: 3, frost: 1.2, fort: 3.2, yard: 3, toybox: 3 } };

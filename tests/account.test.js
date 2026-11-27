@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { checkEmail, checkName, isPlaceholder, saveSig, progressSig } from '../account_v0.98.0.js';
+import { checkEmail, checkName, isPlaceholder, saveSig, progressSig } from '../account_v0.99.0.js';
 
 test('real email addresses are accepted', () => {
   for (const e of ['name@example.com', '  Name.Surname+game@mail.example.co.uk ']) assert.equal(checkEmail(e), '', e);

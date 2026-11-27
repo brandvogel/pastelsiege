@@ -1,8 +1,8 @@
 // First-person gun models. Each returns anchor points (grip, fore hand, mag well, sight line) so hands and attachments line up.
-import { kit, materials, frontPost, rearSight, redDot, holo, acog, scope, birdcage, slantBrake, arms } from './gunkit_v0.98.0.js';
-import { applySkin } from './skins_v0.98.0.js';
-import { pistol, revolver, minigun, launcher, railgun, doubleBarrel } from './models2_v0.98.0.js';
-export { makeEnv } from './gunkit_v0.98.0.js';
+import { kit, materials, frontPost, rearSight, redDot, holo, acog, scope, birdcage, slantBrake, arms } from './gunkit_v0.99.0.js';
+import { applySkin } from './skins_v0.99.0.js';
+import { pistol, revolver, minigun, launcher, railgun, doubleBarrel } from './models2_v0.99.0.js';
+export { makeEnv } from './gunkit_v0.99.0.js';
 
 // L receiver length, H height, B barrel, up upper style, hg handguard, st stock, mg magazine, mz muzzle device, irons [front, rear]
 const S = {
@@ -99,7 +99,8 @@ function longGun(THREE, K, M, w, o, c) {
     K.side([[back - .004, bore - .012], [front + .05, bore - .012], [front + .058, bot - .022], [front + .14, bot - .024], [front + .16, bot - .004], [back - .07, bot], [back - .02, bot + .004], [back, bot + .012]], Wd - .004, c.up === 'lmg' ? M.body : M.poly, { r: .005 });
     K.rbox(.002, H * .28, L * .2, Wd / 2 + .001, bore + .006, back - L * .4, M.dark, .002);                      // ejection port door
     K.cyl(.007, .02, Wd / 2 + .006, bore + .01, back - .05, M.dark, 14, 'x');                                     // forward assist
-    K.side([[back + .02, top - .012], [back - .01, top - .012], [back - .012, top - .004], [back + .02, top - .002]], .03, M.dark, { r: .003 }); // charging handle
+    o.chargeG = K.capture(() => K.side([[back + .02, top - .012], [back - .01, top - .012], [back - .012, top - .004], [back + .02, top - .002]], .03, M.dark, { r: .003 })); // charging handle (slides back on reloads)
+    o.chargeP = V(0, top + .002, back + .01); o.port = V(Wd / 2 + .004, bore + .006, back - L * .4);
     K.pin(0, bot + .012, back - .08, .0025, M.steel, Wd + .002); K.pin(0, bot + .012, front + .04, .0025, M.steel, Wd + .002);
     K.side([[back - .11, bot + .016], [back - .118, bot + .016], [back - .116, bot + .026], [back - .108, bot + .026]], .003, M.steel, { x: -Wd / 2 - .001, r: .001, bevel: 0 }); // selector
     if (c.up === 'lmg') { K.side([[back - .02, top], [front + .04, top], [front + .04, top + .02], [back - .04, top + .022]], Wd + .004, M.dark, { r: .006 }); } // feed cover (no carry handle: it sat right in front of the sights)
@@ -108,7 +109,8 @@ function longGun(THREE, K, M, w, o, c) {
     K.lathe([[.002, back - .005], [.026, back - .012], [.027, front + .06], [.02, front + .03]], M.dark, 0, top - .028, 24);   // ribbed dust cover
     for (let i = 0; i < 4; i++) K.torus(.0265, .0012, 0, top - .028, back - .06 - i * .04, M.metal, Math.PI);
     K.side([[back - .08, bore + .002], [back - .2, bore + .002], [back - .2, bore + .012], [back - .08, bore + .012]], .003, M.steel, { x: Wd / 2 + .002, r: .002, bevel: 0 });
-    K.cyl(.006, .014, Wd / 2 + .008, bore + .006, back - .085, M.steel, 12, 'x');
+    o.chargeG = K.capture(() => K.cyl(.006, .014, Wd / 2 + .008, bore + .006, back - .085, M.steel, 12, 'x')); // bolt carrier handle
+    o.chargeP = V(Wd / 2 + .016, bore + .006, back - .085); o.port = V(Wd / 2 + .004, bore + .006, back - .14);
     K.side([[back - .02, bot + .02], [back - .15, bot + .03], [back - .16, bot + .04], [back - .02, bot + .035]], .003, M.steel, { x: Wd / 2 + .003, r: .003, bevel: 0 });  // selector lever
   } else if (c.up === 'bolt') {
     K.lathe([[.012, back + .01], [.022, back], [.022, front + .02], [.02, front]], M.body, 0, bore, 28);
@@ -116,16 +118,17 @@ function longGun(THREE, K, M, w, o, c) {
       const bz = back - .06; K.cyl(.0045, .045, .03, bore - .004, bz, M.steel, 12, 'x').rotation.y = -.4; K.sphere(.009, .055, bore - .012, bz + .01, M.steel);
       K.lathe([[.0175, back + .01], [.019, back + .03], [.012, back + .045]], M.steel, 0, bore, 20);              // bolt shroud
     });
-    pivot(o.bolt, 0, bore, 0);
+    pivot(o.bolt, 0, bore, 0); o.boltP = V(.055, bore - .012, back - .05); o.port = V(.024, bore + .008, back - .1);
   } else if (c.up === 'lever' || c.up === 'pump') {
     K.side([[back, bot + .01], [front, bot + .012], [front, top - .008], [front + .02, top], [back - .03, top], [back, top - .015]], Wd - .006, M.body, { r: .006 });
-    K.rbox(.002, H * .4, L * .35, (Wd - .006) / 2 + .001, bore, back - L * .5, M.dark, .004);
+    K.rbox(.002, H * .4, L * .35, (Wd - .006) / 2 + .001, bore, back - L * .5, M.dark, .004); o.port = V((Wd - .006) / 2 + .004, bore + .004, back - L * .5);
     if (c.up === 'lever') { const lz = back - .05; K.side([[lz + .03, bot + .01], [lz - .08, bot + .01], [lz - .08, bot - .04], [lz - .05, bot - .055], [lz + .02, bot - .05], [lz + .035, bot - .02]], .01, M.steel, { holes: [K.hole([[lz - .002, bot - .006], [lz - .07, bot - .006], [lz - .07, bot - .035], [lz - .05, bot - .045], [lz - .005, bot - .04]], .008)], r: .008 }); }
     else K.rbox(.004, .008, .03, Wd / 2, bore - .01, back - .06, M.steel, .002);
   } else if (c.up === 'smg') {
     K.lathe([[.018, back + .006], [.021, back], [.021, front + .02], [.019, front]], M.body, 0, top - .02, 24);        // cocking tube
     K.side([[back, top - .02], [front, top - .02], [front, bot + .01], [front + .05, bot - .012], [back - .02, bot - .012], [back, bot + .01]], Wd - .006, M.body, { r: .006 });
-    K.side([[front + .02, top - .01], [front - .02, top - .016], [front - .02, top - .026], [front + .02, top - .026]], .012, M.dark, { x: -.012, r: .003 }); // cocking handle
+    o.chargeG = K.capture(() => K.side([[front + .02, top - .01], [front - .02, top - .016], [front - .02, top - .026], [front + .02, top - .026]], .012, M.dark, { x: -.012, r: .003 })); // cocking handle
+    o.chargeP = V(-.02, top - .02, front + .01); o.port = V(Wd / 2, bore + .01, back - .08);
   }
   // ---- barrel ----
   const bz0 = front, bz1 = front - B, br = c.up === 'bolt' ? .0135 : .0115;
@@ -243,6 +246,7 @@ function bullpup(THREE, K, M, w, o, style) {
     K.rbox(.004, .03, .06, .032, 0, back - .08, M.dark, .002);
     o.grip = V(0, -.1, front + .2); o.fore = V(0, -.1, front + .09); o.mag = V(0, -.05, back - .09);
   }
+  o.port = V(.034, bore + .006, back - .1); o.chargeP = V(-.036, top - .012, front + .1);
   const B = .14; K.lathe([[.012, front + .01], [.0105, front - B]], M.metal, 0, bore, 20); const mz = birdcage(K, M, front - B + .004, bore);
   K.rbox(.064, .12, .016, 0, -.04, back + .008, M.rubber, .008);
   K.side([[front + .17, -.05], [front + .23, -.05], [front + .23, -.06], [front + .2, -.08], [front + .175, -.075]], .012, M.poly, { holes: [K.hole([[front + .178, -.053], [front + .222, -.053], [front + .2, -.072]], .003)], r: .004 });
@@ -298,7 +302,7 @@ export function decorateGun(THREE, view, w) {
   else if (a.stock === 'cheek') K.rbox(.04, .022, .13, 0, sy + .04, bk - .09, M.acc, .009);
 }
 
-export function addArms(THREE, view) { arms(THREE, view.K, view); }
+export function addArms(THREE, view, look) { arms(THREE, view.K, view, look); }
 
 // Move a group's origin to (x, y, z) without moving its parts, so it rotates about that point.
 function pivot(grp, x, y, z) {

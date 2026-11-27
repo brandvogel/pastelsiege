@@ -1,0 +1,27 @@
+# Pastel Siege relay. No ports are opened on your router: the Cloudflare Tunnel connects out to Cloudflare.
+#
+# Tunnel already installed on this machine as a service (cloudflared from the dashboard's install command):
+#   docker compose up -d --build
+#   and point the tunnel's public hostname at  http://localhost:8080
+#
+# No tunnel on this machine yet: run one in Docker too. Put the token in .env (TUNNEL_TOKEN=eyJ...), then
+#   docker compose --profile tunnel up -d --build
+#   and point the public hostname at  http://relay:8080
+# Use one or the other: two tunnels with the same token share the traffic, and the one that can't reach the relay fails.
+services:
+  relay:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:8080"   # only this machine (and its tunnel) can reach it
+    environment:
+      ALLOWED_ORIGINS: https://pastelsiege.com,https://www.pastelsiege.com
+      # ALLOW_PREVIEWS: "0"   # uncomment to turn away Vercel preview links and localhost
+  cloudflared:
+    profiles: [tunnel]
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN}
+    depends_on: [relay]

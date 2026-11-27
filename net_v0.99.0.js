@@ -2,110 +2,22 @@
 // to each other; after that they talk directly. The host is the hub: friends send their position to the host, and the
 // host passes everyone's on to everyone else. Co-op runs (shared bots, waves and floors) are built on top in the game file.
 // Everyone's character look (shirt, pants, visor, hat, back item, name tag) travels with their name.
-import { THREE, scene, tracer, uiFont } from './world_v0.98.0.js';
+import { THREE, scene, tracer, uiFont } from './world_v0.99.0.js';
 
 const PEER_URL = 'https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js';
 const PREFIX = 'pastelsiege-p1-';            // keeps our codes apart from other games on the same free server
 const WORDS = ['PINK', 'MINT', 'PEACH', 'LILAC', 'SKY', 'LEMON', 'CORAL', 'SAGE', 'BERRY', 'CREAM'];
 const COLS = [0xff8fab, 0x7bd8b5, 0x8fb8ff, 0xffc86b, 0xc49bff];
 const MAX = 5, SEND_HZ = 15;
-// Backup relay (a small server, see relay/SETUP.txt): when a direct connection is blocked (school wifi), messages go
+// Backup relay (a small server on the homelab, see relay/README.md): when a direct connection is blocked (school wifi), messages go
 // through it instead, over a normal secure web connection. Blank = no relay, direct connections only.
-const RELAY_URL = '';
+const RELAY_URL = 'wss://relay.pastelsiege.com';
 
 // ---------- character looks ----------
-// req: { lvl } = player level, { leg } = number of Legendary badges. Fancy finishes: gold, chrome, galaxy (glows), rainbow (cycles).
-const PAINT = [
-  ['pink', 'Pink', 0xff8fab], ['mint', 'Mint', 0x7bd8b5], ['sky', 'Sky', 0x8fb8ff], ['lemon', 'Lemon', 0xffc86b], ['lilac', 'Lilac', 0xc49bff],
-  ['peach', 'Peach', 0xffb38a], ['coral', 'Coral', 0xf28482], ['sage', 'Sage', 0xa3c9a8], ['cream', 'Cream', 0xf4ecd8], ['navy', 'Navy', 0x2b2d42],
-  ['gold', 'Gold', 0xffcf5a, { lvl: 20 }, 'gold'], ['chrome', 'Chrome', 0xc9d2e3, { lvl: 30 }, 'chrome'], ['galaxy', 'Galaxy', 0x6a4cff, { leg: 1 }, 'glow'], ['rainbow', 'Rainbow', 0xff8fab, { leg: 3 }, 'rainbow'],
-].map(([id, name, hex, req, fx]) => ({ id, name, hex, req, fx }));
-export const LOOK = {
-  shirt: PAINT, pants: PAINT,
-  visor: [['white', 'White', 0xffffff], ['cyan', 'Cyan', 0x7ff6ff], ['pink', 'Pink', 0xff8fd8], ['lime', 'Lime', 0xb6ff6b], ['amber', 'Amber', 0xffb347],
-    ['red', 'Red', 0xff3b3b, { lvl: 8 }], ['gold', 'Gold', 0xffd75a, { lvl: 25 }], ['rainbow', 'Rainbow', 0xffffff, { leg: 2 }, 'rainbow']].map(([id, name, hex, req, fx]) => ({ id, name, hex, req, fx })),
-  hat: [['none', 'No hat'], ['cap', 'Cap'], ['beanie', 'Beanie'], ['phones', 'Headphones', { lvl: 5 }], ['antenna', 'Antenna', { lvl: 10 }], ['bunny', 'Bunny ears', { lvl: 15 }],
-    ['tophat', 'Top hat', { lvl: 22 }], ['halo', 'Halo', { lvl: 30 }], ['crown', 'Crown', { leg: 1 }]].map(([id, name, req]) => ({ id, name, req })),
-  back: [['none', 'Nothing'], ['pack', 'Backpack'], ['jet', 'Jetpack', { lvl: 12 }], ['cape', 'Cape', { lvl: 18 }], ['wings', 'Wings', { lvl: 35 }], ['gwings', 'Golden wings', { leg: 5 }]].map(([id, name, req]) => ({ id, name, req })),
-  tag: [['team', 'Team colour', 0], ['white', 'White', 0xffffff], ['gold', 'Gold', 0xffcf5a, { lvl: 25 }], ['rainbow', 'Rainbow', 0xff8fab, { leg: 2 }, 'rainbow']].map(([id, name, hex, req, fx]) => ({ id, name, hex, req, fx })),
-};
-export const DEFAULT_LOOK = { shirt: 'pink', pants: 'navy', visor: 'white', hat: 'none', back: 'none', tag: 'team' };
-const pick = (k, id) => LOOK[k].find(x => x.id === id) || LOOK[k].find(x => x.id === DEFAULT_LOOK[k]);
-// keep only known ids (looks arrive from other players)
-export const cleanLook = l => Object.fromEntries(Object.keys(DEFAULT_LOOK).map(k => [k, pick(k, l?.[k]).id]));
+// The looks and the character model live in avatar_v*.js; they are passed on from here for the game file.
+export { LOOK, DEFAULT_LOOK, cleanLook, tintRainbow, buildAvatar, lookColors } from './avatar_v0.99.0.js';
+import { cleanLook, tintRainbow, buildAvatar, pick, DEFAULT_LOOK } from './avatar_v0.99.0.js';
 const lookKey = l => Object.values(cleanLook(l)).join('|');
-function paintMat(o, rough = .45) {
-  const m = new THREE.MeshStandardMaterial({ color: o.hex, roughness: rough });
-  if (o.fx === 'gold') Object.assign(m, { metalness: .85, roughness: .25 });
-  if (o.fx === 'chrome') Object.assign(m, { metalness: 1, roughness: .12 });
-  if (o.fx === 'glow') { m.emissive.set(0x3a1a8a); m.emissiveIntensity = .9; }
-  if (o.fx === 'rainbow') m.userData.rainbow = true;
-  return m;
-}
-// rainbow parts cycle colour; call every frame with the time in seconds
-export function tintRainbow(mats, t) { for (const m of mats) { m.color.setHSL((t * .15) % 1, .75, .7); if (m.emissive && m.userData.glowRainbow) m.emissive.setHSL((t * .15) % 1, .9, .5); } }
-// the friend robot, dressed in a look. Returns its parts so the caller can animate them.
-export function buildAvatar(look) {
-  const L = cleanLook(look), S = pick('shirt', L.shirt), P = pick('pants', L.pants), Vz = pick('visor', L.visor);
-  const g = new THREE.Group(), body = paintMat(S), pants = paintMat(P, .5);
-  const dark = new THREE.MeshStandardMaterial({ color: 0x2b2d42, roughness: .5, metalness: .3 });
-  const visor = new THREE.MeshStandardMaterial({ color: 0x111111, emissive: Vz.hex, emissiveIntensity: .9 }); if (Vz.fx === 'rainbow') visor.userData.glowRainbow = true;
-  const gold = new THREE.MeshStandardMaterial({ color: 0xffcf5a, metalness: .85, roughness: .25, emissive: 0x6b4a00, emissiveIntensity: .3 });
-  const M = (geo, mat, x = 0, y = 0, z = 0, parent) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); (parent || g).add(m); return m; };
-  const torso = new THREE.Group(); g.add(torso);
-  // body: chest with a plate and a glowing stripe in your visor colour, shoulder pads, a belt with pouches and a neck
-  M(new THREE.CapsuleGeometry(.26, .42, 4, 14), body, 0, 1.08, 0, torso);
-  M(new THREE.BoxGeometry(.4, .3, .1), dark, 0, 1.15, -.23, torso);
-  M(new THREE.BoxGeometry(.26, .035, .02), visor, 0, 1.21, -.285, torso);
-  M(new THREE.CylinderGeometry(.275, .275, .08, 18), dark, 0, .8, 0, torso);
-  [-1, 1].forEach(s => { M(new THREE.BoxGeometry(.09, .1, .07), pants, s * .16, .8, -.26, torso); M(new THREE.SphereGeometry(.13, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2), pants, s * .29, 1.3, 0, torso); });
-  M(new THREE.CylinderGeometry(.08, .1, .14, 12), dark, 0, 1.4, 0, torso);
-  M(new THREE.BoxGeometry(.3, .32, .1), dark, 0, 1.12, .25, torso); // back plate
-  // legs: thigh, knee joint, shin, boot (they swing from the hip)
-  const legs = [-1, 1].map(s => {
-    const piv = new THREE.Group(); piv.position.set(s * .14, .72, 0);
-    M(new THREE.CapsuleGeometry(.1, .2, 4, 10), pants, 0, -.17, 0, piv); M(new THREE.SphereGeometry(.1, 10, 8), dark, 0, -.36, 0, piv);
-    M(new THREE.CapsuleGeometry(.085, .18, 4, 10), pants, 0, -.52, 0, piv); M(new THREE.BoxGeometry(.15, .09, .25), dark, 0, -.675, -.04, piv);
-    g.add(piv); return piv;
-  });
-  const aim = new THREE.Group(); aim.position.y = 1.55; g.add(aim);
-  // head: helmet with a wraparound visor, ear pieces
-  M(new THREE.SphereGeometry(.22, 20, 14), body, 0, 0, 0, aim);
-  M(new THREE.BoxGeometry(.36, .14, .1), dark, 0, .02, -.15, aim);
-  M(new THREE.BoxGeometry(.31, .085, .06), visor, 0, .02, -.2, aim);
-  [-1, 1].forEach(s => { const e = M(new THREE.CylinderGeometry(.06, .06, .05, 12), dark, s * .22, 0, 0, aim); e.rotation.z = Math.PI / 2; });
-  // arms hold the gun and turn with your aim
-  const limb = (a, b, r, mat) => { const d = b.clone().sub(a), m = M(new THREE.CapsuleGeometry(r, Math.max(.01, d.length() - r * 2), 4, 8), mat, (a.x + b.x) / 2, (a.y + b.y) / 2, (a.z + b.z) / 2, aim); m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize()); };
-  const v = (x, y, z) => new THREE.Vector3(x, y, z);
-  [[v(.3, -.24, 0), v(.33, -.45, -.06), v(.22, -.33, -.17)], [v(-.3, -.24, 0), v(-.2, -.44, -.24), v(.17, -.3, -.46)]].forEach(([S, E, H]) => {
-    limb(S, E, .075, body); limb(E, H, .065, dark); M(new THREE.SphereGeometry(.08, 10, 8), dark, E.x, E.y, E.z, aim); M(new THREE.SphereGeometry(.058, 10, 8), dark, H.x, H.y, H.z, aim);
-  });
-  // the gun: receiver, barrel, magazine and a sight
-  M(new THREE.BoxGeometry(.08, .1, .42), dark, .22, -.28, -.3, aim);
-  const bar = M(new THREE.CylinderGeometry(.018, .018, .22, 8), dark, .22, -.26, -.6, aim); bar.rotation.x = Math.PI / 2;
-  M(new THREE.BoxGeometry(.06, .14, .07), pants, .22, -.37, -.28, aim); M(new THREE.BoxGeometry(.03, .04, .08), visor, .22, -.21, -.24, aim);
-  // hats sit on the head (they turn with your aim)
-  const h = L.hat, hatCol = paintMat(P, .5);
-  if (h === 'cap') { M(new THREE.SphereGeometry(.235, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2), hatCol, 0, .04, 0, aim); M(new THREE.BoxGeometry(.3, .03, .2), hatCol, 0, .06, -.24, aim); }
-  if (h === 'beanie') { M(new THREE.SphereGeometry(.24, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2), hatCol, 0, .02, 0, aim); M(new THREE.SphereGeometry(.07, 8, 6), body, 0, .27, 0, aim); }
-  if (h === 'phones') { const r = M(new THREE.TorusGeometry(.25, .025, 6, 18, Math.PI), dark, 0, .02, 0, aim); r.rotation.y = Math.PI / 2; [-1, 1].forEach(s => { const c = M(new THREE.CylinderGeometry(.08, .08, .07, 12), hatCol, s * .24, 0, 0, aim); c.rotation.z = Math.PI / 2; }); }
-  if (h === 'antenna') { M(new THREE.CylinderGeometry(.012, .012, .3, 6), dark, 0, .35, 0, aim); M(new THREE.SphereGeometry(.05, 10, 8), visor, 0, .52, 0, aim); }
-  if (h === 'bunny') [-1, 1].forEach(s => { const e = M(new THREE.CapsuleGeometry(.05, .26, 4, 8), body, s * .1, .36, 0, aim); e.rotation.z = -s * .2; });
-  if (h === 'tophat') { M(new THREE.CylinderGeometry(.16, .16, .3, 16), dark, 0, .33, 0, aim); M(new THREE.CylinderGeometry(.28, .28, .025, 18), dark, 0, .19, 0, aim); M(new THREE.CylinderGeometry(.165, .165, .05, 16), body, 0, .23, 0, aim); }
-  if (h === 'halo') { const r = M(new THREE.TorusGeometry(.18, .025, 8, 24), new THREE.MeshStandardMaterial({ color: 0xfff2b0, emissive: 0xffd75a, emissiveIntensity: 1.4 }), 0, .4, 0, aim); r.rotation.x = Math.PI / 2; }
-  if (h === 'crown') { M(new THREE.CylinderGeometry(.17, .17, .1, 14, 1, true), gold, 0, .22, 0, aim); for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2; M(new THREE.ConeGeometry(.04, .1, 6), gold, Math.sin(a) * .16, .31, Math.cos(a) * .16, aim); } }
-  // back items hang off the torso
-  const b = L.back;
-  if (b === 'pack') { M(new THREE.BoxGeometry(.4, .45, .2), hatCol, 0, 1.1, .3, torso); M(new THREE.BoxGeometry(.3, .15, .06), body, 0, .95, .42, torso); }
-  if (b === 'jet') { [-1, 1].forEach(s => { M(new THREE.CylinderGeometry(.09, .09, .45, 12), new THREE.MeshStandardMaterial({ color: 0xc9d2e3, metalness: .9, roughness: .2 }), s * .12, 1.1, .32, torso); const f = M(new THREE.ConeGeometry(.07, .2, 10), new THREE.MeshBasicMaterial({ color: 0xffb347 }), s * .12, .78, .32, torso); f.rotation.x = Math.PI; }); }
-  if (b === 'cape') { const c = M(new THREE.BoxGeometry(.6, .95, .03), hatCol, 0, .9, .34, torso); c.rotation.x = .12; }
-  if (b === 'wings' || b === 'gwings') {
-    const wm = b === 'gwings' ? gold : new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xeaf2ff, emissiveIntensity: .35, roughness: .6 });
-    [-1, 1].forEach(s => { const w = M(new THREE.BoxGeometry(.7, .32, .03), wm, s * .38, 1.25, .32, torso); w.rotation.z = s * .45; w.rotation.y = -s * .35; });
-  }
-  const rainbow = []; g.traverse(m => { if (m.isMesh) { m.castShadow = true; if (m.material.userData.rainbow || m.material.userData.glowRainbow) rainbow.push(m.material); } });
-  return { g, body, torso, legs, aim, rainbow: [...new Set(rainbow)] };
-}
 const disposeGroup = g => g.traverse(m => { if (m.isMesh) { m.geometry.dispose(); m.material.dispose?.(); } });
 
 export const net = { on: false, host: false, code: '', id: '', name: '', col: COLS[0], look: { ...DEFAULT_LOOK }, status: '', peers: new Map(), onGo: null, onChange: null, onMsg: null, onJoin: null };
@@ -363,9 +275,9 @@ export function tick(dt, me) {
     a.yaw = lerpAngle(a.yaw, s.yaw, Math.min(1, dt * 14)); a.g.rotation.y = a.yaw;
     a.aim.rotation.x = THREE.MathUtils.lerp(a.aim.rotation.x, s.pitch, Math.min(1, dt * 14));
     a.g.scale.setScalar(s.dn || s.hp <= 0 ? .6 : 1); a.g.rotation.z = s.dn ? 1.3 : 0; // knocked over while they are down
-    const cr = 1 - .3 * (s.c || 0); a.torso.scale.y = cr; a.aim.position.y = 1.5 * cr + .05;
-    a.walk += dt * Math.min(moved, 8) * 1.6; const sw = Math.sin(a.walk) * Math.min(1, moved / 3) * .6;
-    a.legs[0].rotation.x = sw; a.legs[1].rotation.x = -sw;
+    // legs stride with how fast they move, knees fold when they crouch
+    a.walk += dt * Math.min(moved, 9) * 1.55; a.amt = THREE.MathUtils.lerp(a.amt || 0, Math.min(1, moved / 4.5), Math.min(1, dt * 8));
+    a.pose(a.walk, a.amt, s.c || 0);
     if (a.rainbow.length) tintRainbow(a.rainbow, now / 1000);
     // downed friends: a pulsing REVIVE marker you can see through walls, filling up while someone revives them
     a.rev.visible = !!s.dn;
@@ -390,7 +302,7 @@ function showShot(d) {
 // ---------- the friend robot ----------
 const lerpAngle = (a, b, t) => { let d = ((b - a + Math.PI) % (Math.PI * 2)) - Math.PI; if (d < -Math.PI) d += Math.PI * 2; return a + d * t; };
 function makeAvatar(p) {
-  const A = buildAvatar(p.look), { g } = A;
+  const A = buildAvatar(p.look), { g } = A; g.visible = false; // hidden until its first update puts it where they are (instead of sliding in from the map's middle)
   const tag = new THREE.Sprite(new THREE.SpriteMaterial({ depthTest: false, transparent: true })); tag.position.y = 2.15; tag.renderOrder = 20; g.add(tag);
   // the revive marker lives outside the robot so it stays upright while they lie on the floor
   const rev = new THREE.Sprite(new THREE.SpriteMaterial({ depthTest: false, transparent: true })); rev.renderOrder = 21; rev.visible = false;

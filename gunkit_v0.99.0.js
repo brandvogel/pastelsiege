@@ -1,4 +1,5 @@
 // Building blocks for first-person guns: soft-edged side profiles, lathed tubes, rails, iron sights and optics.
+import { normalFrom } from './textures_v0.99.0.js';
 // Gun space: -z is forward (muzzle), +y up, x across. Profiles are given as [z, y] points.
 
 export function makeEnv(THREE, renderer) {
@@ -40,19 +41,50 @@ function textures(THREE) {
     x.fillStyle = '#808080'; x.fillRect(0, 0, N, N);
     for (let i = 0; i < 900; i++) { const y = Math.random() * N, v = Math.floor(90 + Math.random() * 100); x.fillStyle = `rgb(${v},${v},${v})`; x.fillRect(Math.random() * N, y, 20 + Math.random() * 120, 1); }
   }, 6, false);
-  return { wood, stipple, brushed };
+  // handling marks: soft smudges and wear that vary how shiny a painted surface is
+  const grime = canvasTex(THREE, 'grime', 256, (x, N) => {
+    x.fillStyle = '#7a7a7a'; x.fillRect(0, 0, N, N);
+    for (let i = 0; i < 140; i++) { const cx = Math.random() * N, cy = Math.random() * N, r = 6 + Math.random() * 30, v = Math.random() < .5 ? 40 : 200, g = x.createRadialGradient(cx, cy, 0, cx, cy, r);
+      g.addColorStop(0, `rgba(${v},${v},${v},${.1 + Math.random() * .18})`); g.addColorStop(1, `rgba(${v},${v},${v},0)`); x.fillStyle = g; x.fillRect(cx - r, cy - r, r * 2, r * 2); }
+    for (let i = 0; i < 400; i++) { const v = 150 + Math.random() * 100; x.fillStyle = `rgba(${v},${v},${v},.25)`; x.fillRect(Math.random() * N, Math.random() * N, 1 + Math.random() * 6, 1); }
+  }, 3, false);
+  return { wood, stipple, brushed, grime };
 }
 
+// Joins a group's direct, static meshes into one mesh per material: a gun is drawn in about a dozen calls instead of a
+// hundred. Moving parts are groups (slide, mag, bolt...) and stay as they are, as do instanced rails and lines.
+export function mergeChildren(THREE, parent) {
+  const buckets = new Map();
+  for (const c of [...parent.children]) {
+    if (!c.isMesh || c.isInstancedMesh || c.children.length || c.userData.keep) continue;
+    c.updateMatrix(); let g = c.geometry.index ? c.geometry.toNonIndexed() : c.geometry.clone(); g.applyMatrix4(c.matrix);
+    const k = c.material.uuid; if (!buckets.has(k)) buckets.set(k, { m: c.material, list: [], src: [] }); const b = buckets.get(k); b.list.push(g); b.src.push(c);
+  }
+  for (const { m, list, src } of buckets.values()) {
+    if (list.length < 2) { list[0].dispose(); continue; }
+    const uv = list.every(g => g.attributes.uv), n = list.reduce((a, g) => a + g.attributes.position.count, 0);
+    const pos = new Float32Array(n * 3), nor = new Float32Array(n * 3), uvs = uv ? new Float32Array(n * 2) : null; let o = 0;
+    for (const g of list) { pos.set(g.attributes.position.array, o * 3); nor.set(g.attributes.normal.array, o * 3); if (uv) uvs.set(g.attributes.uv.array, o * 2); o += g.attributes.position.count; g.dispose(); }
+    const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(pos, 3)); geo.setAttribute('normal', new THREE.BufferAttribute(nor, 3)); if (uv) geo.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+    geo.computeBoundingSphere(); const mesh = new THREE.Mesh(geo, m); mesh.castShadow = src[0].castShadow; mesh.receiveShadow = src[0].receiveShadow; mesh.raycast = src[0].raycast;
+    src.forEach(c => parent.remove(c)); parent.add(mesh);
+  }
+}
+// a normal map that keeps its texture's tiling
+const nm = (THREE, t, k) => { const n = normalFrom(THREE, t, k); n.repeat.copy(t.repeat); return n; };
 export function materials(THREE, m) {
   const T = textures(THREE);
   const P = o => new THREE.MeshPhysicalMaterial(o), woodish = c => [0xb5734a, 0x8a7f72, 0xa0613b].includes(c);
-  const wood = P({ color: 0xb07048, map: T.wood, roughness: .45, metalness: 0, clearcoat: .8, clearcoatRoughness: .22 });
-  const poly = P({ color: 0x2b2d42, roughness: .8, roughnessMap: T.stipple, metalness: .05, sheen: .3, sheenColor: 0x6b6f8a });
+  // surface relief: stippled polymer, brushed metal and raised wood grain, all worked out from the textures above
+  const nStip = nm(THREE, T.stipple, 2.2), nBrush = nm(THREE, T.brushed, 1.4), nWood = nm(THREE, T.wood, 1.6), nGrime = nm(THREE, T.grime, .5);
+  const wood = P({ color: 0xb07048, map: T.wood, normalMap: nWood, normalScale: new THREE.Vector2(.6, .6), roughness: .45, metalness: 0, clearcoat: .8, clearcoatRoughness: .22 });
+  const poly = P({ color: 0x2b2d42, roughness: .8, roughnessMap: T.stipple, normalMap: nStip, normalScale: new THREE.Vector2(.45, .45), metalness: .05, sheen: .3, sheenColor: 0x6b6f8a });
+  const painted = c => P({ color: c, roughness: .46, roughnessMap: T.grime, normalMap: nGrime, normalScale: new THREE.Vector2(.25, .25), metalness: .25, clearcoat: .35, clearcoatRoughness: .32 });
   return {
-    body: woodish(m.color) ? wood : P({ color: m.color, roughness: .4, metalness: .3, clearcoat: .45, clearcoatRoughness: .3 }),
-    acc: woodish(m.accent) ? wood : P({ color: m.accent, roughness: .55, roughnessMap: T.stipple, metalness: .15, clearcoat: .2 }),
-    wood, metal: P({ color: 0x3a3d47, roughness: .32, roughnessMap: T.brushed, metalness: .9, anisotropy: .6 }), steel: P({ color: 0xb3b9c3, roughness: .18, roughnessMap: T.brushed, metalness: 1, anisotropy: .8 }),
-    dark: P({ color: 0x22232c, roughness: .46, metalness: .7, clearcoat: .2 }), poly,
+    body: woodish(m.color) ? wood : painted(m.color),
+    acc: woodish(m.accent) ? wood : P({ color: m.accent, roughness: .55, roughnessMap: T.stipple, normalMap: nStip, normalScale: new THREE.Vector2(.3, .3), metalness: .15, clearcoat: .2 }),
+    wood, metal: P({ color: 0x3a3d47, roughness: .32, roughnessMap: T.brushed, normalMap: nBrush, normalScale: new THREE.Vector2(.2, .2), metalness: .9, anisotropy: .6 }), steel: P({ color: 0xb3b9c3, roughness: .18, roughnessMap: T.brushed, normalMap: nBrush, normalScale: new THREE.Vector2(.15, .15), metalness: 1, anisotropy: .8 }),
+    dark: P({ color: 0x22232c, roughness: .46, roughnessMap: T.grime, metalness: .7, clearcoat: .3, clearcoatRoughness: .25 }), poly,
     rubber: P({ color: 0x17181e, roughness: .95, roughnessMap: T.stipple }), brass: P({ color: 0xd4a73a, roughness: .25, metalness: 1 }),
     glass: P({ color: 0x9fd6ec, roughness: .04, metalness: .2, transparent: true, opacity: .28, envMapIntensity: 2.5 }),
     coat: P({ color: 0x6b4fa0, roughness: .04, metalness: .7, transparent: true, opacity: .6, envMapIntensity: 2.5 }),
@@ -226,52 +258,94 @@ export function scope(K, M, z, railY, mag) {
 export function birdcage(K, M, z, y) { K.lathe([[.0095, z], [.0115, z - .004], [.0115, z - .042], [.0105, z - .046]], M.dark, 0, y, 20); for (let i = 0; i < 4; i++) { const a = i / 4 * Math.PI * 2 + Math.PI / 4; K.box(.002, .009, .028, Math.cos(a) * .011, y + Math.sin(a) * .011, z - .026, M.rubber).rotation.z = a; } return z - .046; }
 export function slantBrake(K, M, z, y) { K.lathe([[.01, z], [.012, z - .006], [.012, z - .03], [.009, z - .036]], M.dark, 0, y, 18); K.box(.016, .004, .02, 0, y + .011, z - .02, M.rubber); return z - .036; }
 
-// ---------- gloved arms ----------
-export function arms(THREE, K, view) {
-  const glove = new THREE.MeshPhysicalMaterial({ color: 0x3a3c52, roughness: .85, sheen: .5, sheenColor: 0x9cc5d6 });
-  const knuckle = new THREE.MeshPhysicalMaterial({ color: 0x2b2d42, roughness: .7 });
-  const sleeve = new THREE.MeshPhysicalMaterial({ color: 0x5f6f52, roughness: .95, sheen: .6, sheenColor: 0xcfd8b5 });
-  const cuff = new THREE.MeshPhysicalMaterial({ color: 0xcfb58a, roughness: .9 });
+// ---------- arms ----------
+// Your own arms, dressed like your character (Character screen): armour gauntlets in your shirt colour over a cream
+// suit, dark gloves with armoured knuckles, a glowing vent and wrist computer in your visor colour.
+// Each arm is a two-bone rig (upper arm + forearm with a real elbow). The right hand stays on the grip; the left one
+// is solved every frame (view.leftRig.solve), so during reloads it really reaches for the pouch, the mag and the
+// charging handle and the elbow bends to follow.
+export function arms(THREE, K, view, look = {}) {
+  const P = o => new THREE.MeshPhysicalMaterial(o);
+  const armor = P({ color: look.armor ?? 0xff8fab, roughness: .32, metalness: .12, clearcoat: .6, clearcoatRoughness: .22 });
+  if (look.armorFx === 'gold') Object.assign(armor, { metalness: .9, roughness: .22 }); if (look.armorFx === 'chrome') Object.assign(armor, { metalness: 1, roughness: .1 });
+  if (look.armorFx === 'glow') { armor.emissive.set(0x3a1a8a); armor.emissiveIntensity = .9; }
+  const suit = P({ color: 0xf3efe4, roughness: .7, sheen: .5, sheenColor: 0xffffff });
+  const glove = P({ color: 0x2b2f36, roughness: .6, metalness: .25, sheen: .35, sheenColor: 0x8a93a8 });
+  const frame = P({ color: 0x2b2f36, roughness: .4, metalness: .55 });
+  const glow = new THREE.MeshBasicMaterial({ color: new THREE.Color(look.glow ?? 0xffffff).multiplyScalar(2.2) });
+  if (look.armorFx === 'rainbow') armor.userData.rainbow = true; if (look.glowFx === 'rainbow') glow.userData.rainbowBasic = true;
+  view.armMats = [armor, glow];
   const V = (x, y, z) => new THREE.Vector3(x, y, z);
-  const limb = (a, b, r, mat, r2 = r * 1.15) => {
-    const len = a.distanceTo(b), m = new THREE.Mesh(new THREE.CylinderGeometry(r, r2, len, 16), mat);
-    m.position.copy(a).add(b).multiplyScalar(.5); m.quaternion.setFromUnitVectors(V(0, 1, 0), b.clone().sub(a).normalize()); view.group.add(m); return m;
-  };
-  const capsule = (a, b, r, mat) => { limb(a, b, r, mat, r); K.sphere(r, a.x, a.y, a.z, mat); K.sphere(r, b.x, b.y, b.z, mat); };
-  // fingers wrap round the grip: four capsules curling from the knuckles
-  const hand = (p, dir, curlSide) => {
-    const palm = new THREE.Mesh(new THREE.BoxGeometry(.034, .07, .05), glove); palm.position.copy(p).add(V(curlSide * .016, 0, .012)); view.group.add(palm);
-    K.rbox(.036, .06, .012, p.x + curlSide * .016, p.y, p.z + .036, knuckle, .004);
-    for (let i = 0; i < 4; i++) { const fy = p.y + .024 - i * .017, a = V(p.x + curlSide * .018, fy, p.z - .012), b = V(p.x - curlSide * .012, fy - .002, p.z - .024 * dir); capsule(a, b, .0072, glove); }
-    capsule(V(p.x + curlSide * .022, p.y + .028, p.z + .012), V(p.x - curlSide * .006, p.y + .038, p.z - .014), .0078, glove); // thumb
-  };
-  // two-bone arms: forearm + upper arm with a real elbow, so long guns and bullpups don't stretch one straight tube
+  const mesh = (geo, mat, parent, x = 0, y = 0, z = 0, rx = 0, ry = 0, rz = 0) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.rotation.set(rx, ry, rz); parent.add(m); return m; };
   const FORE = .27, UPPER = .31;
-  const reach = (wr, sh, pole, cuffX) => {
-    let s = sh.clone(); const max = FORE + UPPER - .015;
-    if (s.distanceTo(wr) > max) s = wr.clone().add(s.sub(wr).setLength(max));      // shoulder leans in for far grips
-    const d = Math.max(.05, s.distanceTo(wr)), u = s.clone().sub(wr).divideScalar(d);
-    const x = (FORE * FORE - UPPER * UPPER + d * d) / (2 * d), h = Math.sqrt(Math.max(0, FORE * FORE - x * x));
-    const side = pole.clone().sub(u.clone().multiplyScalar(pole.dot(u))).normalize();
-    const elbow = wr.clone().addScaledVector(u, x).addScaledVector(side, h);
-    limb(wr, elbow, .036, sleeve, .031); K.sphere(.037, elbow.x, elbow.y, elbow.z, sleeve); limb(elbow, s, .045, sleeve, .038);
-    K.lathe([[.03, wr.z - .02], [.034, wr.z], [.034, wr.z + .028], [.031, wr.z + .03]], cuff, wr.x + cuffX, wr.y + .008, 16);
+  // forearm: built hanging along -y from the elbow to the wrist; +z is the face you look at, s = 1 left arm, -1 right
+  const forearm = (s, big) => {
+    const f = new THREE.Group(), F = FORE;
+    mesh(new THREE.CylinderGeometry(.037, .031, F, 16), suit, f, 0, -F / 2);
+    mesh(new THREE.CylinderGeometry(.045, .039, .16, 8), armor, f, 0, -F + .095, 0, 0, Math.PI / 8);
+    mesh(new THREE.TorusGeometry(.044, .0045, 6, 8), frame, f, 0, -F + .175, 0, Math.PI / 2, 0, Math.PI / 8);
+    mesh(new THREE.TorusGeometry(.0385, .0045, 6, 8), frame, f, 0, -F + .016, 0, Math.PI / 2, 0, Math.PI / 8);
+    for (let i = 0; i < 3; i++) mesh(new THREE.BoxGeometry(.004, .006, .022), frame, f, s * .043, -F + .13 - i * .014, 0);
+    mesh(new THREE.BoxGeometry(.003, .045, .016), glow, f, s * .0425, -F + .075, 0);
+    const dw = big ? .046 : .03, dl = big ? .06 : .036;
+    mesh(new THREE.BoxGeometry(dw, dl, .012), frame, f, 0, -F + .09, .041); mesh(new THREE.BoxGeometry(dw - .008, dl - .01, .004), glow, f, 0, -F + .09, .048);
+    if (big) [-.012, 0, .012].forEach(x => mesh(new THREE.CylinderGeometry(.0035, .0035, .005, 10), armor, f, x, -F + .09 - dl / 2 - .007, .046, Math.PI / 2));
+    mesh(new THREE.SphereGeometry(.038, 16, 12), frame, f); mesh(new THREE.SphereGeometry(.04, 16, 12), armor, f, 0, .004, -.022).scale.set(.95, .95, .6);
+    mesh(new THREE.TorusGeometry(.032, .006, 6, 18), frame, f, 0, -F + .002, 0, Math.PI / 2);
+    return f;
   };
-  // the left hand and arm are their own group so reloads can move them (to the mag pouch and back)
+  const upperArm = s => {
+    const u = new THREE.Group(), L = UPPER;
+    mesh(new THREE.CylinderGeometry(.047, .04, L, 16), suit, u, 0, -L / 2);
+    mesh(new THREE.BoxGeometry(.018, .13, .05), armor, u, s * .042, -L * .55, 0);
+    [-.1, -.24].forEach(y => mesh(new THREE.TorusGeometry(.046, .006, 6, 20), frame, u, 0, y, 0, Math.PI / 2));
+    return u;
+  };
+  // hand: palm, armoured back plate and knuckles, four curled fingers with tip caps and a thumb, round a grip at p
+  const capsule = (a, b, r, mat, parent) => { const len = a.distanceTo(b), m = new THREE.Mesh(new THREE.CapsuleGeometry(r, len, 3, 8), mat); m.position.copy(a).add(b).multiplyScalar(.5); m.quaternion.setFromUnitVectors(V(0, 1, 0), b.clone().sub(a).normalize()); parent.add(m); return m; };
+  const hand = (dir, c) => {
+    const h = new THREE.Group();
+    mesh(new THREE.BoxGeometry(.034, .07, .05), glove, h, c * .016, 0, .012);
+    mesh(new THREE.BoxGeometry(.008, .064, .044), armor, h, c * .034, 0, .012);           // back-of-hand plate
+    for (let i = 0; i < 4; i++) {
+      const fy = .024 - i * .017, a = V(c * .018, fy, -.012), b = V(-c * .012, fy - .002, -.024 * dir);
+      capsule(a, b, .0074, glove, h); mesh(new THREE.BoxGeometry(.012, .011, .012), armor, h, c * .024, fy, -.01);   // knuckle armour
+      mesh(new THREE.SphereGeometry(.0078, 8, 6), frame, h, b.x, b.y, b.z);
+    }
+    capsule(V(c * .022, .028, .012), V(-c * .006, .038, -.014), .008, glove, h); // thumb
+    return h;
+  };
+  // a rig: hand at the grip point, wrist a fixed step from it, elbow solved between the shoulder and the wrist
+  const rig = (handPt, wristOff, shoulder, pole, s, dir, big) => {
+    const g = new THREE.Group(), hd = hand(dir, -s), up = upperArm(s), fo = forearm(s, big); [hd, up, fo].forEach(x => mergeChildren(THREE, x)); g.add(hd, up, fo); view.group.add(g);
+    const tmp = { y: V(0, 0, 0), z: V(0, 0, 0), x: V(0, 0, 0), m: new THREE.Matrix4(), hint: V(0, 1, .6).normalize(), w: V(0, 0, 0), sh: V(0, 0, 0) };
+    const orient = (obj, a, b) => {
+      tmp.y.copy(a).sub(b).normalize(); tmp.z.copy(tmp.hint).addScaledVector(tmp.y, -tmp.hint.dot(tmp.y)).normalize(); tmp.x.crossVectors(tmp.y, tmp.z);
+      obj.position.copy(a); obj.quaternion.setFromRotationMatrix(tmp.m.makeBasis(tmp.x, tmp.y, tmp.z));
+    };
+    const R = { group: g, hand: hd, rest: handPt.clone(), elbow: V(0, 0, 0), solve(H, q) {
+      hd.position.copy(H); if (q) hd.quaternion.copy(q); else hd.quaternion.identity();
+      const W = tmp.w.copy(wristOff).applyQuaternion(hd.quaternion).add(H);
+      const S = tmp.sh.copy(shoulder), max = FORE + UPPER - .015;
+      if (S.distanceTo(W) > max) S.sub(W).setLength(max).add(W);                           // shoulder leans in for far reaches
+      const d = Math.max(.05, S.distanceTo(W)), u = S.clone().sub(W).divideScalar(d);
+      const x = (FORE * FORE - UPPER * UPPER + d * d) / (2 * d), hh = Math.sqrt(Math.max(0, FORE * FORE - x * x));
+      const side = pole.clone().sub(u.clone().multiplyScalar(pole.dot(u))).normalize();
+      const E = R.elbow.copy(W).addScaledVector(u, x).addScaledVector(side, hh);
+      orient(up, S, E); orient(fo, E, W);
+    } };
+    R.solve(handPt); return R;
+  };
   const start = view.group.children.length;
   const rg = view.grip.clone().add(V(.004, -.012, .006));
-  hand(rg, 1, 1);
-  reach(rg.clone().add(V(.03, -.045, .075)), V(.2, -.34, .52), V(1, -1.1, .15), -.005);
-  if (view.oneHand) { view.leftArm = K.capture(() => { }); view.leftHand = view.grip.clone(); } // one-handed melee: the left arm stays out of view
-  else if (view.ak) { // dual pistols: the left hand holds its own gun, a mirror of the right
-    view.leftArm = K.capture(() => { const lg = view.ak.gripL.clone().add(V(-.004, -.012, .006)); hand(lg, 1, -1); view.leftHand = lg;
-    reach(lg.clone().add(V(-.03, -.045, .075)), V(lg.x - .2, -.34, .52), V(-1, -1.1, .15), .005); });
-  } else if (view.pistol) {
-    view.leftArm = K.capture(() => { const lg = view.grip.clone().add(V(-.028, -.02, .004)); hand(lg, 1, -1); view.leftHand = lg;
-    reach(lg.clone().add(V(-.035, -.045, .07)), V(-.22, -.34, .5), V(-1, -1.1, .1), .005); });
-  } else {
-    view.leftArm = K.capture(() => { const lf = view.fore.clone().add(V(-.006, -.028, 0)); hand(lf, -1, -1); view.leftHand = lf;
-    reach(lf.clone().add(V(-.045, -.055, .05)), V(-.26, -.34, .46), V(-1, -1.3, -.1), .005); });
+  view.rightRig = rig(rg, V(.03, -.045, .075), V(.2, -.34, .52), V(1, -1.1, .15), -1, 1, false);
+  if (view.oneHand) { view.leftArm = new THREE.Group(); view.group.add(view.leftArm); view.leftHand = view.grip.clone(); view.leftRig = null; } // one-handed melee: the left arm stays out of view
+  else {
+    let lp, wo, sh, pole, dir = 1;
+    if (view.ak) { lp = view.ak.gripL.clone().add(V(-.004, -.012, .006)); wo = V(-.03, -.045, .075); sh = V(lp.x - .2, -.34, .52); pole = V(-1, -1.1, .15); } // dual pistols: a mirror of the right
+    else if (view.pistol) { lp = view.grip.clone().add(V(-.028, -.02, .004)); wo = V(-.035, -.045, .07); sh = V(-.22, -.34, .5); pole = V(-1, -1.1, .1); }
+    else { lp = view.fore.clone().add(V(-.006, -.028, 0)); wo = V(-.045, -.055, .05); sh = V(-.26, -.34, .46); pole = V(-1, -1.3, -.1); dir = -1; }
+    view.leftRig = rig(lp, wo, sh, pole, 1, dir, true); view.leftArm = view.leftRig.group; view.leftHand = lp;
   }
   // and both arms together, so the detailed inspect can hide them while you turn the gun
   const all = new THREE.Group(); view.group.children.slice(start).forEach(c => all.add(c)); view.group.add(all); view.armsG = all;

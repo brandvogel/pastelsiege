@@ -1,5 +1,69 @@
 # Changelog
 
+## v0.99.0 (unreleased)
+
+### Changed: new player characters
+
+- Players are armoured spacefighters, in co-op and on the Character screen. Each has a glossy helmet with a gold mirror visor, layered armour plates, pauldrons, gauntlets with a wrist computer, knee pads, mag boots and a life-support pack.
+- Your look paints the character: **Shirt** colours the armour, **Pants** the legs and **Visor** the visor tint and every glowing strip. Hats and back items sit on the new body.
+- Characters bend their knees when they walk and crouch, and hold their rifle with both hands.
+- Each character is merged into about 35 draw calls, so four friends cost about the same as the old robots.
+- Your first-person arms match: armour gauntlets in your shirt colour, a cream suit, dark gloves with armoured knuckles, and a vent and wrist computer glowing in your visor colour.
+
+### Added: reload animations for every kind of gun
+
+- Your left arm has a real elbow now, so the hand can reach anywhere and the arm follows.
+- **Magazine guns** tilt to show the mag well. Empty reloads drop the old mag, which falls to the floor and stays there for a while. Partial reloads keep the old mag and put it away. Your hand fetches a fresh mag from the pouch, seats it and taps it home.
+- Empty reloads then finish the gun's own way: ARs slap the bolt catch, AKs and SMGs rack their charging handle, bolt guns work the bolt, and pistols rack the slide, which stays locked back until then.
+- **Shotguns and lever guns** load each round by hand, with the shell visible in your fingers, then pump at the end.
+- **Revolvers** swing the cylinder out, dump all six cases, load and flick it shut.
+- **Double barrels** break open, pop both hulls and load two fresh ones.
+- **Bullpups and P90-style guns** reach behind the grip or over the top for the mag.
+- Sounds follow the animation: mag release, pouch, seat, tap and rack.
+
+### Added: more gun animations
+
+- **First draw.** The first time you pull out each gun in a run, you rack it, check the mag, spin the cylinder or snap the action shut.
+- **Idle fidgets.** Stand still for a while and you glance at your wrist computer or check that the mag is seated.
+- Changing **fire mode** flicks the gun a little.
+- **Pistols** are held at high ready, muzzle up, while sprinting.
+- The gun tucks back when you stand right against a wall.
+- The pump moves your hand with it.
+
+### Changed: shell ejection
+
+- Spent cases are real shapes: bottlenecked rifle brass, short pistol cases, bigger sniper cases and red shotgun hulls with brass heads.
+- Cases come out of the gun's ejection port and tumble end over end. They bounce off walls and land on roofs and crates, not only the ground. They lie flat, tink as they bounce, and stay down for 3 seconds (Potato) up to 45 (Super Ultra).
+
+### Changed: better guns
+
+Guns have surface detail: stippled polymer grips, brushed metal, raised wood grain, and handling marks that change how shiny the paint is.
+
+### Changed: the world looks more detailed
+
+- **Surface relief.** Walls and ground have detail that catches the light: mortar lines, plank gaps, corrugated metal, paving seams and sand ripples. It's on from Medium up.
+- **Ground clutter.** Pebbles, rocks and tufts of grass (or dry grass, snow lumps or toy bricks, depending on the map) are scattered over open ground. There are more on higher presets and none on Potato and Low.
+- **Light.** The sun is lower, so buildings cast real shadows and walls have a lit side and a shaded side. The sky fill is a little softer.
+
+### Added: ray tracing settings
+
+- **Settings > Graphics > Ray tracing**: Off, Performance, Quality or Max, or Preset, where Super Ultra uses Max.
+- Rays are traced through the scene for soft shadows in every corner, coloured light bouncing off nearby walls, glossy reflections (mirror-like on wet ground in the rain) and sun rays.
+- Results are smoothed over several frames and follow the camera, so the noisy speckle of the old Super Ultra pass is gone. Performance and Quality work at half resolution, which is much cheaper.
+- Ray-traced reflections and sun rays can each be turned off.
+- New **motion blur** (Off, Low or High) smears the world when you turn fast. Your gun stays sharp.
+- Pause screens get extra passes, so screenshots are smooth straight away.
+
+### Changed: faster first-person drawing
+
+The gun and arms you hold are merged per material: about 35 draw calls instead of 90 to 130.
+
+### Added: a relay server for blocked networks
+
+- `relay/` holds the backup relay that multiplayer already knew how to use but that was never written. It runs on a homelab behind a Cloudflare Tunnel, so school Wi-Fi sees an ordinary secure website. It's the fallback when a direct connection or the PeerJS matchmaking server is blocked.
+- It refuses other websites, full games and floods of messages, and drops connections that go silent. It includes Docker and Docker Compose files, setup steps and tests.
+- The game uses it automatically: `RELAY_URL` in `net_v0.99.0.js` points at `wss://relay.pastelsiege.com`.
+
 ## v0.98.0 (unreleased)
 
 ### Changed: the menus are redesigned

@@ -1,9 +1,9 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
-import { makeBuilder } from './mapgen_v0.98.0.js';
-import { Nav } from './nav_v0.98.0.js';
-import { SND, ac, sfx } from './audio_v0.98.0.js';
-import { makeEnv } from './gunkit_v0.98.0.js';
-import { surfaces, ground } from './textures_v0.98.0.js';
+import { makeBuilder } from './mapgen_v0.99.0.js';
+import { Nav } from './nav_v0.99.0.js';
+import { SND, ac, sfx } from './audio_v0.99.0.js';
+import { makeEnv } from './gunkit_v0.99.0.js';
+import { surfaces, ground, normalFrom, RELIEF } from './textures_v0.99.0.js';
 export { THREE, SND, ac, sfx };
 
 export const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -44,12 +44,14 @@ export const scene = new THREE.Scene();
 export const camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, .1, 700);
 camera.rotation.order = 'YXZ'; scene.add(camera);
 scene.environment = makeEnv(THREE, renderer); scene.environmentIntensity = .45; // soft reflections and bounce light
-const hemi = new THREE.HemisphereLight(0xfff6e6, 0xc9b79c, 1.15); scene.add(hemi);
-const sun = new THREE.DirectionalLight(0xfff1dc, 2.5);
-sun.position.set(30, 60, 20); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -.0004; sun.shadow.normalBias = .03;
+// daylight: the sun does more of the work and the sky fill a little less, so shapes and surface relief read clearly
+const DAY = { hemi: 1.02, sun: 2.85, fill: .4 };
+const hemi = new THREE.HemisphereLight(0xfff6e6, 0xc9b79c, DAY.hemi); scene.add(hemi);
+const sun = new THREE.DirectionalLight(0xfff1dc, DAY.sun);
+sun.position.set(42, 40, 22); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -.0004; sun.shadow.normalBias = .03;
 scene.add(sun, sun.target);
 // a cool fill from the opposite side so shadowed faces read as blue-ish rather than flat grey
-const fill = new THREE.DirectionalLight(0xb8d4ff, .45); fill.position.set(-30, 20, -25); scene.add(fill);
+const fill = new THREE.DirectionalLight(0xb8d4ff, DAY.fill); fill.position.set(-30, 20, -25); scene.add(fill);
 // graphics presets. pr = pixel ratio cap (a Retina Mac is 2, so 1.5 there is 75% of the screen's real pixels);
 // lod = metres before a bot turns into a cheap capsule; botShadow = metres before bots stop casting shadows
 export const quality = { level: 'high', shadow: 2048 };
@@ -84,6 +86,7 @@ export function setQuality(level) {
   sun.castShadow = q.shadow > 0 && !world.night; renderer.shadowMap.enabled = q.shadow > 0; scene.traverse(o => { if (o.material && !Array.isArray(o.material)) o.material.needsUpdate = true; });
   scene.environmentIntensity = world.night ? 0 : q.hq ? .6 : .45;
   setClouds(cloudCount(level), !!q.hq);
+  for (const m of reliefMats) applyRelief(m); applyScatter();
   buildPrecip(); // more raindrops or snowflakes on higher presets
   applyPR();
   applyShadowSize();
@@ -95,7 +98,7 @@ function applyShadowSize() {
   if (!quality.shadow) return; const cap = quality.level === 'superultra' ? Math.min(8192, renderer.capabilities.maxTextureSize) : IS_MAC ? 2048 : 4096, n = Math.min(cap, quality.shadow);
   if (sun.shadow.mapSize.x !== n) { sun.shadow.mapSize.set(n, n); sun.shadow.map?.dispose(); sun.shadow.map = null; }
 }
-export const SUN_DIR = new THREE.Vector3(30, 60, 20).normalize();
+export const SUN_DIR = new THREE.Vector3(42, 40, 22).normalize(); // about 40° up: long enough shadows to give everything shape
 let shadowTick = false, lastSX = 1e9, lastSZ = 1e9;
 export function followShadow(p) {
   // the box jumps in ~4m steps (a whole number of texels), so the map only has to be redrawn every frame when it moves
@@ -243,7 +246,7 @@ function buildPad(p, group) {
 export function loadMap(def) {
   if (mapGroup) { scene.remove(mapGroup); mapGroup.traverse(o => { o.geometry?.dispose(); }); }
   mapGroup = new THREE.Group(); scene.add(mapGroup);
-  world.def = def; world.size = def.size; world.colliders.length = 0; world.solids.length = 0; grid = new Map(); padAnims.length = 0;
+  reliefMats.clear(); world.def = def; world.size = def.size; world.colliders.length = 0; world.solids.length = 0; grid = new Map(); padAnims.length = 0;
   const t = def.theme, S = def.size, rawTheme = def.id.split('-')[0], themeId = ({ market: 'city', works: 'yard' })[rawTheme] || rawTheme; // new themes reuse a close ground texture
   const CH = CHUNK; blockChunks.length = 0;
   scene.background = new THREE.Color(t.bg); setSky(t.bg); scene.fog = new THREE.Fog(t.bg, t.fog[0], t.fog[1]);
@@ -253,12 +256,13 @@ export function loadMap(def) {
   setClouds(cloudList.length, cloudMesh.castShadow); // spread the clouds over the new map
   // ground: a painted texture per theme, 8m per tile
   const gTex = ground(THREE, themeId).clone(); gTex.needsUpdate = true; gTex.repeat.set((S * 2 + 10) / 8, (S * 2 + 10) / 8);
-  const floor = world.floor = new THREE.Mesh(new THREE.PlaneGeometry(S * 2 + 10, S * 2 + 10), new THREE.MeshStandardMaterial({ color: t.floor, map: gTex, roughness: .95 }));
+  const gN = normalFrom(THREE, ground(THREE, themeId), RELIEF.ground[themeId] ?? 2.5).clone(); gN.needsUpdate = true; gN.repeat.copy(gTex.repeat);
+  const floor = world.floor = new THREE.Mesh(new THREE.PlaneGeometry(S * 2 + 10, S * 2 + 10), relief(new THREE.MeshStandardMaterial({ color: t.floor, map: gTex, roughness: .95 }), gN, .9));
   floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; mapGroup.add(floor);
   const B = specs(def), mats = {}, SURF = surfaces(THREE);
   const mat = (c, kind = 'plaster') => {
     const k = c + kind;
-    return mats[k] || (mats[k] = new THREE.MeshStandardMaterial({ color: c, map: SURF[kind], roughness: kind === 'metal' ? .5 : kind === 'planks' ? .75 : .88, metalness: kind === 'metal' ? .25 : 0 }));
+    return mats[k] || (mats[k] = relief(new THREE.MeshStandardMaterial({ color: c, map: SURF[kind], roughness: kind === 'metal' ? .42 : kind === 'planks' ? .72 : .88, metalness: kind === 'metal' ? .35 : 0 }), normalFrom(THREE, SURF[kind], RELIEF[kind] ?? 2), 1));
   };
   const leaf = c => mats['leaf' + c] || (mats['leaf' + c] = new THREE.MeshStandardMaterial({ color: c, map: SURF.concrete, roughness: .9, flatShading: true }));
   const buckets = new Map(), edges = new Map();
@@ -286,6 +290,7 @@ export function loadMap(def) {
   edgeChunks.length = 0;
   for (const e of edges.values()) { const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(e, 3)); g.computeBoundingSphere(); const l = new THREE.LineSegments(g, edgeMat); l.raycast = () => {}; mapGroup.add(l); edgeChunks.push(l); }
   mapGroup.add(contactShadows(B.boxes));
+  scatterGround(themeId, S);
   // the map never moves: work out its matrices once instead of every frame (jump pads, added after, still animate)
   mapGroup.updateMatrixWorld(true); mapGroup.matrixAutoUpdate = false; for (const o of mapGroup.children) o.matrixAutoUpdate = false;
   world.pads = B.pads;
@@ -296,6 +301,44 @@ export function loadMap(def) {
   setNight(false);
   clearFx();
 }
+
+// ---------- surface detail ----------
+// Relief (normal) maps are on from Medium up; Potato and Low skip them (one less texture to read per pixel).
+const reliefMats = new Set();
+function relief(m, nm, k) { m.userData.nm = nm; m.userData.nk = k; reliefMats.add(m); applyRelief(m); return m; }
+function applyRelief(m) { const on = !['potato', 'low'].includes(quality.level); const want = on ? m.userData.nm : null; if (m.normalMap !== want) { m.normalMap = want; m.normalScale.setScalar(m.userData.nk); m.needsUpdate = true; } }
+// Little things on the ground: pebbles, rocks and tufts of grass (or dry grass, snow lumps, rubble, toy bricks), so open
+// ground isn't a flat sheet. Two instanced meshes for the whole map; how many are drawn depends on the preset.
+const SCATTER = { potato: 0, low: 0, medium: .35, high: .65, ultra: 1, superultra: 1.6 };
+const SCATTER_LOOK = {
+  desert: { rock: [0xd9b98c, 0xc7a27a, 0xb08a64], tuft: [0xd8c27a, 0xc9ae62, 0xb79f5c] }, garden: { rock: [0xbdb7a8, 0xa9a394], tuft: [0x7fb069, 0x93c47d, 0x6a9f58, 0xffd6e0] },
+  frost: { rock: [0xf4f8ff, 0xdce8f4, 0xb8c9d9], tuft: [0xe8f1fa, 0xcfdcea] }, city: { rock: [0xb9b6b0, 0x9d9a94, 0xd8d3c8], tuft: [0x9cb07f, 0xb9b6b0] },
+  yard: { rock: [0xa8a49c, 0x8f8b84, 0xc4bfb5], tuft: [0x9aab74, 0xa59a7e] }, fort: { rock: [0xc9b79c, 0xb5a283, 0xa08d72], tuft: [0x93b06f, 0xb4b878] },
+  toybox: { rock: [0xff8fab, 0x8fb8ff, 0xffc86b, 0x7bd8b5, 0xc49bff], tuft: [0xfffaf0, 0xffd6e0] } };
+const scatterMeshes = [];
+const tuftGeo = (() => { // five thin blades leaning out from a point
+  const p = [], n = []; for (let i = 0; i < 5; i++) { const a = i / 5 * Math.PI * 2 + .3, lx = Math.cos(a), lz = Math.sin(a), w = .035, hgt = 1, lean = .35;
+    const bx = -lz * w, bz = lx * w; p.push(bx, 0, bz, -bx, 0, -bz, lx * lean, hgt, lz * lean); n.push(lx, .4, lz, lx, .4, lz, lx, .6, lz); }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(p, 3)); g.setAttribute('normal', new THREE.Float32BufferAttribute(n, 3)); return g; })();
+function scatterGround(themeId, S) {
+  scatterMeshes.length = 0; const look = SCATTER_LOOK[themeId] || SCATTER_LOOK.fort;
+  const area = (S * 2) * (S * 2), max = Math.min(14000, Math.round(area * .55)), rnd = mulberry(world.def.id.length * 977 + Math.round(S));
+  const mk = (geo, mat, cols, n, size, isTuft) => {
+    const m = new THREE.InstancedMesh(geo, mat, n), o = new THREE.Object3D(), c = new THREE.Color(); let k = 0;
+    for (let tries = 0; k < n && tries < n * 3; tries++) {
+      const x = (rnd() * 2 - 1) * S, z = (rnd() * 2 - 1) * S; if (boxAt(new THREE.Vector3(x, .05, z), .15)) continue;
+      const s = size * (.4 + rnd() * rnd() * 1.6); o.position.set(x, isTuft ? 0 : s * .25, z); o.rotation.set(isTuft ? (rnd() - .5) * .3 : rnd() * 6, rnd() * 6, isTuft ? (rnd() - .5) * .3 : rnd() * 6);
+      o.scale.set(s * (isTuft ? 1 : .8 + rnd() * .6), s * (isTuft ? .8 + rnd() * .8 : .45 + rnd() * .3), s); o.updateMatrix(); m.setMatrixAt(k, o.matrix);
+      m.setColorAt(k, c.set(cols[Math.floor(rnd() * cols.length)]).multiplyScalar(.85 + rnd() * .3)); k++;
+    }
+    m.userData.full = k; m.receiveShadow = true; m.castShadow = false; m.raycast = () => {}; m.computeBoundingSphere(); mapGroup.add(m); scatterMeshes.push(m); return m;
+  };
+  mk(new THREE.IcosahedronGeometry(1, 0), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: .85, flatShading: true }), look.rock, Math.round(max * .55), .09, false);
+  mk(tuftGeo, new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: .9, side: THREE.DoubleSide }), look.tuft, Math.round(max * .45), .22, true);
+  applyScatter();
+}
+function applyScatter() { const k = Math.min(1, (SCATTER[quality.level] ?? .65) / 1.6); for (const m of scatterMeshes) { m.count = Math.round(m.userData.full * k); m.visible = m.count > 0; } }
+const mulberry = a => () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
 
 // ---------- night waves ----------
 // Some waves are pitch black: no sun, no sky, no fill or bounce light. Your Tac Light and a tiny glow around you are the only light,
@@ -308,8 +351,8 @@ export function setNight(on, nvg = false) {
   scene.background = new THREE.Color(bg); setSky(bg, on);
   scene.fog = !on ? new THREE.Fog(t.bg, t.fog[0], t.fog[1]) : nvg ? new THREE.Fog(bg, far * .6, far) : new THREE.Fog(bg, 0, NIGHT_R);
   hemi.color.set(on && nvg ? 0x9dffa8 : 0xfff6e6); hemi.groundColor.set(on && nvg ? 0x1f6b2c : 0xc9b79c);
-  hemi.intensity = !on ? 1.15 : nvg ? 1.6 : 0; sun.intensity = on ? 0 : 2.5; sun.castShadow = !on && quality.shadow > 0; motes.visible = !on; cloudMesh.visible = !on;
-  fill.intensity = on ? 0 : .45; scene.environmentIntensity = on && !nvg ? 0 : .45; selfGlow.intensity = on && !nvg ? 1.2 : 0;
+  hemi.intensity = !on ? DAY.hemi : nvg ? 1.6 : 0; sun.intensity = on ? 0 : DAY.sun; sun.castShadow = !on && quality.shadow > 0; motes.visible = !on; cloudMesh.visible = !on;
+  fill.intensity = on ? 0 : DAY.fill; scene.environmentIntensity = on && !nvg ? 0 : .45; selfGlow.intensity = on && !nvg ? 1.2 : 0;
   camera.far = on && !nvg ? NIGHT_R + 6 : 700; camera.updateProjectionMatrix();
   for (const m of blockChunks) m.visible = true;
   if (!on) weatherLook(); // rain and snow keep their grey (or white) skies after a night wave
@@ -426,8 +469,21 @@ function ipool(geo, mat, max, shadow = false) {
 const P_DROP = ipool(new THREE.IcosahedronGeometry(.035, 1), new THREE.MeshBasicMaterial({ color: 0xffffff }), 4200);
 const P_SPARK = ipool(new THREE.BoxGeometry(.07, .07, .07), new THREE.MeshBasicMaterial({ color: 0xffffff }), 700);
 const P_GIB = ipool(new THREE.DodecahedronGeometry(.1, 0), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: .32, metalness: .05 }), 800, true);
-const P_SHELL = ipool(new THREE.CylinderGeometry(.006, .006, .03, 8).rotateX(Math.PI / 2), new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: .8, roughness: .25 }), 120);
-const POOLS = [P_DROP, P_SPARK, P_GIB, P_SHELL];
+// Spent cases, lathed from real profiles and lying along x: a bottlenecked rifle case, a short pistol case and a
+// shotgun hull. The rim and primer end is darker (vertex colours); brass, steel or nickel comes from the instance colour.
+function caseGeo(prof, cols) {
+  const g = new THREE.LatheGeometry(prof.map(([r, y]) => new THREE.Vector2(r, y)), 12), pos = g.attributes.position, c = [];
+  for (let i = 0; i < pos.count; i++) { const k = cols(pos.getY(i)); c.push(k[0], k[1], k[2]); }
+  g.setAttribute('color', new THREE.Float32BufferAttribute(c, 3));
+  const top = prof[prof.length - 1][1]; g.translate(0, -top / 2, 0); g.rotateZ(-Math.PI / 2); return g;
+}
+const rim = y => y < .0028 ? [.55, .5, .45] : [1, 1, 1];
+const caseMat = () => new THREE.MeshStandardMaterial({ color: 0xffffff, vertexColors: true, metalness: .85, roughness: .26 });
+const P_SHELL = ipool(caseGeo([[.0001, 0], [.0058, 0], [.0058, .002], [.005, .0028], [.0057, .0036], [.0057, .034], [.0041, .039], [.0036, .0405], [.0036, .045], [.0001, .045]], rim), caseMat(), 220);
+const P_PCASE = ipool(caseGeo([[.0001, 0], [.0049, 0], [.0049, .0015], [.0043, .0021], [.0048, .0027], [.0048, .019], [.0045, .0192], [.0001, .0192]], rim), caseMat(), 160);
+const P_HULL = ipool(caseGeo([[.0001, 0], [.0113, 0], [.0113, .0018], [.0108, .0024], [.0108, .014], [.0104, .0146], [.0104, .064], [.0096, .067], [.0001, .067]],
+  y => y < .0024 ? [.55, .45, .2] : y < .0142 ? [.86, .66, .24] : [.84, .26, .23]), new THREE.MeshStandardMaterial({ color: 0xffffff, vertexColors: true, metalness: .35, roughness: .42 }), 70);
+const POOLS = [P_DROP, P_SPARK, P_GIB, P_SHELL, P_PCASE, P_HULL];
 // o: { p, v, col (hex or Color), s, life, g, kind: 'drop'|'spark'|'gib'|'shell', spin }
 function emit(ps, o) {
   o.max = o.life; o.rx = o.rx || 0; o.ry = o.ry || 0; o.rz = o.rz || 0;
@@ -441,7 +497,7 @@ function updatePool(ps, dt) {
     if (q.life <= 0) { L[i] = L[L.length - 1]; L.pop(); continue; }
     if (!q.rest) {
       q.v.y -= q.g * dt; _p.copy(q.p); q.p.addScaledVector(q.v, dt);
-      if (q.spin) { q.rx += q.spin * dt; q.rz += q.spin * .7 * dt; }
+      if (q.spin) { if (q.kind === 'shell') { q.ry += q.spin * .8 * dt; q.rz += q.spin * .55 * dt; q.rx += q.spin * .3 * dt; } else { q.rx += q.spin * dt; q.rz += q.spin * .7 * dt; } } // cases tumble end over end
       if (q.kind === 'drop') {
         if (q.p.y < .02) { if (Math.random() < .35) splat(new V(q.p.x, .011, q.p.z), UP, q.s * rand(.07, .18), q.c.getHex()); L[i] = L[L.length - 1]; L.pop(); continue; }
         if ((q.n = (q.n || 0) + 1) % 2 === 0 && insideSolid(q.p)) {
@@ -450,12 +506,13 @@ function updatePool(ps, dt) {
           if (w && Math.random() < .6) splat(w.point, w.normal, q.s * rand(.1, .26), q.c.getHex());
           L[i] = L[L.length - 1]; L.pop(); continue;
         }
-      } else if (q.p.y < q.r) {
-        // gibs, casings and sparks bounce, then settle
-        q.p.y = q.r; q.v.y *= -.38; q.v.x *= .55; q.v.z *= .55; q.spin *= .5;
-        if (q.kind === 'shell' && q.tink && Math.abs(q.v.y) > .3) { q.tink = false; SND.casing(); }
+      } else if (q.kind === 'shell' ? q.p.y < (q.fl = groundAt(q.p.x, q.p.z, .02, _p.y + .02, .02)) + q.r : q.p.y < q.r) {
+        // gibs, casings and sparks bounce, then settle (cases land on roofs and crates too, not just the ground)
+        const hard = Math.abs(q.v.y); q.p.y = (q.kind === 'shell' ? q.fl : 0) + q.r; q.v.y *= q.kind === 'shell' ? -.42 : -.38; q.v.x *= .55; q.v.z *= .55; q.spin *= q.kind === 'shell' ? .6 : .5;
+        if (q.kind === 'shell') { if (hard > .8 && q.tinks-- > 0) SND.casing(); if (Math.abs(q.v.y) < .5) { q.rz = 0; q.spin = 0; } } // lie flat once it stops hopping
         if (q.kind === 'gib' && !q.smear) { q.smear = true; splat(new V(q.p.x, .012, q.p.z), UP, rand(.25, .5) * q.s, bloodColor(q.base)); }
         if (Math.abs(q.v.y) < .5 && q.v.x * q.v.x + q.v.z * q.v.z < .3) q.rest = true;
+      } else if (q.kind === 'shell' && (q.n = (q.n || 0) + 1) % 2 === 0 && insideSolid(q.p)) { q.p.x = _p.x; q.p.z = _p.z; q.v.x *= -.4; q.v.z *= -.4; // bounced off a wall
       } else if (q.kind === 'gib') {
         if (insideSolid(q.p)) { q.p.copy(_p); q.v.x *= -.35; q.v.z *= -.35; }
         // flying chunks spray a trail of drops
@@ -463,7 +520,7 @@ function updatePool(ps, dt) {
       }
     }
     const fade = q.kind === 'spark' ? q.life / q.max : Math.min(1, q.life * 2);
-    _o.position.copy(q.p); _o.rotation.set(q.rx, q.ry, q.rz); _o.scale.setScalar(q.s * fade);
+    _o.position.copy(q.p); _o.rotation.order = q.kind === 'shell' ? 'YXZ' : 'XYZ'; _o.rotation.set(q.rx, q.ry, q.rz); _o.scale.setScalar(q.s * fade);
     if (q.sx) _o.scale.set(q.s * q.sx * fade, q.s * q.sy * fade, q.s * q.sz * fade);
     _o.updateMatrix(); m.setMatrixAt(i, _o.matrix); m.instanceColor.setXYZ(i, q.c.r, q.c.g, q.c.b);
   }
@@ -527,8 +584,13 @@ function puff(p, size, life, col = 0xe8e2d6, op = .7, grow = rand(2.5, 4), rise 
 }
 export function smoke(p, n = 1, size = .25, life = .9) { for (let i = 0; i < n; i++) puff(p, size, life * rand(.8, 1.2)); }
 const mist = (p, col, size, life = .35, op = .8) => puff(p, size, life, col, op, 4, .3);
-export function shell(pos, vel, color = 0xd4a73a) {
-  emit(P_SHELL, { p: pos.clone(), v: vel.clone(), col: color, s: 1, life: 1.6, g: 14, kind: 'shell', r: .02, spin: rand(8, 16), rx: rand(0, 3), ry: rand(0, 3), tink: true });
+// kind: 'rifle', 'big' (sniper), 'pistol' (pistols and SMGs) or 'hull' (shotguns). yaw: the shooter's facing, so the
+// case leaves lying along the barrel and tumbles end over end as it flies.
+const CASE_LIFE = { potato: 3, low: 8, medium: 14, high: 20, ultra: 30, superultra: 45 };
+export function shell(pos, vel, color = 0xd4a73a, kind = 'rifle', yaw) {
+  const pool = kind === 'hull' ? P_HULL : kind === 'pistol' ? P_PCASE : P_SHELL, s = kind === 'big' ? 1.35 : 1;
+  emit(pool, { p: pos.clone(), v: vel.clone(), col: kind === 'hull' ? 0xffffff : color, s, life: CASE_LIFE[quality.level] ?? 20, g: 11, kind: 'shell',
+    r: (kind === 'hull' ? .0108 : kind === 'pistol' ? .0048 : .0057) * s, spin: rand(14, 26) * (Math.random() < .5 ? -1 : 1), rx: rand(0, 6), ry: (yaw ?? rand(0, 6)) + Math.PI / 2, rz: rand(-.4, .4), tinks: 3 });
 }
 // Spray of droplets along dir; they leave splats where they land. Big hits paint the wall behind.
 export function blood(p, dir, n, base = 0x9b1d1d) {
@@ -790,12 +852,12 @@ export function setWeather(id) {
 function weatherLook() {
   const t = world.def?.theme; if (!t) return;
   cloudMat.color.set(wx.cloud || 0xffffff); cloudMat.emissive.set(wx.cloud ? new THREE.Color(wx.cloud).multiplyScalar(.85) : 0xffeef2);
-  if (wx.id === 'clear') { hemi.intensity = 1.15; sun.intensity = 2.5; fill.intensity = .45; return; }
+  if (wx.id === 'clear') { hemi.intensity = DAY.hemi; sun.intensity = DAY.sun; fill.intensity = DAY.fill; return; }
   const bg = new THREE.Color(t.bg).lerp(new THREE.Color(wx.tint), wx.mix);
   scene.background = bg.clone(); setSky(bg.getHex());
   // thick fog, blizzards and sandstorms use a denser curve: near things are clear, then it closes in fast
   scene.fog = wx.exp ? new THREE.FogExp2(bg.getHex(), wx.exp) : new THREE.Fog(bg.getHex(), t.fog[0] * wx.fog, t.fog[1] * wx.fog);
-  hemi.intensity = 1.15 * (wx.snow ? 1.08 : wx.light); sun.intensity = 2.5 * wx.light * (wx.snow ? .7 : .6); fill.intensity = .45 * wx.light;
+  hemi.intensity = DAY.hemi * (wx.snow ? 1.08 : wx.light); sun.intensity = DAY.sun * wx.light * (wx.snow ? .7 : .6); fill.intensity = DAY.fill * wx.light;
 }
 // how far you can make anything out (used by the game for the edge of what's drawn)
 export const weatherView = () => wx.exp ? 2.3 / wx.exp : 1e9;

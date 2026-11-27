@@ -1,5 +1,5 @@
 // Handguns and special weapons, built from the parts kit.
-import { frontPost, rearSight, redDot, holo } from './gunkit_v0.98.0.js';
+import { frontPost, rearSight, redDot, holo } from './gunkit_v0.99.0.js';
 const V = (THREE, x, y, z) => new THREE.Vector3(x, y, z);
 
 export function pistol(THREE, K, M, w, o) {
@@ -33,6 +33,7 @@ export function pistol(THREE, K, M, w, o) {
   K.pin(0, fy - .008, back - .03, .0022, M.steel, sw + .004); K.pin(0, fy - .008, front + .05, .0022, M.steel, sw + .004);
   o.boreY = sy0 + sh * .45; o.muzzleZ = front - .002; o.top = top; o.back = back;
   o.grip = V(THREE, 0, fy - .065, back - .03); o.fore = o.grip.clone(); o.mag = V(THREE, 0, fy - .12, back - .04); o.pistol = true;
+  o.port = V(THREE, sw / 2 + .002, sy0 + sh * .62, back - L * .42);
   K.capture(() => {
   if (w.scope === 'dot' || w.scope === 'holo') { const r = redDot(K, M, back - .05, top - .006); o.sightY = r.sightY; o.rearZ = r.rearZ; }
   else { o.sightY = top + .0065; rearSight(K, M, THREE, back - .01, top - .001, o.sightY, 'pistol'); frontPost(K, M, front + .012, top - .001, o.sightY, 'pistol'); o.rearZ = back - .006; }
