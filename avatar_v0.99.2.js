@@ -6,7 +6,7 @@
 // Built from a few hundred small shapes, then merged: every part that never moves on its own is joined into one mesh
 // per material on the joint it rides on (hips, each hip, knee and ankle, and the aim group that carries the head, arms
 // and gun). A whole character is about 40 draw calls instead of 300.
-import { THREE } from './world_v0.99.1.js';
+import { THREE } from './world_v0.99.2.js';
 
 // ---------- looks ----------
 // req: { lvl } = player level, { leg } = number of Legendary badges. Fancy finishes: gold, chrome, galaxy (glows), rainbow (cycles).

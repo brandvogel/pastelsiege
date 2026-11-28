@@ -1,6 +1,16 @@
 # Changelog
 
-## v0.99.1 (unreleased)
+## v0.99.2
+
+### More ways to sign in
+- **Continue with Google** and **Continue with Discord** on the sign-in screen. New players pick their username once; a Google or Discord account with the same email as an existing account joins it.
+- **Forgot password?** emails a reset link; opening it signs you in and asks for a new password.
+- **Email me a sign-in link** signs you in without a password.
+- Links only work in the browser that asked for them, so a forwarded link can't sign someone into your account.
+- Google sign-in uses Google's own button, so Google names pastelsiege.com instead of the account server's address.
+- New **Terms of Service** (`/terms`) and **Privacy Policy** (`/privacy`) pages, linked from the sign-in screen.
+
+## v0.99.1
 
 ### Security headers
 - New `vercel.json` gives the website proper security headers on Vercel (which ignores the old `_headers` file):

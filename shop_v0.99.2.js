@@ -1,11 +1,11 @@
-import { WEAPONS, CATS, GEAR, drawSilhouette, PIP_TIERS, ttk } from './weapons_v0.99.1.js';
-export { ttk }; // the weapon card uses it, and weapons_v0.99.1 keeps it testable without the 3D imports
-import { ATTACH, SLOT_NAMES, compatible, slotsFor, describe, attById, computeWeapon, LASER_COLS, LASER_LV } from './attachments_v0.99.1.js';
-import { SKINS, TIER_COL, PERKS, MAX_LEVEL, levelOf, prog, skinUnlocked, drawSwatch, skinById } from './skins_v0.99.1.js';
-import { SUPPORT } from './helpers_v0.99.1.js';
-import { ABILITIES } from './abilities_v0.99.1.js';
-import { CHARMS } from './charms_v0.99.1.js';
-import { keyLabel } from './controls_v0.99.1.js';
+import { WEAPONS, CATS, GEAR, drawSilhouette, PIP_TIERS, ttk } from './weapons_v0.99.2.js';
+export { ttk }; // the weapon card uses it, and weapons_v0.99.2 keeps it testable without the 3D imports
+import { ATTACH, SLOT_NAMES, compatible, slotsFor, describe, attById, computeWeapon, LASER_COLS, LASER_LV } from './attachments_v0.99.2.js';
+import { SKINS, TIER_COL, PERKS, MAX_LEVEL, levelOf, prog, skinUnlocked, drawSwatch, skinById } from './skins_v0.99.2.js';
+import { SUPPORT } from './helpers_v0.99.2.js';
+import { ABILITIES } from './abilities_v0.99.2.js';
+import { CHARMS } from './charms_v0.99.2.js';
+import { keyLabel } from './controls_v0.99.2.js';
 
 // The buy menu. Left: sections. Middle: a list of everything in the section. Right: a big detail panel for the
 // selected item, compared against what you're carrying now, with one big buy button.

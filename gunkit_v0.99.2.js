@@ -1,5 +1,5 @@
 // Building blocks for first-person guns: soft-edged side profiles, lathed tubes, rails, iron sights and optics.
-import { normalFrom } from './textures_v0.99.1.js';
+import { normalFrom } from './textures_v0.99.2.js';
 // Gun space: -z is forward (muzzle), +y up, x across. Profiles are given as [z, y] points.
 
 export function makeEnv(THREE, renderer) {

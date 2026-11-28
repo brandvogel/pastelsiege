@@ -6,8 +6,8 @@
 //
 // Gun space: -z toward the muzzle, +y up, +x to the right. Gun moves are [x, y, z, pitch, yaw, roll], added on top of
 // the normal pose; a negative roll turns the bottom of the gun toward your left hand.
-import { THREE } from './world_v0.99.1.js';
-import { mergeChildren } from './gunkit_v0.99.1.js';
+import { THREE } from './world_v0.99.2.js';
+import { mergeChildren } from './gunkit_v0.99.2.js';
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
 export const smooth = u => u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u);

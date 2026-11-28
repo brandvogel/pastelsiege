@@ -1,28 +1,28 @@
 import { uiFont, THREE, renderer, scene, camera, world, loadMap, resolveCircle, groundAt, ceilingAt, lineOfSight, boxAt, insideSolid, openPoint, clamp, rand,
-  tracer, beam, sparks, shell, decal, smoke, explosionFx, flashLight, updateFx, updateAtmos, fxSettings, SND, ac, setQuality, SUN_DIR, setWeather, lightningBolt, skyFlash, WEATHER, underCover, rayWall, collidersNear, followShadow, updatePads, updateEdges, setNight, followGlow, setResScale, getResScale, setResPct, renderPct, QUALITY, quality, IS_MAC, RETINA, DEV, liteMats, WXU, WX_OPT, refreshWeather, arc, hitBreakable, blastBreakables, breakByIndex, onBreak, updateExtras, stepSplash, footprint, slideMark, APPLE_SI, CHIP, goreBurst, gibs, splat, bloodColor } from './world_v0.99.1.js';
-import { setVolume, musicStart, musicLevel, musicSong, setMusicVolume, at3, setListener, audioSettings, setAmbience, ambienceLevel, ambienceTick, ambienceCover, setStepSurface, audioClock } from './audio_v0.99.1.js';
-import { makePost } from './post_v0.99.1.js';
-import { XH_STYLES, XH_COLORS, XH_DEFAULT, XH_PRESETS, mountCrosshair, spreadCrosshair, crosshairSVG, crosshairCode, parseCrosshair } from './crosshair_v0.99.1.js';
-import { generateMap } from './mapgen_v0.99.1.js';
-import { byId, WEAPONS, drawSilhouette, PIP_TIERS, applyPipTier } from './weapons_v0.99.1.js';
-import { buildGun, addArms, decorateGun, makeEnv } from './models_v0.99.1.js';
-import { muzzleFlash, mergeChildren } from './gunkit_v0.99.1.js';
-import { prepare as vmPrepare, reloadPose, flourishPose, FLOURISH, dropMag, updateMags, clearMags, makeHandShell, reloadTier, RELOAD_SPEED } from './vmanim_v0.99.1.js';
-import { Bot, bots, ctx, guardProps, updateShots, clearBots, updateDebris, updateLOD, TYPES, SPAWN_EXTRA, mates, botByNid, ghostBolt, puppetStep, laserOf as botLaser } from './bots_v0.99.1.js';
-import { Shop, compareBars, fineStats, ttk } from './shop_v0.99.1.js';
-import { computeWeapon, attById, SLOT_NAMES, LASER_COLS, LASER_LV, laserCol } from './attachments_v0.99.1.js';
-import { SKINS, skinById, prog, saveProg, sealSave, openSave, dropSave, tamper, levelOf, gunLevel, applyLevel, xpForLevel, MAX_LEVEL, TIER_COL } from './skins_v0.99.1.js';
-import { CHARMS, charmById, buildCharm, updateCharm } from './charms_v0.99.1.js';
+  tracer, beam, sparks, shell, decal, smoke, explosionFx, flashLight, updateFx, updateAtmos, fxSettings, SND, ac, setQuality, SUN_DIR, setWeather, lightningBolt, skyFlash, WEATHER, underCover, rayWall, collidersNear, followShadow, updatePads, updateEdges, setNight, followGlow, setResScale, getResScale, setResPct, renderPct, QUALITY, quality, IS_MAC, RETINA, DEV, liteMats, WXU, WX_OPT, refreshWeather, arc, hitBreakable, blastBreakables, breakByIndex, onBreak, updateExtras, stepSplash, footprint, slideMark, APPLE_SI, CHIP, goreBurst, gibs, splat, bloodColor } from './world_v0.99.2.js';
+import { setVolume, musicStart, musicLevel, musicSong, setMusicVolume, at3, setListener, audioSettings, setAmbience, ambienceLevel, ambienceTick, ambienceCover, setStepSurface, audioClock } from './audio_v0.99.2.js';
+import { makePost } from './post_v0.99.2.js';
+import { XH_STYLES, XH_COLORS, XH_DEFAULT, XH_PRESETS, mountCrosshair, spreadCrosshair, crosshairSVG, crosshairCode, parseCrosshair } from './crosshair_v0.99.2.js';
+import { generateMap } from './mapgen_v0.99.2.js';
+import { byId, WEAPONS, drawSilhouette, PIP_TIERS, applyPipTier } from './weapons_v0.99.2.js';
+import { buildGun, addArms, decorateGun, makeEnv } from './models_v0.99.2.js';
+import { muzzleFlash, mergeChildren } from './gunkit_v0.99.2.js';
+import { prepare as vmPrepare, reloadPose, flourishPose, FLOURISH, dropMag, updateMags, clearMags, makeHandShell, reloadTier, RELOAD_SPEED } from './vmanim_v0.99.2.js';
+import { Bot, bots, ctx, guardProps, updateShots, clearBots, updateDebris, updateLOD, TYPES, SPAWN_EXTRA, mates, botByNid, ghostBolt, puppetStep, laserOf as botLaser } from './bots_v0.99.2.js';
+import { Shop, compareBars, fineStats, ttk } from './shop_v0.99.2.js';
+import { computeWeapon, attById, SLOT_NAMES, LASER_COLS, LASER_LV, laserCol } from './attachments_v0.99.2.js';
+import { SKINS, skinById, prog, saveProg, sealSave, openSave, dropSave, tamper, levelOf, gunLevel, applyLevel, xpForLevel, MAX_LEVEL, TIER_COL } from './skins_v0.99.2.js';
+import { CHARMS, charmById, buildCharm, updateCharm } from './charms_v0.99.2.js';
 prog.charms = prog.charms || ['none']; prog.charmOf = prog.charmOf || {};
-import { SUPPORT, support, hctx, buySupport, buyCharge, setSupport, useScan, slv, supById, supNextPrice, owned, deployTurret, launchStriker, updateSupport, floorChange, clearSupport } from './helpers_v0.99.1.js';
-import { ABILITIES, abById, abNextPrice, abMax, AB } from './abilities_v0.99.1.js';
-import { MUTATIONS, mutById, MUT_STEPS, nextStep, applyMuts, offers, MV, mutDesc, ROMAN, MAX_MLV } from './mutations_v0.99.1.js';
-import { levelInfo, levelPerks, LEVEL_REWARDS, nextReward, XP_FOR, xpForFloor, ensureDaily, questById, markPlayed, streakXp, questTick, recordRun } from './meta_v0.99.1.js';
-import { ACTIONS, NOBIND, setBinds, bindIn, rebind, keyLabel } from './controls_v0.99.1.js';
-import { PLATFORM, allowed, enforce, sdkInit, sdkLoaded, playState, midAd, happy, audioGate, adBusy } from './platform_v0.99.1.js';
-import * as NET from './net_v0.99.1.js';
-import { account, staff, saveSig, progressSig, signIn, signUp, resendSignUp, changeEmail, refreshUser, confirmsEmail, finishLink, signOut, resume as resumeAccount, cloudGet, cloudPut, syncInfo, setSync, friendList, ping, addFriend, acceptFriend, removeFriend, testerList, setTester, playerList, giveRole, kick as kickPlayer, mute as mutePlayer, muteInfo, submitScore, topScores, clearScores, rank, ROLE_NAME, roleOf } from './account_v0.99.1.js';
-import { MODS, modById, doorOffers, CHARS, charById, charUnlocked, PERK, UPGRADES, upgCost, upgPoints, ACH, todayKey, dailySeed, mulberry, paintGoal } from './run_v0.99.1.js';
+import { SUPPORT, support, hctx, buySupport, buyCharge, setSupport, useScan, slv, supById, supNextPrice, owned, deployTurret, launchStriker, updateSupport, floorChange, clearSupport } from './helpers_v0.99.2.js';
+import { ABILITIES, abById, abNextPrice, abMax, AB } from './abilities_v0.99.2.js';
+import { MUTATIONS, mutById, MUT_STEPS, nextStep, applyMuts, offers, MV, mutDesc, ROMAN, MAX_MLV } from './mutations_v0.99.2.js';
+import { levelInfo, levelPerks, LEVEL_REWARDS, nextReward, XP_FOR, xpForFloor, ensureDaily, questById, markPlayed, streakXp, questTick, recordRun } from './meta_v0.99.2.js';
+import { ACTIONS, NOBIND, setBinds, bindIn, rebind, keyLabel } from './controls_v0.99.2.js';
+import { PLATFORM, allowed, enforce, sdkInit, sdkLoaded, playState, midAd, happy, audioGate, adBusy } from './platform_v0.99.2.js';
+import * as NET from './net_v0.99.2.js';
+import { account, staff, saveSig, progressSig, signIn, signUp, resendSignUp, sendMagicLink, sendReset, setPassword, signInWith, pickName, PROVIDERS, GOOGLE_CLIENT_ID, googleButton, changeEmail, refreshUser, confirmsEmail, finishLink, signOut, resume as resumeAccount, cloudGet, cloudPut, syncInfo, setSync, friendList, ping, addFriend, acceptFriend, removeFriend, testerList, setTester, playerList, giveRole, kick as kickPlayer, mute as mutePlayer, muteInfo, submitScore, topScores, clearScores, rank, ROLE_NAME, roleOf } from './account_v0.99.2.js';
+import { MODS, modById, doorOffers, CHARS, charById, charUnlocked, PERK, UPGRADES, upgCost, upgPoints, ACH, todayKey, dailySeed, mulberry, paintGoal } from './run_v0.99.2.js';
 
 const $ = id => document.getElementById(id);
 const V3 = THREE.Vector3, lerp = THREE.MathUtils.lerp;
@@ -40,7 +40,7 @@ let frozenDrawn = false; // solo menus show one still frame (see the end of fram
 const stats = { kills: 0, fired: 0, hit: 0, heads: 0, earned: 0, bestStreak: 0 };
 const runXP = {};
 
-// version shown at the bottom of Settings, taken from this file's name (game_v0.99.1.js -> v0.97.0) so it can't go out of date
+// version shown at the bottom of Settings, taken from this file's name (game_v0.99.2.js -> v0.97.0) so it can't go out of date
 const GAME_VERSION = (import.meta.url.match(/_(v\d+\.\d+\.\d+)\.js/) || [, 'dev'])[1];
 // ---------- settings (saved) ----------
 const SET_KEY = 'pastelSiegeSettings12';
@@ -55,7 +55,7 @@ const settings = (() => {
   // first launch on a low-memory machine: start on Potato (or Low) so it runs; it can be changed in Settings
   // "Uncapped" used to be the default but it draws frames out of step with the screen; move old saves to Monitor once
   if (s && !s.fpsMig && s.fpsCap === 'uncapped') out.fpsCap = '0'; out.fpsMig = 1;
-  if (s && !s.oilMig && s.blood === 'red') out.blood = 'oil'; out.oilMig = 1; // v0.99.1: robots bleed oil and spark by default (Red is still in Settings)
+  if (s && !s.oilMig && s.blood === 'red') out.blood = 'oil'; out.oilMig = 1; // v0.99.2: robots bleed oil and spark by default (Red is still in Settings)
   // first launch on a Mac (Safari doesn't report memory): M-chip Macs start on High, Intel Macs on Medium
   if (!s && IS_MAC) out.quality = APPLE_SI ? 'high' : 'medium';
   else if (!s && navigator.deviceMemory) out.quality = navigator.deviceMemory <= 2 ? 'potato' : navigator.deviceMemory <= 4 ? 'low' : out.quality; out.xh = Object.assign({}, XH_DEFAULT, (s && s.xh) || {}); return out;
@@ -3042,27 +3042,24 @@ function renderAccount() {
   const an = $('adminNav'); if (an) { an.hidden = !account.mod; if (!account.mod && an.classList.contains('sel')) document.querySelector('#mnav [data-panel="play"]').click(); }
   lb.at = 0; if ($('panel-board')?.classList.contains('on')) loadBoard(); else renderGlobalBoard();
 }
+// Sign-in buttons in each company's own style and logo (Google's and Discord's brand guidelines)
+const OA_LOGO = {
+  google: '<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>',
+  discord: '<svg viewBox="0 0 127.14 96.36" aria-hidden="true"><path fill="#fff" d="M107.7 8.07A105.15 105.15 0 0 0 81.47 0a72.06 72.06 0 0 0-3.36 6.83 97.68 97.68 0 0 0-29.11 0A72.37 72.37 0 0 0 45.64 0a105.89 105.89 0 0 0-26.25 8.09C2.79 32.65-1.71 56.6.54 80.21a105.73 105.73 0 0 0 32.17 16.15 77.7 77.7 0 0 0 6.89-11.11 68.42 68.42 0 0 1-10.85-5.18c.91-.66 1.8-1.34 2.66-2a75.57 75.57 0 0 0 64.32 0c.87.71 1.76 1.39 2.66 2a68.68 68.68 0 0 1-10.87 5.19 77 77 0 0 0 6.89 11.1 105.25 105.25 0 0 0 32.19-16.14c2.64-27.38-4.51-51.11-18.9-72.15zM42.45 65.69C36.18 65.69 31 60 31 53s5-12.74 11.43-12.74S54 46 53.89 53s-5.05 12.69-11.44 12.69zm42.24 0C78.41 65.69 73.25 60 73.25 53s5-12.74 11.44-12.74S96.23 46 96.12 53s-5.04 12.69-11.43 12.69z"/></svg>',
+};
+const oauthBtn = (k, up) => `<button class="oa oa-${k}" data-oauth="${k}"><i>${OA_LOGO[k]}</i><span>${up ? 'Sign up' : 'Sign in'} with ${PROVIDERS[k]}</span></button>`;
 function openAccount(note = '', who = '') {
   if (emailBox) return;
-  const box = document.createElement('div'); box.className = 'savebox'; let mode = 'in', busy = false, sent = null; // sent: { email, pass } while a new account waits to be confirmed
+  const box = document.createElement('div'); box.className = 'savebox'; let mode = 'in', busy = false, sent = null, mailed = null; // sent: { email, pass } while a new account waits to be confirmed
   const close = () => box.remove();
   const draw = () => {
     if (account.user) {
       box.innerHTML = `<div class="savecard acctcard"><h3>Signed in as ${escH(account.name)}${account.role ? ` <em class="adm">${ROLE_NAME[account.role]}</em>` : ''}</h3>
         <p>Your progress saves to your account automatically. ${account.status === 'offline' ? 'Right now the account server can\'t be reached, so it will catch up when it can.' : account.syncedAt ? `Last saved online ${ago(account.syncedAt)}.` : ''}</p>
-        ${staff() ? `<p class="acnote">Press <kbd>&#96;</kbd> in a run to open the ${account.admin ? "admin" : "tester"} panel.</p>` : account.mod ? `<p class="acnote">You are a moderator: open ADMIN in the menu to kick players.</p>` : ""}
-        ${account.admin ? `<h3 class="tsh">Bug testers</h3><p class="acnote">Testers can open the <kbd>&#96;</kbd> panel in their runs too. Type a username to add one.</p>
-        <div class="palsadd"><input id="tsName" maxlength="16" placeholder="Their username" spellcheck="false" autocomplete="off"><button class="go" id="tsAdd">${ic('plus')}MAKE TESTER</button></div>
-        <p class="palsmsg" id="tsMsg"></p><div class="tslist" id="tsList"></div>` : ""}
+        ${staff() ? `<p class="acnote">Press <kbd>&#96;</kbd> in a run to open the ${account.admin ? "admin" : "tester"} panel.${account.mod ? ' Give ranks on the ADMIN page in the menu.' : ''}</p>` : account.mod ? `<p class="acnote">You are a moderator: open ADMIN in the menu to kick players.</p>` : ""}
         <div class="savebtns"><button class="go" id="acSync">${ic('save')}SAVE NOW</button><button class="go alt" id="acOut">${ic('exit')}SIGN OUT</button><button class="go ghost" id="acX">${ic('close')}CLOSE</button></div><p class="saveerr" id="acErr"></p></div>`;
       box.querySelector('#acSync').onclick = async () => { SND.ui(); setSync({ ...syncInfo(), sig: '' }); await (syncedFor === account.user?.id ? cloudPush() : cloudSync()); draw(); };
       box.querySelector('#acOut').onclick = async () => { SND.ui(); await leaveAccount(); close(); };
-      if (account.admin) {
-        const inp = box.querySelector('#tsName'), msg = box.querySelector('#tsMsg'), list = box.querySelector('#tsList');
-        const show = async () => { try { const L = await testerList(); list.innerHTML = L.length ? L.map(n => `<span>${escH(n)}<button class="x" data-untest="${escH(n)}" title="Remove tester">${ic('close')}</button></span>`).join('') : '<small>No testers yet.</small>'; list.querySelectorAll('[data-untest]').forEach(b => b.onclick = async () => { SND.ui(); try { await setTester(b.dataset.untest, false); msg.textContent = `${b.dataset.untest} is not a tester any more.`; } catch (e) { msg.textContent = e.message; } show(); }); } catch (e) { list.innerHTML = '<small>Run the tester setup script in Supabase first.</small>'; } };
-        const add = async () => { SND.ui(); try { await setTester(inp.value, true); msg.textContent = `${inp.value.trim().toLowerCase()} is a tester now.`; inp.value = ''; } catch (e) { msg.textContent = e.message; SND.deny(); } show(); };
-        box.querySelector('#tsAdd').onclick = add; inp.addEventListener('keydown', e => { if (e.key === 'Enter') add(); }); show();
-      }
     } else if (sent) {
       box.innerHTML = `<div class="savecard acctcard"><h3>Check your email</h3>
         <p>Open the confirmation link we sent to <b>${escH(sent.email)}</b>, then sign in. Look in spam too.</p>
@@ -3072,15 +3069,25 @@ function openAccount(note = '', who = '') {
       box.querySelector('#acDone').onclick = () => run(box.querySelector('#acDone'), () => signIn(sent.email, sent.pass).then(signedIn));
       box.querySelector('#acAgain').onclick = () => run(box.querySelector('#acAgain'), () => resendSignUp(sent.email).then(() => { err.textContent = 'Sent. It can take a minute.'; }));
       box.querySelector('#acBack').onclick = () => { SND.ui(); who = sent.email; sent = null; mode = 'in'; draw(); };
+    } else if (mailed) {
+      box.innerHTML = `<div class="savecard acctcard"><h3>Check your email</h3>
+        <p>${mailed.reset ? 'If an account uses' : 'We sent a sign-in link to'} <b>${escH(mailed.email)}</b>${mailed.reset ? ', we sent it a link to set a new password' : ''}. Open it <b>in this browser</b>. Look in spam too.</p>
+        <div class="savebtns"><button class="go alt" id="acAgain">${ic('mail')}SEND AGAIN</button><button class="go ghost" id="acBack">${ic('back')}BACK</button><button class="go ghost" id="acX">${ic('close')}CLOSE</button></div><p class="saveerr" id="acErr"></p></div>`;
+      const err = box.querySelector('#acErr');
+      box.querySelector('#acAgain').onclick = () => run(box.querySelector('#acAgain'), () => (mailed.reset ? sendReset : sendMagicLink)(mailed.email).then(() => { err.textContent = 'Sent. It can take a minute.'; }));
+      box.querySelector('#acBack').onclick = () => { SND.ui(); who = mailed.email; mailed = null; draw(); };
     } else {
       const up = mode === 'up';
       box.innerHTML = `<div class="savecard acctcard"><h3>${up ? 'Create an account' : 'Sign in'}</h3>
         <div class="seg-btn actabs"><button data-m="in" class="${up ? '' : 'sel'}">SIGN IN</button><button data-m="up" class="${up ? 'sel' : ''}">CREATE ACCOUNT</button></div>
         ${note ? `<p>${escH(note)}</p>` : ''}
+        <div class="oauth">${Object.keys(PROVIDERS).map(k => k === 'google' && GOOGLE_CLIENT_ID ? '<div class="gsi" id="acGsi"></div>' : oauthBtn(k, up)).join('')}</div>
+        <div class="acor"><span>or with email</span></div>
         ${up ? '<label class="acf">Username<input id="acName" maxlength="16" autocomplete="nickname" spellcheck="false" placeholder="3 to 16 letters, numbers or _"></label>' : ''}
-        <label class="acf">${up ? 'Email' : 'Email (or username, if you haven\'t added an email yet)'}<input id="acEmail" type="${up ? 'email' : 'text'}" maxlength="254" autocomplete="${up ? 'email' : 'username'}" autocapitalize="off" spellcheck="false" placeholder="name@example.com" value="${escH(who)}"></label>
+        <label class="acf">${up ? 'Email' : 'Email or username'}<input id="acEmail" type="${up ? 'email' : 'text'}" maxlength="254" autocomplete="${up ? 'email' : 'username'}" autocapitalize="off" spellcheck="false" placeholder="name@example.com" value="${escH(who)}"></label>
         <label class="acf">Password<input id="acPass" type="password" autocomplete="${up ? 'new-password' : 'current-password'}" placeholder="${up ? 'at least 6 characters' : ''}"></label>
-        <p class="acnote">${up ? 'We send a link to your email to confirm it. Other players only see your username. There\'s no password reset yet, so pick one you\'ll remember (and don\'t reuse a password from another site). Your progress on this computer comes with you.' : 'Signing in brings your progress with you to any computer.'}</p>
+        ${up ? '' : '<div class="aclinks"><button class="linkbtn" id="acForgot">Forgot password?</button><button class="linkbtn" id="acMagic">Email me a sign-in link instead</button></div>'}
+        <p class="acnote">${up ? 'We\'ll email you a link to confirm your address. Other players only see your username, and your progress on this device comes with you.' : 'Signing in brings your progress with you to any device.'} By continuing you agree to the <a href="/terms" target="_blank" rel="noopener">Terms</a> and <a href="/privacy" target="_blank" rel="noopener">Privacy Policy</a>.</p>
         <div class="savebtns"><button class="go" id="acGo">${up ? `${ic('plus')}CREATE ACCOUNT` : `${ic('login')}SIGN IN`}</button><button class="go ghost" id="acX">PLAY WITHOUT AN ACCOUNT${ic('next')}</button></div><p class="saveerr" id="acErr"></p></div>`;
       box.querySelectorAll('[data-m]').forEach(t => t.onclick = () => { SND.ui(); who = box.querySelector('#acEmail').value; note = ''; mode = t.dataset.m; draw(); });
       const go = () => run(box.querySelector('#acGo'), async () => {
@@ -3090,6 +3097,14 @@ function openAccount(note = '', who = '') {
         signedIn();
       });
       box.querySelector('#acGo').onclick = go;
+      const gEl = box.querySelector('#acGsi');
+      if (gEl) googleButton(gEl, () => signedIn(), m => { box.querySelector('#acErr').textContent = m; SND.deny(); }, up).catch(e => { // Google unreachable: fall back to the redirect
+        gEl.outerHTML = oauthBtn('google', up);
+        const b = box.querySelector('[data-oauth="google"]'); b.onclick = () => { SND.ui(); b.querySelector('span').textContent = 'One moment...'; signInWith('google'); };
+      });
+      box.querySelectorAll('[data-oauth]').forEach(b => b.onclick = () => { SND.ui(); b.querySelector('span').textContent = 'One moment...'; signInWith(b.dataset.oauth); });
+      const mail = (id, reset) => { const b = box.querySelector(id); if (b) b.onclick = () => run(b, async () => { const e = box.querySelector('#acEmail').value; if (!e.includes('@')) throw new Error('Type your email address first.'); mailed = { email: await (reset ? sendReset : sendMagicLink)(e), reset }; SND.code(); draw(); }); };
+      mail('#acForgot', true); mail('#acMagic', false);
       box.querySelectorAll('input').forEach(i => i.addEventListener('keydown', e => { if (e.key === 'Enter') go(); }));
       setTimeout(() => box.querySelector(up ? '#acName' : '#acEmail')?.focus(), 50);
     }
@@ -3111,7 +3126,27 @@ $('acctBtn').onclick = () => { SND.ui(); openAccount(); };
 async function leaveAccount() {
   await cloudPush(); await signOut(); syncedFor = null; Object.assign(adm, ADM_OFF); admApply(); renderAccount(); loadPals(); toast('SIGNED OUT', 'Your progress stays on this computer too', 'Sign in again any time', '👤');
 }
-function startAccount() { cloudSync(); pingNow(); loadPals(); checkEmailGate(); }
+function startAccount() { cloudSync(); pingNow(); loadPals(); checkEmailGate(); if (account.needsName) openNameGate(); }
+// ---------- small account boxes: a new password (after a reset link) and a username (new Google / Discord players) ----------
+function smallBox(title, html, onGo, { closable = true } = {}) {
+  const box = document.createElement('div'); box.className = 'savebox'; let busy = false;
+  box.innerHTML = `<div class="savecard acctcard"><h3>${title}</h3>${html}<div class="savebtns"><button class="go" id="sbGo">${ic('check')}SAVE</button>${closable ? `<button class="go ghost" id="sbX">${ic('close')}LATER</button>` : ''}</div><p class="saveerr" id="sbErr"></p></div>`;
+  const go = async () => { if (busy) return; busy = true; const b = box.querySelector('#sbGo'), l = b.innerHTML; b.textContent = 'ONE MOMENT...'; box.querySelector('#sbErr').textContent = '';
+    try { await onGo(box); box.remove(); SND.code(); } catch (e) { box.querySelector('#sbErr').textContent = e.message; SND.deny(); b.innerHTML = l; } busy = false; };
+  box.querySelector('#sbGo').onclick = go; box.querySelector('#sbX')?.addEventListener('click', () => { SND.ui(); box.remove(); });
+  box.querySelectorAll('input').forEach(i => i.addEventListener('keydown', e => { if (e.key === 'Enter') go(); }));
+  for (const t of ['keydown', 'keyup', 'keypress', 'mousedown']) box.addEventListener(t, e => e.stopPropagation());
+  document.body.appendChild(box); setTimeout(() => box.querySelector('input')?.focus(), 50);
+}
+function openNewPassword() {
+  smallBox('Set a new password', `<p>You're signed in as <b>${escH(account.name)}</b>. Pick a new password for next time.</p><label class="acf">New password<input id="npPass" type="password" autocomplete="new-password" placeholder="at least 6 characters"></label>`,
+    async box => { await setPassword(box.querySelector('#npPass').value); toast('PASSWORD CHANGED', 'All set', 'Use your new password next time', '🔑'); });
+}
+function openNameGate() {
+  if (document.querySelector('#ngName')) return;
+  smallBox('Pick your username', `<p>Welcome! Choose the name other players will see. You can't change it later.</p><label class="acf">Username<input id="ngName" maxlength="16" autocomplete="nickname" spellcheck="false" placeholder="3 to 16 letters, numbers or _"></label>`,
+    async box => { await pickName(box.querySelector('#ngName').value); renderAccount(); toast('WELCOME', `Hi, ${escH(account.name)}!`, 'Your progress now saves online', '👤'); }, { closable: false });
+}
 // ---------- everyone with an account needs an email ----------
 // An older account with no real email gets a box it can't close (only signing out gets rid of it) until the link
 // sent to the new address has been opened. It only appears on the menu, never in the middle of a run.
@@ -3186,6 +3221,8 @@ finishLink().then(async link => {
   if (link.error && !ok) openAccount(`That email link didn't work: ${link.error}`);
   else if (link.error) toast('EMAIL LINK', 'That link didn\'t work', escH(link.error), '✉');
   else if (link.message) toast('EMAIL LINK', 'Link accepted', escH(link.message), '✉');
+  else if (link.signedIn && link.type === 'recovery') openNewPassword();
+  else if (link.signedIn && (link.type === 'magiclink' || link.type === 'oauth')) { if (!account.needsName) toast('SIGNED IN', `Hi, ${escH(account.name)}!`, 'Your progress now saves online', '👤'); }
   else if (link.signedIn) { if (!account.needsEmail) toast('EMAIL CONFIRMED', `Welcome, ${escH(account.name)}!`, 'Your progress saves online', '✓'); }
   else if (!ok) openAccount('Email confirmed. Sign in to carry on.', link.email);
   else toast('EMAIL CONFIRMED', 'Thanks!', escH(link.email), '✓');

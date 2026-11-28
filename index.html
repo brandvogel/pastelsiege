@@ -958,7 +958,23 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) addEve
   .acctcard .actabs button.sel{background:var(--ink);color:var(--mustard)}
   .acf{display:flex;flex-direction:column;gap:5px;font:800 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--navy);margin:0 0 12px}
   .acf input{width:100%;text-transform:none;letter-spacing:0}
-  .acnote{font-size:12px;color:var(--navy);opacity:.85;line-height:1.45;margin:4px 0 8px}
+  .savecard.acctcard{width:min(580px,94vw);padding:24px 30px}
+  .acctcard .oauth{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:0 0 4px}
+  .acctcard .oa{display:flex;align-items:center;gap:0;height:44px;padding:0 12px 0 2px;border:0;border-radius:4px;cursor:pointer;font:500 15px/1 Roboto,"Helvetica Neue",Arial,sans-serif;letter-spacing:.2px;color:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:filter .15s,box-shadow .15s}
+  .acctcard .oa:hover{filter:brightness(1.06);box-shadow:0 2px 6px rgba(0,0,0,.3)}
+  .acctcard .oa i{display:grid;place-items:center;width:40px;height:40px;flex:none;border-radius:3px}
+  .acctcard .oa i svg{width:20px;height:20px}
+  .acctcard .oa span{flex:1;text-align:center;white-space:nowrap}
+  .acctcard .oa-google{background:#1a73e8} .acctcard .oa-google i{background:#fff}
+  .acctcard .oa-discord{background:#5865f2;padding-left:6px} .acctcard .oa-discord i svg{width:24px;height:24px}
+  .acctcard .gsi{display:flex;justify-content:center;align-items:center;min-height:44px}
+  .acor{display:flex;align-items:center;gap:10px;margin:16px 0 14px;font:800 10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--navy);opacity:.7}
+  .acor::before,.acor::after{content:'';flex:1;height:2px;background:var(--line)}
+  .aclinks{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:-4px 0 10px}
+  .linkbtn{background:none;border:0;padding:2px 0;font:800 12px inherit;color:var(--navy);text-decoration:underline;cursor:pointer}
+  .linkbtn:hover{color:var(--ink)}
+  .acnote{font-size:12px;color:var(--navy);opacity:.8;line-height:1.5;margin:6px 0 4px}
+  .acnote a{color:var(--coral);font-weight:800;text-underline-offset:2px}
   .tslist{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 10px}
   .tslist span{display:inline-flex;align-items:center;gap:6px;border:2.5px solid var(--ink);border-radius:10px;background:var(--cream);padding:3px 4px 3px 10px;font-weight:800;font-size:13px}
   .tslist small{opacity:.6}
@@ -1512,6 +1528,6 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) addEve
   window.addEventListener('unhandledrejection', e => showErr('Promise: ' + (e.reason && e.reason.message || e.reason)));
   setTimeout(() => { if (!window.__gameReady) showErr('Game code did not finish loading.'); }, 7000);
 </script>
-<script type="module" src="game_v0.99.1.js" onerror="showErr('Could not load game_v0.99.1.js')"></script>
+<script type="module" src="game_v0.99.2.js" onerror="showErr('Could not load game_v0.99.2.js')"></script>
 </body>
 </html>

@@ -7,7 +7,7 @@
 // row-level security rules (you can only read and write your own save, and nobody can make themselves admin).
 const BASE = 'https://qembjixloxurcybpivli.supabase.co', KEY = 'sb_publishable_WkZwlljL0X3k_f6hYjvSUA_pAjc8ozO';
 const STORE = 'sbPastelAuth', SYNC = 'sbPastelSync', PEND = 'sbPastelPending'; // not "ps..." names, so they stay out of save exports and cloud saves
-export const account = { user: null, name: '', email: '', newEmail: '', needsEmail: false, role: '', admin: false, mod: false, tester: false, status: '', syncedAt: 0 };
+export const account = { user: null, name: '', email: '', newEmail: '', needsEmail: false, needsName: false, role: '', admin: false, mod: false, tester: false, status: '', syncedAt: 0 };
 // Ranks: owner (you) > admin > moderator > bug tester. Who may do what is checked by the database's functions, not by the
 // game, so editing the game can't give anyone powers. The game only uses the role to show the right buttons.
 export const RANK = { owner: 4, admin: 3, mod: 2, tester: 1 };
@@ -83,7 +83,7 @@ async function swapToken() {
     throw e;
   }
 }
-function clear() { account.user = null; account.name = ''; setEmail(); setRole(''); account.status = ''; account.syncedAt = 0; }
+function clear() { account.user = null; account.name = ''; account.needsName = false; setEmail(); setRole(''); account.status = ''; account.syncedAt = 0; }
 function setEmail(email = '', newEmail = '') { account.email = email; account.newEmail = newEmail; account.needsEmail = isPlaceholder(email); }
 // asks the server which email the account has now, and whether a new one is waiting to be confirmed
 export async function refreshUser() {
@@ -97,11 +97,11 @@ async function loadProfile() {
   // (role and is_tester only exist once their setup scripts have run; if asking for them fails for any reason, ask
   // with less, so a half-finished setup can never stop the owner from being recognised)
   let rows;
-  for (const cols of ['username,is_admin,is_tester,role', 'username,is_admin,is_tester', 'username,is_admin']) {
+  for (const cols of ['username,is_admin,is_tester,role,needs_name', 'username,is_admin,is_tester,role', 'username,is_admin,is_tester', 'username,is_admin']) {
     try { rows = await call(`/rest/v1/profiles?id=eq.${sess.uid}&select=${cols}`, { auth: true }); break; }
     catch (e) { if (e.status === 401 || cols === 'username,is_admin') throw e; }
   }
-  account.user = { id: sess.uid }; account.name = rows?.[0]?.username || sess.name || ''; setRole(roleOf(rows?.[0]));
+  account.user = { id: sess.uid }; account.name = rows?.[0]?.username || sess.name || ''; setRole(roleOf(rows?.[0])); account.needsName = !!rows?.[0]?.needs_name; // Google / Discord sign-ups pick a username first
   adopt(); keep({ ...sess, name: account.name, role: account.role, admin: undefined, tester: undefined }); // remembered, so a bad connection does not hide your role
   setEmail(sess.email);
   try { await refreshUser(); } catch (e) { if (!sess) throw e; }
@@ -138,10 +138,11 @@ export async function finishLink() {
   if (!token) return { message };
   try {
     const u = await call('/auth/v1/user', { token });
-    if (u.id !== sess?.uid && !(pending() && u.email === pending())) return { signedIn: false, email: u.email };
+    const p = pending(), oauth = p.startsWith('oauth:'); // Google / Discord: this browser started the sign-in, whatever the email
+    if (u.id !== sess?.uid && !(p && (u.email === p || oauth))) return { signedIn: false, email: u.email };
     keep(session({ access_token: token, refresh_token: q.get('refresh_token'), expires_at: +q.get('expires_at') || 0, expires_in: +q.get('expires_in') || 0, user: u }, u.id === sess?.uid ? sess : {}));
-    setPending('');
-    return { signedIn: true, email: u.email };
+    setPending(''); await loadProfile().catch(() => { });
+    return { signedIn: true, email: u.email, type: q.get('type') || (oauth ? 'oauth' : '') };
   } catch (e) { return { error: nice(e) }; }
 }
 
@@ -189,6 +190,66 @@ export async function changeEmail(email) {
     await call('/auth/v1/user' + back(), { method: 'PUT', auth: true, body: { email } });
     await refreshUser();
   } catch (e) { throw new Error(e.status || e instanceof TypeError ? nice(e) : e.message); }
+}
+// ---------- other ways in ----------
+// A sign-in link by email, for accounts that already exist (it never makes a new account: those need a username).
+export async function sendMagicLink(email) {
+  const bad = checkEmail(email); if (bad) throw new Error(bad); email = cleanEmail(email);
+  try { await call('/auth/v1/otp' + back(), { method: 'POST', body: { email, create_user: false } }); }
+  catch (e) { throw new Error(/signups? not allowed|otp_disabled|not found/i.test(e.message || '') || e.code === 'otp_disabled' ? 'No account uses that email. Create one, or continue with Google or Discord.' : nice(e)); }
+  setPending(email); return email;
+}
+// Password reset: emails a link; opening it signs you in and the game asks for a new password.
+// (Supabase answers the same whether or not the address has an account, so nobody can use this to find accounts.)
+export async function sendReset(email) {
+  const bad = checkEmail(email); if (bad) throw new Error(bad); email = cleanEmail(email);
+  try { await call('/auth/v1/recover' + back(), { method: 'POST', body: { email } }); } catch (e) { throw new Error(nice(e)); }
+  setPending(email); return email;
+}
+export async function setPassword(pass) {
+  if (String(pass || '').length < 6) throw new Error('Passwords need at least 6 characters.');
+  try { await call('/auth/v1/user', { method: 'PUT', auth: true, body: { password: pass } }); } catch (e) { throw new Error(/different from the old/i.test(e.message || '') ? 'Pick a password you haven\'t used on this account before.' : nice(e)); }
+}
+// Google and Discord: off to their sign-in page and back here (finishLink picks it up)
+export const PROVIDERS = { google: 'Google', discord: 'Discord' };
+export function signInWith(provider) {
+  if (!PROVIDERS[provider]) return;
+  setPending('oauth:' + provider);
+  location.href = `${BASE}/auth/v1/authorize?provider=${provider}&redirect_to=${encodeURIComponent(location.origin + location.pathname)}`;
+}
+// Google's own sign-in button, on our page. Google then names pastelsiege.com ("Pastel Siege" once the brand is
+// verified) instead of the Supabase address the redirect above shows. Paste the Web client ID from Google Cloud here;
+// while it's empty the game uses the redirect.
+export const GOOGLE_CLIENT_ID = '386684538845-7tk3b2spto3tlr1kto9r9rg4i8cjb61g.apps.googleusercontent.com';
+let gsi;
+const loadGsi = () => gsi ||= new Promise((ok, no) => {
+  if (window.google?.accounts?.id) return ok();
+  const s = document.createElement('script'); s.src = 'https://accounts.google.com/gsi/client'; s.async = true;
+  s.onload = ok; s.onerror = () => { gsi = null; no(new Error('Could not reach Google. Check your internet.')); }; document.head.appendChild(s);
+});
+const hex = b => [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join('');
+// Puts Google's button into `el`. done() runs once signed in; fail(message) on an error.
+export async function googleButton(el, done, fail, up) {
+  await loadGsi();
+  const nonce = hex(crypto.getRandomValues(new Uint8Array(16)).buffer); // Supabase checks the token was made for this sign-in
+  window.google.accounts.id.initialize({
+    client_id: GOOGLE_CLIENT_ID, nonce: hex(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(nonce))),
+    ux_mode: 'popup', auto_select: false, itp_support: true, use_fedcm_for_prompt: true,
+    callback: async r => {
+      try {
+        keep(session(await call('/auth/v1/token?grant_type=id_token', { method: 'POST', body: { provider: 'google', id_token: r.credential, nonce } })));
+        await loadProfile(); setPending(''); done(account);
+      } catch (e) { keep(null); clear(); fail(/provider.*(not enabled|disabled)|unsupported/i.test(e.message || '') ? 'Google sign-in isn\'t switched on yet.' : nice(e)); }
+    },
+  });
+  window.google.accounts.id.renderButton(el, { theme: 'filled_blue', size: 'large', shape: 'rectangular', text: up ? 'signup_with' : 'signin_with', logo_alignment: 'left', width: Math.min(400, el.clientWidth || 240) });
+}
+// New Google / Discord players choose their username once (the database checks it's free and allowed)
+export async function pickName(name) {
+  const bad = checkName(name); if (bad) throw new Error(bad); name = name.trim().toLowerCase();
+  try { await call('/rest/v1/rpc/set_username', { method: 'POST', auth: true, body: { name_: name } }); }
+  catch (e) { throw new Error(/taken/i.test(e.message || '') ? 'That username is taken.' : e.status === 404 ? 'Usernames for Google / Discord accounts aren\'t switched on yet (run the SQL in Supabase).' : nice(e)); }
+  account.name = name; account.needsName = false; adopt(); keep({ ...sess, name });
 }
 export async function signOut() {
   try { if (sess) await call('/auth/v1/logout', { method: 'POST', auth: true }); } catch (e) { }

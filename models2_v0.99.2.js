@@ -1,5 +1,5 @@
 // Handguns and special weapons, built from the parts kit.
-import { frontPost, rearSight, redDot, holo } from './gunkit_v0.99.1.js';
+import { frontPost, rearSight, redDot, holo } from './gunkit_v0.99.2.js';
 const V = (THREE, x, y, z) => new THREE.Vector3(x, y, z);
 
 export function pistol(THREE, K, M, w, o) {
