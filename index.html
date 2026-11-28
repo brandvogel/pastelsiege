@@ -388,6 +388,15 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) addEve
   .bootbar u{display:block;height:100%;width:40%;background:var(--coral);border-radius:6px;animation:bootslide 1.1s ease-in-out infinite alternate}
   @keyframes bootslide{from{transform:translateX(-60%)}to{transform:translateX(210%)}}
   .bootcard small{font-family:var(--mono);font-size:11px;color:var(--mute)}
+  .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  #landing{max-width:560px;margin:8px auto 0;padding:0 16px}
+  .boottag{font-size:20px;font-weight:800;margin:4px 0 8px}
+  .bootabout{font-size:15px;line-height:1.5;color:var(--navy);margin:0 0 18px}
+  #landPlay{width:auto;font-size:16px;padding:12px 32px}
+  #landNote{display:block;margin-top:10px}
+  .bootlegal{position:absolute;left:0;right:0;bottom:14px;font:700 12px var(--display);color:var(--mute)}
+  .bootlegal a,.drlegal a{color:var(--navy);text-underline-offset:2px}
+  .drlegal{margin:14px 6px 4px;font-size:11px;font-weight:700;color:var(--mute)}
 
   /* =================== Screens =================== */
   .screen{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(246,239,226,.72);backdrop-filter:blur(8px);overflow:auto;padding:30px 0 50px}
@@ -960,14 +969,15 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) addEve
   .acf input{width:100%;text-transform:none;letter-spacing:0}
   .savecard.acctcard{width:min(580px,94vw);padding:24px 30px}
   .acctcard .oauth{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:0 0 4px}
-  .acctcard .oa{display:flex;align-items:center;gap:0;height:44px;padding:0 12px 0 2px;border:0;border-radius:4px;cursor:pointer;font:500 15px/1 Roboto,"Helvetica Neue",Arial,sans-serif;letter-spacing:.2px;color:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:filter .15s,box-shadow .15s}
+  .acctcard .oa{display:flex;align-items:center;gap:0;width:100%;height:40px;padding:0 12px 0 2px;border:0;border-radius:4px;cursor:pointer;font:500 14px/1 Roboto,"Helvetica Neue",Arial,sans-serif;letter-spacing:.2px;color:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:filter .15s,box-shadow .15s}
   .acctcard .oa:hover{filter:brightness(1.06);box-shadow:0 2px 6px rgba(0,0,0,.3)}
-  .acctcard .oa i{display:grid;place-items:center;width:40px;height:40px;flex:none;border-radius:3px}
-  .acctcard .oa i svg{width:20px;height:20px}
+  .acctcard .oa i{display:grid;place-items:center;width:36px;height:36px;flex:none;border-radius:3px}
+  .acctcard .oa i svg{width:18px;height:18px}
   .acctcard .oa span{flex:1;text-align:center;white-space:nowrap}
   .acctcard .oa-google{background:#1a73e8} .acctcard .oa-google i{background:#fff}
-  .acctcard .oa-discord{background:#5865f2;padding-left:6px} .acctcard .oa-discord i svg{width:24px;height:24px}
-  .acctcard .gsi{display:flex;justify-content:center;align-items:center;min-height:44px}
+  .acctcard .oa-discord{background:#5865f2;padding-left:6px} .acctcard .oa-discord i svg{width:22px;height:22px}
+  .acctcard .gsi{display:flex;justify-content:center;align-items:center;height:40px;overflow:hidden;border-radius:4px}
+  .acctcard .gsi > div{width:100%}
   .acor{display:flex;align-items:center;gap:10px;margin:16px 0 14px;font:800 10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--navy);opacity:.7}
   .acor::before,.acor::after{content:'';flex:1;height:2px;background:var(--line)}
   .aclinks{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:-4px 0 10px}
@@ -1204,7 +1214,17 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) addEve
 <symbol id="i-up" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 16.5v-9M8 11.5l4-4 4 4"/></symbol>
 </defs>
 </svg>
-<div id="boot"><div class="bootcard"><img class="bootlogo" src="logo.png" alt="Pastel Siege"><div class="bootbar"><u></u></div><small>Loading the tower…</small></div></div>
+<div id="boot"><div class="bootcard"><h1 class="vh">Pastel Siege</h1><img class="bootlogo" src="logo.png" alt="Pastel Siege">
+  <div class="bootbar" id="bootBar"><u></u></div><small id="bootMsg">Loading the tower…</small>
+  <div id="landing" hidden>
+    <p class="boottag">A free, chunky, colourful tower shooter you play right in your browser.</p>
+    <p class="bootabout">Climb endless floors of adaptive robots, choose which elevator door to take, beat bosses and level up 74 guns. Play solo or in co-op with friends. Make an account (email, Google or Discord) to save your progress online and appear on the leaderboards.</p>
+    <button class="go" id="landPlay">PLAY PASTEL SIEGE</button>
+    <small id="landNote"></small>
+  </div>
+  <nav class="bootlegal"><a href="/privacy">Privacy Policy</a> · <a href="/terms">Terms of Service</a></nav>
+</div></div>
+<noscript><p style="position:fixed;inset:auto 0 12px;text-align:center;font:700 14px sans-serif;z-index:99">Pastel Siege needs JavaScript and WebGL to play.</p></noscript>
 <div id="stage"></div>
 <div id="fade"></div>
 
@@ -1292,6 +1312,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) addEve
         <button data-panel="howto"><i><svg class="ic"><use href="#i-help"/></svg></i><span>HELP<small>How to play</small></span></button>
         <button data-panel="admin" id="adminNav" hidden><i><svg class="ic"><use href="#i-shield"/></svg></i><span>ADMIN<small>Players, ranks and kicks</small></span></button>
       </nav>
+      <p class="drlegal"><a href="/privacy" target="_blank" rel="noopener">Privacy Policy</a> · <a href="/terms" target="_blank" rel="noopener">Terms</a></p>
     </aside>
     <div id="drawerShade"></div>
 
@@ -1526,8 +1547,33 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) addEve
   function showErr(msg) { const b = document.getElementById('errbox'); b.style.display = 'block'; b.textContent = (b.textContent ? b.textContent + '\n' : 'Something broke. Please share this message (click to close):\n') + msg; }
   window.addEventListener('error', e => showErr((e.message || 'Script failed to load') + (e.filename ? ' @ ' + e.filename.split('/').pop() + ':' + e.lineno : '')));
   window.addEventListener('unhandledrejection', e => showErr('Promise: ' + (e.reason && e.reason.message || e.reason)));
-  setTimeout(() => { if (!window.__gameReady) showErr('Game code did not finish loading.'); }, 7000);
 </script>
-<script type="module" src="game_v0.99.2.js" onerror="showErr('Could not load game_v0.99.2.js')"></script>
+<script>
+  // Search engines, link previews and site checkers (Google's included) get the page above instead of the 3D game, and so
+  // do browsers without working 3D graphics, where it would freeze: they see what the game is and a PLAY button.
+  (function () {
+    const GAME = 'game_v0.99.2.js', q = new URLSearchParams(location.search);
+    let why = '';
+    try { if (!q.has('play') && !localStorage.getItem('psForcePlay')) {
+      if (/bot|crawl|spider|slurp|google-|googleother|lighthouse|preview|facebookexternalhit|embedly|headless/i.test(navigator.userAgent)) why = 'bot';
+      else {
+        const gl = document.createElement('canvas').getContext('webgl2') || document.createElement('canvas').getContext('webgl');
+        if (!gl) why = 'This browser can\'t show 3D graphics (WebGL is off or not supported).';
+        else { const ext = gl.getExtension('WEBGL_debug_renderer_info'), r = ext ? String(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)) : '';
+          if (/swiftshader|llvmpipe|softpipe|software|basic render/i.test(r)) why = 'This computer is drawing graphics without a graphics card, so the game may run very slowly.';
+          gl.getExtension('WEBGL_lose_context')?.loseContext(); }
+      }
+    } } catch (e) { }
+    const start = () => {
+      document.getElementById('landing').hidden = true; document.getElementById('bootBar').hidden = false; document.getElementById('bootMsg').hidden = false;
+      setTimeout(() => { if (!window.__gameReady) showErr('Game code did not finish loading.'); }, 20000);
+      const s = document.createElement('script'); s.type = 'module'; s.src = GAME; s.onerror = () => showErr('Could not load ' + GAME); document.body.appendChild(s);
+    };
+    if (!why) return start();
+    document.getElementById('bootBar').hidden = true; document.getElementById('bootMsg').hidden = true; document.getElementById('landing').hidden = false;
+    if (why !== 'bot') document.getElementById('landNote').textContent = why;
+    document.getElementById('landPlay').onclick = start;
+  })();
+</script>
 </body>
 </html>

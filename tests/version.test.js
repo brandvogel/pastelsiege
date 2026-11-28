@@ -17,7 +17,7 @@ test('every game file, the page and the offline cache use the package version', 
     for (const [, used] of read(f).matchAll(/from '\.\/([^']+)'/g)) assert.ok(files.includes(used), `${f} imports ${used}`);
   }
   assert.ok(sw.includes(`'pastel-siege-v${version}'`));
-  assert.ok(read('index.html').includes(`src="${game}"`));
+  assert.ok(read('index.html').includes(`const GAME = '${game}'`)); // the page loads the game through its small loader script
 });
 
 // two patterns read the version from file names: if they stop matching, the anti-cheat blocks the game's own changes
