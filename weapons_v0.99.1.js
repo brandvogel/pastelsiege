@@ -354,6 +354,16 @@ WEAPONS.push(
     model: { kind: 'melee', style: 'katana', color: 0xe9ecf2, accent: 0xd6453d } }),
   W({ ...MEL, id: 'scythe', name: 'Pastel Scythe', price: 3200, dmg: 150, rpm: 75, reach: 4, arc: 1.1, cleave: 7, back: 2, heal: 6, lunge: 4, draw: .45, two: true,
     model: { kind: 'melee', style: 'scythe', color: 0xb388ff, accent: 0x2b2d42 } }),
+  W({ ...MEL, id: 'tomahawk', name: 'Combat Tomahawk', price: 800, dmg: 95, rpm: 100, reach: 2.6, arc: .55, cleave: 2, back: 2.5, lunge: 3, draw: .3,
+    model: { kind: 'melee', style: 'axe', color: 0x3a3d47, accent: 0x5b4a3a } }),
+  W({ ...MEL, id: 'crowbar', name: 'Crowbar', price: 500, dmg: 70, rpm: 105, reach: 2.7, arc: .65, cleave: 2, back: 1.5, knock: 18, draw: .3,
+    model: { kind: 'melee', style: 'crowbar', color: 0xd6453d, accent: 0x2b2d42 } }),
+  W({ ...MEL, id: 'kukri', name: 'Kukri', price: 1000, dmg: 88, rpm: 130, reach: 2.5, arc: .65, cleave: 2, back: 2.5, draw: .25,
+    model: { kind: 'melee', style: 'kukri', color: 0xc9ced6, accent: 0x6b4a32 } }),
+  W({ ...MEL, id: 'baton', name: 'Shock Baton', price: 1300, dmg: 60, rpm: 160, reach: 2.6, arc: .6, cleave: 2, back: 2, knock: 10, stun: .9, mobility: 1.15, draw: .2,
+    model: { kind: 'melee', style: 'baton', color: 0x2b2d42, accent: 0x5ab8ff } }),
+  W({ ...MEL, id: 'fireaxe', name: 'Fire Axe', price: 1900, dmg: 175, rpm: 60, reach: 3.1, arc: .7, cleave: 4, back: 2, knock: 20, mobility: .98, draw: .45, two: true,
+    model: { kind: 'melee', style: 'fireaxe', color: 0xd6453d, accent: 0xb5734a } }),
 );
 Object.assign(DESC, {
   knife: 'Free in every run. Quick stabs, and triple damage from behind.',
@@ -363,6 +373,11 @@ Object.assign(DESC, {
   sledge: 'Slow, but 210 damage, hits up to 4 and slams them into the floor.',
   katana: 'Lunges you 7 m at whatever you swing at. Huge damage from behind.',
   scythe: 'Huge reach and a wide sweep that hits up to 7 bots. Heals 6 HP a hit.',
+  tomahawk: 'Hard overhead chops with a spike on the back. Lunges in and hits 2 bots.',
+  crowbar: 'Cheap, heavy and blunt. Knocks bots flying.',
+  kukri: 'A forward-curved blade that chops like an axe and slashes like a knife.',
+  baton: 'Fast telescopic baton with a shock tip that stuns bots for a moment.',
+  fireaxe: 'Two-handed red axe. Slow, brutal chops through 4 bots at once.',
 });
 for (const w of WEAPONS) w.desc = DESC[w.id] || '';
 export const byId = id => WEAPONS.find(w => w.id === id);

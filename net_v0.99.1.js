@@ -2,7 +2,7 @@
 // to each other; after that they talk directly. The host is the hub: friends send their position to the host, and the
 // host passes everyone's on to everyone else. Co-op runs (shared bots, waves and floors) are built on top in the game file.
 // Everyone's character look (shirt, pants, visor, hat, back item, name tag) travels with their name.
-import { THREE, scene, tracer, uiFont } from './world_v0.99.0.js';
+import { THREE, scene, tracer, uiFont } from './world_v0.99.1.js';
 
 const PEER_URL = 'https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js';
 const PREFIX = 'pastelsiege-p1-';            // keeps our codes apart from other games on the same free server
@@ -15,8 +15,8 @@ const RELAY_URL = 'wss://relay.pastelsiege.com';
 
 // ---------- character looks ----------
 // The looks and the character model live in avatar_v*.js; they are passed on from here for the game file.
-export { LOOK, DEFAULT_LOOK, cleanLook, tintRainbow, buildAvatar, lookColors } from './avatar_v0.99.0.js';
-import { cleanLook, tintRainbow, buildAvatar, pick, DEFAULT_LOOK } from './avatar_v0.99.0.js';
+export { LOOK, DEFAULT_LOOK, cleanLook, tintRainbow, buildAvatar, lookColors } from './avatar_v0.99.1.js';
+import { cleanLook, tintRainbow, buildAvatar, pick, DEFAULT_LOOK } from './avatar_v0.99.1.js';
 const lookKey = l => Object.values(cleanLook(l)).join('|');
 const disposeGroup = g => g.traverse(m => { if (m.isMesh) { m.geometry.dispose(); m.material.dispose?.(); } });
 

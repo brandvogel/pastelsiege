@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { todayKey, yesterdayKey } from '../run_v0.99.0.js';
-import { xpNeed, levelInfo, levelPerks, ensureDaily, questById, markPlayed, questTick, recordRun, nextReward } from '../meta_v0.99.0.js';
+import { todayKey, yesterdayKey } from '../run_v0.99.1.js';
+import { xpNeed, levelInfo, levelPerks, ensureDaily, questById, markPlayed, questTick, recordRun, nextReward } from '../meta_v0.99.1.js';
 
 test('level info round-trips with the XP table', () => {
   let xp = 0;

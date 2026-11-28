@@ -1,28 +1,28 @@
 import { uiFont, THREE, renderer, scene, camera, world, loadMap, resolveCircle, groundAt, ceilingAt, lineOfSight, boxAt, insideSolid, openPoint, clamp, rand,
-  tracer, beam, sparks, shell, decal, smoke, explosionFx, flashLight, updateFx, updateAtmos, fxSettings, SND, ac, setQuality, SUN_DIR, setWeather, lightningBolt, skyFlash, WEATHER, underCover, rayWall, collidersNear, followShadow, updatePads, updateEdges, setNight, followGlow, setResScale, getResScale, setResPct, renderPct, QUALITY, quality, IS_MAC, RETINA, APPLE_SI, CHIP, goreBurst, gibs, splat, bloodColor } from './world_v0.99.0.js';
-import { setVolume, musicStart, musicLevel, musicSong, setMusicVolume, at3, setListener, audioSettings, setAmbience, ambienceLevel, ambienceTick, ambienceCover, setStepSurface, audioClock } from './audio_v0.99.0.js';
-import { makePost } from './post_v0.99.0.js';
-import { XH_STYLES, XH_COLORS, XH_DEFAULT, XH_PRESETS, mountCrosshair, spreadCrosshair, crosshairSVG, crosshairCode, parseCrosshair } from './crosshair_v0.99.0.js';
-import { generateMap } from './mapgen_v0.99.0.js';
-import { byId, WEAPONS, drawSilhouette, PIP_TIERS, applyPipTier } from './weapons_v0.99.0.js';
-import { buildGun, addArms, decorateGun, makeEnv } from './models_v0.99.0.js';
-import { muzzleFlash, mergeChildren } from './gunkit_v0.99.0.js';
-import { prepare as vmPrepare, reloadPose, flourishPose, FLOURISH, dropMag, updateMags, clearMags, makeHandShell } from './vmanim_v0.99.0.js';
-import { Bot, bots, ctx, guardProps, updateShots, clearBots, updateDebris, updateLOD, TYPES, SPAWN_EXTRA, mates, botByNid, ghostBolt, puppetStep, laserOf as botLaser } from './bots_v0.99.0.js';
-import { Shop, compareBars, fineStats, ttk } from './shop_v0.99.0.js';
-import { computeWeapon, attById, SLOT_NAMES, LASER_COLS, LASER_LV, laserCol } from './attachments_v0.99.0.js';
-import { SKINS, skinById, prog, saveProg, sealSave, openSave, dropSave, tamper, levelOf, gunLevel, applyLevel, xpForLevel, MAX_LEVEL, TIER_COL } from './skins_v0.99.0.js';
-import { CHARMS, charmById, buildCharm, updateCharm } from './charms_v0.99.0.js';
+  tracer, beam, sparks, shell, decal, smoke, explosionFx, flashLight, updateFx, updateAtmos, fxSettings, SND, ac, setQuality, SUN_DIR, setWeather, lightningBolt, skyFlash, WEATHER, underCover, rayWall, collidersNear, followShadow, updatePads, updateEdges, setNight, followGlow, setResScale, getResScale, setResPct, renderPct, QUALITY, quality, IS_MAC, RETINA, DEV, liteMats, WXU, WX_OPT, refreshWeather, arc, hitBreakable, blastBreakables, breakByIndex, onBreak, updateExtras, stepSplash, footprint, slideMark, APPLE_SI, CHIP, goreBurst, gibs, splat, bloodColor } from './world_v0.99.1.js';
+import { setVolume, musicStart, musicLevel, musicSong, setMusicVolume, at3, setListener, audioSettings, setAmbience, ambienceLevel, ambienceTick, ambienceCover, setStepSurface, audioClock } from './audio_v0.99.1.js';
+import { makePost } from './post_v0.99.1.js';
+import { XH_STYLES, XH_COLORS, XH_DEFAULT, XH_PRESETS, mountCrosshair, spreadCrosshair, crosshairSVG, crosshairCode, parseCrosshair } from './crosshair_v0.99.1.js';
+import { generateMap } from './mapgen_v0.99.1.js';
+import { byId, WEAPONS, drawSilhouette, PIP_TIERS, applyPipTier } from './weapons_v0.99.1.js';
+import { buildGun, addArms, decorateGun, makeEnv } from './models_v0.99.1.js';
+import { muzzleFlash, mergeChildren } from './gunkit_v0.99.1.js';
+import { prepare as vmPrepare, reloadPose, flourishPose, FLOURISH, dropMag, updateMags, clearMags, makeHandShell, reloadTier, RELOAD_SPEED } from './vmanim_v0.99.1.js';
+import { Bot, bots, ctx, guardProps, updateShots, clearBots, updateDebris, updateLOD, TYPES, SPAWN_EXTRA, mates, botByNid, ghostBolt, puppetStep, laserOf as botLaser } from './bots_v0.99.1.js';
+import { Shop, compareBars, fineStats, ttk } from './shop_v0.99.1.js';
+import { computeWeapon, attById, SLOT_NAMES, LASER_COLS, LASER_LV, laserCol } from './attachments_v0.99.1.js';
+import { SKINS, skinById, prog, saveProg, sealSave, openSave, dropSave, tamper, levelOf, gunLevel, applyLevel, xpForLevel, MAX_LEVEL, TIER_COL } from './skins_v0.99.1.js';
+import { CHARMS, charmById, buildCharm, updateCharm } from './charms_v0.99.1.js';
 prog.charms = prog.charms || ['none']; prog.charmOf = prog.charmOf || {};
-import { SUPPORT, support, hctx, buySupport, buyCharge, setSupport, useScan, slv, supById, supNextPrice, owned, deployTurret, launchStriker, updateSupport, floorChange, clearSupport } from './helpers_v0.99.0.js';
-import { ABILITIES, abById, abNextPrice, abMax, AB } from './abilities_v0.99.0.js';
-import { MUTATIONS, mutById, MUT_STEPS, nextStep, applyMuts, offers, MV, mutDesc, ROMAN, MAX_MLV } from './mutations_v0.99.0.js';
-import { levelInfo, levelPerks, LEVEL_REWARDS, nextReward, XP_FOR, xpForFloor, ensureDaily, questById, markPlayed, streakXp, questTick, recordRun } from './meta_v0.99.0.js';
-import { ACTIONS, NOBIND, setBinds, bindIn, rebind, keyLabel } from './controls_v0.99.0.js';
-import { PLATFORM, allowed, enforce, sdkInit, sdkLoaded, playState, midAd, happy, audioGate, adBusy } from './platform_v0.99.0.js';
-import * as NET from './net_v0.99.0.js';
-import { account, staff, saveSig, progressSig, signIn, signUp, resendSignUp, changeEmail, refreshUser, confirmsEmail, finishLink, signOut, resume as resumeAccount, cloudGet, cloudPut, syncInfo, setSync, friendList, ping, addFriend, acceptFriend, removeFriend, testerList, setTester, playerList, giveRole, kick as kickPlayer, mute as mutePlayer, muteInfo, submitScore, topScores, clearScores, rank, ROLE_NAME, roleOf } from './account_v0.99.0.js';
-import { MODS, modById, doorOffers, CHARS, charById, charUnlocked, PERK, UPGRADES, upgCost, upgPoints, ACH, todayKey, dailySeed, mulberry, paintGoal } from './run_v0.99.0.js';
+import { SUPPORT, support, hctx, buySupport, buyCharge, setSupport, useScan, slv, supById, supNextPrice, owned, deployTurret, launchStriker, updateSupport, floorChange, clearSupport } from './helpers_v0.99.1.js';
+import { ABILITIES, abById, abNextPrice, abMax, AB } from './abilities_v0.99.1.js';
+import { MUTATIONS, mutById, MUT_STEPS, nextStep, applyMuts, offers, MV, mutDesc, ROMAN, MAX_MLV } from './mutations_v0.99.1.js';
+import { levelInfo, levelPerks, LEVEL_REWARDS, nextReward, XP_FOR, xpForFloor, ensureDaily, questById, markPlayed, streakXp, questTick, recordRun } from './meta_v0.99.1.js';
+import { ACTIONS, NOBIND, setBinds, bindIn, rebind, keyLabel } from './controls_v0.99.1.js';
+import { PLATFORM, allowed, enforce, sdkInit, sdkLoaded, playState, midAd, happy, audioGate, adBusy } from './platform_v0.99.1.js';
+import * as NET from './net_v0.99.1.js';
+import { account, staff, saveSig, progressSig, signIn, signUp, resendSignUp, changeEmail, refreshUser, confirmsEmail, finishLink, signOut, resume as resumeAccount, cloudGet, cloudPut, syncInfo, setSync, friendList, ping, addFriend, acceptFriend, removeFriend, testerList, setTester, playerList, giveRole, kick as kickPlayer, mute as mutePlayer, muteInfo, submitScore, topScores, clearScores, rank, ROLE_NAME, roleOf } from './account_v0.99.1.js';
+import { MODS, modById, doorOffers, CHARS, charById, charUnlocked, PERK, UPGRADES, upgCost, upgPoints, ACH, todayKey, dailySeed, mulberry, paintGoal } from './run_v0.99.1.js';
 
 const $ = id => document.getElementById(id);
 const V3 = THREE.Vector3, lerp = THREE.MathUtils.lerp;
@@ -40,11 +40,11 @@ let frozenDrawn = false; // solo menus show one still frame (see the end of fram
 const stats = { kills: 0, fired: 0, hit: 0, heads: 0, earned: 0, bestStreak: 0 };
 const runXP = {};
 
-// version shown at the bottom of Settings, taken from this file's name (game_v0.99.0.js -> v0.97.0) so it can't go out of date
+// version shown at the bottom of Settings, taken from this file's name (game_v0.99.1.js -> v0.97.0) so it can't go out of date
 const GAME_VERSION = (import.meta.url.match(/_(v\d+\.\d+\.\d+)\.js/) || [, 'dev'])[1];
 // ---------- settings (saved) ----------
 const SET_KEY = 'pastelSiegeSettings12';
-const SET_DEFAULT = { font: 'futura', sens: 1, adsSens: 1, fov: 80, vol: .8, music: .55, blood: 'red', dmgNums: true, shake: true, fps: false,
+const SET_DEFAULT = { font: 'futura', sens: 1, adsSens: 1, fov: 80, vol: .8, music: .55, blood: 'oil', dmgNums: true, shake: true, fps: false,
   quality: 'high', rt: 'auto', rtRefl: true, sunRays: true, mblur: 'off', bloom: true, grain: true, vignette: true, hud: 1, hitmarkers: true, hmColor: '#fffaf0', spatial: 'hrtf', gore: 'extreme', autoRes: true, res: 'auto', sharpen: .35, wobble: 1, fpsCap: '0', padSens: 1, invertY: false, toggleAds: false, crouchHold: false, bob: 1, hurtFx: 1, minimap: true, killfeed: true, toasts: true, xh: { ...XH_DEFAULT } };
 const settings = (() => {
   let s = null; try { s = JSON.parse(localStorage.getItem(SET_KEY)); } catch (e) { }
@@ -55,6 +55,7 @@ const settings = (() => {
   // first launch on a low-memory machine: start on Potato (or Low) so it runs; it can be changed in Settings
   // "Uncapped" used to be the default but it draws frames out of step with the screen; move old saves to Monitor once
   if (s && !s.fpsMig && s.fpsCap === 'uncapped') out.fpsCap = '0'; out.fpsMig = 1;
+  if (s && !s.oilMig && s.blood === 'red') out.blood = 'oil'; out.oilMig = 1; // v0.99.1: robots bleed oil and spark by default (Red is still in Settings)
   // first launch on a Mac (Safari doesn't report memory): M-chip Macs start on High, Intel Macs on Medium
   if (!s && IS_MAC) out.quality = APPLE_SI ? 'high' : 'medium';
   else if (!s && navigator.deviceMemory) out.quality = navigator.deviceMemory <= 2 ? 'potato' : navigator.deviceMemory <= 4 ? 'low' : out.quality; out.xh = Object.assign({}, XH_DEFAULT, (s && s.xh) || {}); return out;
@@ -63,8 +64,22 @@ const post = makePost(THREE, renderer, IS_MAC && RETINA);
 if (IS_MAC) document.documentElement.classList.add("mac");
 renderer.info.autoReset = false; let drawCalls = 0;
 let lastQuality = null;
-// a Custom preset made by the graphics test (Settings > Graphics)
-if (settings.customQ && typeof settings.customQ === "object") QUALITY.custom = settings.customQ; else if (settings.quality === "custom") settings.quality = "high";
+// Custom graphics (Settings > Graphics > Custom): every part of a preset can be set on its own. Made by hand, from a
+// preset, or by the graphics test. Stored as plain choices (resolution as a % of your screen) and turned into a preset here.
+const SHADOW_BOTS = { 0: 0, 1024: 18, 2048: 40, 4096: 60 };
+function cqFrom(level) {
+  const q = QUALITY[level] || QUALITY.high, lv = QUALITY[level] ? level : 'high';
+  const res = Math.round(Math.min(1, (q.pr || 1) / devicePixelRatio) * 100);
+  return { res: [50, 60, 67, 75, 85, 100].reduce((a, b) => Math.abs(b - res) < Math.abs(a - res) ? b : a), shadow: q.shadow || 0, post: !!q.post, bloom: !!q.bloom, samples: q.samples || 0,
+    lite: q.lite ?? 1, relief: q.relief ?? !['potato', 'low'].includes(lv), scatter: q.scatter ?? ({ potato: 0, low: 0, medium: .35, high: .65 })[lv] ?? 1,
+    lod: Math.min(200, q.lod || 90), edges: q.edges || 110, drops: q.drops ?? ({ potato: 800, low: 1000, medium: 2200, high: 3800 })[lv] ?? 5600,
+    clouds: q.clouds ?? ({ potato: 0, low: 8, medium: 14, high: 22 })[lv] ?? 32, think: q.think || 2, hudHz: q.hudHz || 0 };
+}
+function buildCustom(c) {
+  const pr = c.res ? devicePixelRatio * c.res / 100 : c.pr || 1; // older tests stored a pixel ratio
+  return { ...c, pr, botShadow: c.botShadow ?? SHADOW_BOTS[c.shadow] ?? 40, mm: c.hudHz === 20 ? 5 : c.hudHz === 30 ? 3 : 2, bloom: c.post && c.bloom, samples: c.post ? c.samples : 0 };
+}
+if (settings.customQ && typeof settings.customQ === "object") QUALITY.custom = buildCustom(settings.customQ); else if (settings.quality === "custom") settings.quality = "high";
 // Font picker (Settings > HUD): Futura is built into Macs only, so on Windows and Chromebooks the game fell back to a
 // plain font. The others load from Google Fonts the first time they're shown, so they look the same on every computer.
 const FONT_FALLBACK = '"Futura","Avenir Next","Trebuchet MS",sans-serif';
@@ -90,6 +105,7 @@ function applySettings() {
     lastQuality = settings.quality; const q = setQuality(settings.quality);
     post.enabled = q.post; if (post.samples !== q.samples) post.setSamples(q.samples);
     post.sunDir = SUN_DIR;
+    liteMats(scene, fxSettings.lite < 1); try { liteMats(gunScene, fxSettings.lite < 1); } catch (e) { } // the gun in your hands (not made yet on the very first call)
   }
   // ray tracing: the preset decides (on at Max for Super Ultra) unless you pick a level; it needs post effects (Medium and up)
   const Q = QUALITY[settings.quality] || QUALITY.high, rtMode = settings.rt === 'auto' || !settings.rt ? (Q.hq ? 'max' : 'off') : settings.rt;
@@ -120,6 +136,10 @@ ctx.player = player; ctx.playing = () => state === "playing"; ctx.hurt = (d, src
 // a bot headshot on you: a sharp ring, a white flash and a big kick
 function medalHead() { SND.head(); player.pitch += .03; player.shake += .4; const f = $("headflash"); f.classList.remove("go"); void f.offsetWidth; f.classList.add("go"); }
 ctx.explode = (p, r, d, o) => explode(p, r, d, o);
+// new robots: the Mortar's shells land where a warning ring shows; the Arc Walker's zaps slow you for a moment
+ctx.mortar = (bot, p, dmg) => { if (coop?.role === 'guest') return; zapAt(p, false, { mortar: true, dmg, from: bot }); };
+ctx.zapped = t => { player.zapT = Math.max(player.zapT || 0, t); };
+onBreak.fn = i => { if (coop) NET.toFriends({ t: 'brk', i }); }; // glass and crates break for everyone in co-op
 ctx.whizz = s => at3(s.mesh.position.clone(), () => SND.whizz(0));
 hctx.player = player;
 hctx.damage = (bot, dmg, point, dir, name) => damageBot(bot, dmg, false, point, name, dir, { helper: true });
@@ -168,7 +188,7 @@ const laserDot = new THREE.Mesh(new THREE.SphereGeometry(.035, 8, 6), new THREE.
 const gunToWorld = p => { const k = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) / Math.tan(THREE.MathUtils.degToRad(gunCam.fov / 2)); p.x *= k; p.y *= k; return camera.localToWorld(p); };
 const toWorld = v => { view.group.updateMatrixWorld(true); return gunToWorld(view.group.localToWorld(v)); };
 const shown = { p: new V3(), q: new THREE.Quaternion(), ok: false };
-const HIP = new V3(.2, -.19, -.4), HIP_PISTOL = new V3(.17, -.16, -.4), AKX = -.34; // AKX: how far left the second of two pistols sits
+const HIP = new V3(.14, -.16, -.4), HIP_PISTOL = new V3(.1, -.125, -.4), AKX = -.34; // AKX: how far left the second of two pistols sits
 // Dual pistols: a second copy of the gun goes in the left hand. Each gun sits in its own pivot at its grip, so it can kick,
 // twirl and roll on its own while the hands stay put.
 function makeAkimbo(v, w, skin) {
@@ -209,6 +229,7 @@ function equipView() {
   // aim-down-sights pose: rear sight lined up with the eye; pistols are held out at arm's length
   const relief = view.pistol ? .42 : magnified(cur().w) ? .1 : .15;
   view.ads = view.ak ? new V3(.16, -.125, -.37) : new V3(0, -view.sightY, -relief - view.rearZ); // two pistols: both come up and in, no sights
+  if (fxSettings.lite < 1) liteMats(view.group, true);
   gunCam.add(view.group); lastSlotsKey = ''; renderSlots();
 }
 function switchTo(slot, instant) {
@@ -227,7 +248,7 @@ const thumbCache = new Map(), thumbQ = [];
 let thumbR = null, thumbScene = null, thumbCam = null;
 function thumbSetup() {
   thumbR = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
-  thumbR.setPixelRatio(1); thumbR.setSize(640, 240, false); thumbR.toneMapping = THREE.NeutralToneMapping; thumbR.toneMappingExposure = 1.1;
+  thumbR.debug.checkShaderErrors = DEV; thumbR.setPixelRatio(1); thumbR.setSize(640, 240, false); thumbR.toneMapping = THREE.NeutralToneMapping; thumbR.toneMappingExposure = 1.1;
   thumbScene = new THREE.Scene(); thumbScene.environment = makeEnv(THREE, thumbR); thumbScene.environmentIntensity = .9;
   thumbScene.add(new THREE.HemisphereLight(0xfff6e6, 0x8f8270, 1.2));
   const key = new THREE.DirectionalLight(0xfff1dc, 2.6); key.position.set(2, 3, 1); thumbScene.add(key);
@@ -246,7 +267,7 @@ function renderThumb(w) {
   Object.assign(thumbCam, { left: -halfW, right: halfW, top: halfW / aspect, bottom: -halfW / aspect }); thumbCam.updateProjectionMatrix();
   thumbR.setClearColor(0, 0); thumbR.clear(); thumbR.render(thumbScene, thumbCam);
   const out = document.createElement('canvas'); out.width = 640; out.height = 240; out.getContext('2d').drawImage(thumbR.domElement, 0, 0);
-  thumbScene.remove(g); g.traverse(o => { if (o.isMesh) { o.geometry.dispose(); [].concat(o.material).forEach(m => m.dispose()); } });
+  thumbScene.remove(g); g.traverse(o => { if (o.isMesh) o.geometry.dispose(); }); // materials are left alone: disposing them would throw away their compiled shaders, and the next gun would compile them all again
   return out;
 }
 const thumbKey = w => `${w.id}|${prog.skinOf[w.id] || 'factory'}|${w.model.color}|${w.scope}`;
@@ -263,13 +284,20 @@ function gunThumb(cv, w) {
   drawSilhouette(cv, w); cv.dataset.tk = key;
   if (!thumbQ.some(q => q.cv === cv)) thumbQ.push({ cv, w, key });
 }
+// During a run this does almost nothing: building a gun picture takes a few ms (more the first time its shaders compile),
+// so it only draws ones you can actually see (the weapon slots), at most one a second. Menus and the shop get 8 ms a frame.
+let thumbLast = 0;
 function pumpThumbs() {
-  const t0 = performance.now();
-  while (thumbQ.length && performance.now() - t0 < (state === 'playing' ? 1 : 10)) {
-    const { cv, w, key } = thumbQ.shift();
+  const t0 = performance.now(), play = state === 'playing';
+  if (play && t0 - thumbLast < 1000) return;
+  for (let i = thumbQ.length - 1; i >= 0; i--) if (!document.body.contains(thumbQ[i].cv)) thumbQ.splice(i, 1); // canvases thrown away since
+  while (thumbQ.length && performance.now() - t0 < (play ? .1 : 8)) {
+    // pictures on screen first; hidden ones (other menu tabs) wait for a quiet moment in the menus
+    let i = thumbQ.findIndex(q => q.cv.offsetParent !== null || thumbCache.has(q.key)); if (i < 0) { if (play) return; i = 0; }
+    const { cv, w, key } = thumbQ.splice(i, 1)[0];
     let img = thumbCache.get(key);
-    if (!img) { try { img = renderThumb(w); thumbCache.set(key, img); } catch (e) { thumbCache.set(key, null); console.warn('gun render', e); continue; } }
-    if (img && document.body.contains(cv) && cv.dataset.tk === key) paintThumb(cv, img);
+    if (!thumbCache.has(key)) { thumbLast = performance.now(); try { img = renderThumb(w); thumbCache.set(key, img); } catch (e) { thumbCache.set(key, null); console.warn('gun render', e); continue; } }
+    if (img && cv.dataset.tk === key) paintThumb(cv, img);
   }
 }
 // ---------- floors (the tower) ----------
@@ -472,23 +500,25 @@ function clearStrikes() {
 //  Blizzard: snow but far worse: you can barely see, 15% slower, very slippery, strong gusts shove you sideways.
 //  Thick Fog: bots can only see you up close (and you can't see them far off either). Perfect for sneaking.
 //  Sandstorm: everyone's aim gets worse (your spread +25%, bots hit less), 10% slower, gusts.
-let weather = 'clear', zapT = 6, rumbleT = 4, gustT = 9, gust = 0, ambK = -1;
+let hailT = 2, footSide = 1, slideMarkT = 0, weather = 'clear', zapT = 6, rumbleT = 4, gustT = 9, gust = 0, ambK = -1;
 const zaps = [];
 const WX_FX = {
   rain: { move: .92, sight: .8 }, storm: { move: .88, sight: .68, gust: 3 }, snow: { move: .97, botSpeed: .88, slip: true },
-  blizzard: { move: .85, botSpeed: .8, sight: .5, slip: true, gust: 6.5 }, fog: { sight: .42 }, sand: { move: .9, sight: .55, botAcc: .72, spread: 1.25, gust: 7 },
+  blizzard: { move: .85, botSpeed: .8, sight: .5, slip: true, gust: 6.5 }, fog: { sight: .42 }, hail: { move: .95, sight: .75, sting: true }, sand: { move: .9, sight: .55, botAcc: .72, spread: 1.25, gust: 7 },
 };
 const WX_TEXT = {
   rain: 'RAIN · YOU MOVE 8% SLOWER · BOTS CAN\'T SEE AS FAR', storm: 'THUNDERSTORM · LIGHTNING HITS WHERE THE GROUND GLOWS · 12% SLOWER',
   snow: 'SNOW · SLIDES GO MUCH FURTHER · SLIPPERY GROUND · BOTS ARE SLOWER', blizzard: 'BLIZZARD · YOU CAN BARELY SEE · VERY SLIPPERY · GUSTS PUSH YOU AROUND',
-  fog: 'THICK FOG · BOTS ONLY SEE YOU UP CLOSE · NEITHER CAN YOU', sand: 'SANDSTORM · EVERYONE\'S AIM IS WORSE · GUSTS · 10% SLOWER',
+  hail: 'HAIL · IT STINGS OUT IN THE OPEN · GET UNDER A ROOF', fog: 'THICK FOG · BOTS ONLY SEE YOU UP CLOSE · NEITHER CAN YOU', sand: 'SANDSTORM · EVERYONE\'S AIM IS WORSE · GUSTS · 10% SLOWER',
 };
 const wxMove = () => WX_FX[weather]?.move || 1, slippery = () => !!WX_FX[weather]?.slip;
 function rollWeather(fl, rnd = Math.random) {
   if (fl < 2 || training || isTitanFloor(fl) || isRampage(fl)) return 'clear';
-  const r = rnd(); return r < .1 ? 'rain' : r < .18 ? 'storm' : r < .25 ? 'snow' : r < .29 ? 'blizzard' : r < .36 ? 'fog' : r < .41 ? 'sand' : 'clear';
+  const r = rnd(); return r < .1 ? 'rain' : r < .18 ? 'storm' : r < .25 ? 'snow' : r < .29 ? 'blizzard' : r < .36 ? 'fog' : r < .41 ? 'sand' : r < .45 ? 'hail' : 'clear';
 }
+let admWxLock = null; // admin panel: keep one weather on every floor
 function applyWeather(id, quiet) {
+  if (admWxLock) id = admWxLock;
   weather = WEATHER[id] ? id : 'clear'; setWeather(weather); zapT = rand(4, 7); rumbleT = rand(2, 5); gustT = rand(5, 9); gust = 0; clearZaps();
   const wet = weather === 'rain' || weather === 'storm'; post.rtUniforms.ssrStr.value = wet ? 1.1 : .4; post.setGloss(wet ? .08 : .3); // ray-traced reflections: wet ground turns mirror-like in the rain
   setAmbience(weather); renderWxChip();
@@ -498,6 +528,11 @@ function applyWeather(id, quiet) {
 function updateWeatherFx(dt) {
   const k = state === 'playing' ? 1 : state === 'menu' ? 0 : .4; if (k !== ambK) { ambK = k; ambienceLevel(k); }
   ambienceTick(dt);
+  // hail: pellets clatter all around, and out in the open they sting (a little damage every second or two)
+  if (WX_FX[weather]?.sting && state === 'playing') {
+    if (Math.random() < dt * 14) SND.casing();
+    if (!underCover(player.pos.x, player.pos.z, player.pos.y + 1.6) && (hailT -= dt) <= 0) { hailT = rand(1.2, 2.2); hurt(1.5 * diff.dmg, player.pos.clone().setY(player.pos.y + 8)); }
+  }
   const G = WX_FX[weather]?.gust; if (!G || state !== 'playing') return;
   if (gust > 0) {
     gust -= dt; const f = Math.sin(Math.min(1, gust / 2.5) * Math.PI) * G; // builds up, then dies down
@@ -510,13 +545,14 @@ function renderWxChip() {
 }
 // lightning: pick a spot (usually near a bot, sometimes near you), glow for a moment, then strike
 function updateStorm(dt) {
-  if ((rumbleT -= dt) <= 0) { rumbleT = rand(3, 7); skyFlash(rand(.25, .5)); SND.thunder(rand(90, 150)); } // far-off lightning
+  const storm = weather === 'storm'; // (also runs in other weather while an admin lightning strike is on its way)
+  if (storm && (rumbleT -= dt) <= 0) { rumbleT = rand(3, 7); skyFlash(rand(.25, .5)); SND.thunder(rand(90, 150)); } // far-off lightning
   for (let i = zaps.length - 1; i >= 0; i--) {
     const z = zaps[i]; z.t -= dt;
     z.ring.material.opacity = .4 + .5 * Math.abs(Math.sin(z.t * 18)); z.ring.scale.setScalar(1 + (1 - z.t / .9) * .3);
-    if (z.t <= 0) { strike(z.p, z.remote); scene.remove(z.ring); z.ring.geometry.dispose(); z.ring.material.dispose(); zaps.splice(i, 1); }
+    if (z.t <= 0) { if (z.m?.mortar) explode(z.p.clone().setY(z.p.y + .2), 4.2, z.m.dmg, { from: z.m.from, noBots: true, name: z.m.from?.t?.boss ? z.m.from.t.name : 'Mortar' }); else if (z.m?.tesla) { lightningBolt(z.p); const dd = z.p.distanceTo(camera.position); SND.thunder(dd); explode(z.p.clone().setY(z.p.y + .3), 3.8, z.m.dmg, { from: z.m.from, noBots: true, name: 'Tesla' }); } else strike(z.p, z.remote); scene.remove(z.ring); z.ring.geometry.dispose(); z.ring.material.dispose(); zaps.splice(i, 1); }
   }
-  if (coop?.role === 'guest' || (zapT -= dt) > 0) return;
+  if (!storm || coop?.role === 'guest' || (zapT -= dt) > 0) return;
   zapT = rand(4, 8);
   const alive = bots.filter(b => b.alive && !b.puppet), nearYou = !alive.length || Math.random() < .3;
   const c = nearYou ? player.pos : alive[Math.floor(Math.random() * alive.length)].pos, a = Math.random() * Math.PI * 2, r = nearYou ? rand(4, 12) : rand(0, 3);
@@ -524,11 +560,13 @@ function updateStorm(dt) {
   zapAt(p, false);
   if (coop?.role === 'host') NET.toFriends({ t: 'zap', x: +p.x.toFixed(2), z: +p.z.toFixed(2) });
 }
-function zapAt(p, remote) {
+function zapAt(p, remote, m) {
   p.y = groundAt(p.x, p.z, .3, 50, 60);
   const ring = new THREE.Mesh(new THREE.RingGeometry(3.6, 4.5, 40), new THREE.MeshBasicMaterial({ color: new THREE.Color(0xcfe0ff).multiplyScalar(2.5), transparent: true, opacity: .7, side: THREE.DoubleSide, depthWrite: false }));
   ring.rotation.x = -Math.PI / 2; ring.position.set(p.x, p.y + .06, p.z); scene.add(ring);
-  zaps.push({ p, ring, t: .9, remote }); SND.click();
+  if (m?.mortar) { ring.material.color.set(0xff8c42).multiplyScalar(2.5); ring.scale.setScalar(1); SND.whoosh?.(); }
+  if (m?.tesla) ring.material.color.set(0x9fd4ff).multiplyScalar(2.5);
+  zaps.push({ p, ring, t: m?.t ?? (m?.mortar ? 1.4 : .9), remote, m }); if (!m) SND.click();
 }
 function strike(p, remote) {
   const dd = p.distanceTo(camera.position); lightningBolt(p); SND.thunder(dd); lightningFlash(dd);
@@ -598,7 +636,7 @@ function throwNade() {
   player.cookT = 0; SND.jump();
 }
 function explode(p, radius, dmg, o = {}) {
-  explosionFx(p, radius); at3(p, () => SND.boom(p.distanceTo(camera.position)), !lineOfSight(p.clone().setY(Math.max(p.y, .5)), camera.position));
+  explosionFx(p, radius); blastBreakables(p, radius, dmg * 2); at3(p, () => SND.boom(p.distanceTo(camera.position)), !lineOfSight(p.clone().setY(Math.max(p.y, .5)), camera.position));
   const src = p.clone().setY(Math.max(p.y, .3) + .2);
   const name = o.name || (o.from ? 'Blast' : o.strike ? 'Strike Drone' : o.wid ? byId(o.wid).name : 'Frag');
   for (const b of bots) if (b.alive && b !== o.from) {
@@ -704,7 +742,7 @@ const upgHp = () => 100 + 10 * (prog.upg.hp || 0), upgSpd = () => 1 + .03 * (pro
 let floorMod = MODS[0], paint = 0, paintFills = 0, frenzyT = 0, dailyRun = false, training = null, runChar = 'rookie';
 const perk = () => PERK[runChar] || {};
 const isTitanFloor = fl => fl % 10 === 0;
-const moveMul = () => (perk().speed || 1) * (player.spdMul || 1) * (floorMod.id === "over" ? 1.35 : 1) * comboMul() * wxMove() * adm.speed;
+const moveMul = () => (perk().speed || 1) * (player.spdMul || 1) * (floorMod.id === "over" ? 1.35 : 1) * comboMul() * wxMove() * adm.speed * (player.zapT > 0 ? .62 : 1); // zapped by an Arc Walker: slowed
 // movement combos: every move you chain (slides, hops, wall runs, dashes, vaults...) adds to the combo and makes you
 // faster, ULTRAKILL style: +16% speed per move, so x5 is +80%, x10 is +160%, and x19 caps at +300% (4x speed). It lasts as long as you keep moving.
 // Slow down (under walking pace) for a tenth of a second and it's gone; go 0.6 s without a move and it drains very fast (a full x19 is gone in about 1 s).
@@ -980,7 +1018,7 @@ function startReload() {
   if (it.mag >= cap) { if (player.inspectT <= 0) startInspect(2); return; }
   player.inspectT = 0;
   if (w.shell) { it.shellMode = true; it.reloadT = it.reloadTotal = w.shell + (it.mag === 0 ? .3 : 0); }
-  else { it.reloadT = it.reloadTotal = it.mag > 0 ? w.reload : w.emptyReload; it.wasEmpty = it.mag === 0; const keyed = !!view?.fam; it.magInDone = keyed; it.rackDone = keyed; if (!keyed) SND.magOut(); } // keyframed reloads play their own sounds as they go
+  else { it.rlTier = reloadTier(levelInfo(prog.pxp || 0).lvl); it.reloadT = it.reloadTotal = (it.mag > 0 ? w.reload : w.emptyReload) * (view?.fam ? RELOAD_SPEED[it.rlTier] : 1); it.wasEmpty = it.mag === 0; const keyed = !!view?.fam; it.magInDone = keyed; it.rackDone = keyed; if (!keyed) SND.magOut(); } // keyframed reloads play their own sounds as they go
   player.burstLeft = 0;
 }
 function finishReload(it) {
@@ -1000,19 +1038,20 @@ function finishReload(it) {
 const K0 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 const SWINGS = {
   // right to left: cocked out to the right with the blade turned flat, then swept hard across
-  rl: [K0, [.2, .09, .03, .03, .1, -.55, -.35, 0, 0, -1.15], [.46, -.13, -.01, -.09, -.1, .75, .3, -.2, 0, -1.25], [.66, -.17, -.04, -.03, -.2, .85, .4, -.2, 0, -1.1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
+  rl: [K0, [.2, .09, .03, .03, .1, -.55, -.35, 0, 0, -1.15], [.46, -.13, .01, -.09, -.1, .75, .3, -.2, 0, -1.25], [.66, -.16, -.01, -.03, -.2, .85, .4, -.2, 0, -1.1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
   // left to right: the backhand
-  lr: [K0, [.2, -.1, .04, .03, .1, .55, .35, 0, 0, 1.05], [.46, .14, -.02, -.09, -.1, -.7, -.3, -.2, 0, 1.15], [.66, .17, -.05, -.03, -.2, -.8, -.4, -.2, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
+  lr: [K0, [.2, -.1, .04, .03, .1, .55, .35, 0, 0, 1.05], [.46, .12, .0, -.09, -.1, -.7, -.3, -.2, 0, 1.15], [.66, .15, -.02, -.03, -.2, -.8, -.4, -.2, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
   // overhead: raised high with the tip back over your shoulder, then chopped straight down
-  down: [K0, [.22, .02, .12, .06, .95, .05, -.1, .45, 0, 0], [.46, -.01, -.1, -.12, -.75, 0, .05, -.45, 0, 0], [.66, 0, -.14, -.05, -.85, 0, .05, -.4, 0, 0], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
+  down: [K0, [.22, .02, .11, .06, .95, .05, -.1, .45, 0, 0], [.46, -.02, -.04, -.12, -.7, 0, .05, -.4, 0, 0], [.66, -.01, -.06, -.06, -.8, 0, .05, -.36, 0, 0], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
   // upswing: dropped low and back, then ripped up and forward
-  up: [K0, [.22, .03, -.13, .04, -.8, .12, .25, -.45, 0, .2], [.46, -.02, .09, -.11, .85, -.1, -.1, .35, 0, 0], [.66, -.01, .11, -.05, .95, -.05, -.1, .3, 0, 0], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
+  up: [K0, [.22, .03, -.07, .04, -.7, .12, .25, -.4, 0, .2], [.46, -.02, .09, -.11, .85, -.1, -.1, .35, 0, 0], [.66, -.01, .11, -.05, .95, -.05, -.1, .3, 0, 0], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
   // stab: pulled back with the point straight ahead, then thrust out
-  stab: [K0, [.2, .03, -.02, .09, -.12, 0, 0, -.42, 0, 0], [.42, -.03, .01, -.24, .04, .06, 0, -.48, 0, 0], [.62, -.03, .01, -.2, .02, .06, 0, -.46, 0, 0], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
+  stab: [K0, [.2, .03, .01, .08, -.12, 0, 0, -.42, 0, 0], [.42, -.06, .05, -.2, .04, .06, 0, -.48, 0, 0], [.62, -.06, .05, -.17, .02, .06, 0, -.46, 0, 0], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
 };
 // the combo each weapon plays, one swing per click (starts over if you stop swinging for 1.2 s)
 const SWING_SEQ = { knife: ['rl', 'lr', 'stab', 'down'], machete: ['rl', 'lr', 'down', 'up'], claws: ['rl', 'lr', 'up', 'stab'], bat: ['rl', 'down', 'lr', 'up'],
-  sledge: ['down', 'rl', 'up', 'lr'], katana: ['rl', 'lr', 'down', 'up', 'stab'], scythe: ['rl', 'lr', 'up', 'down'] };
+  sledge: ['down', 'rl', 'up', 'lr'], katana: ['rl', 'lr', 'down', 'up', 'stab'], scythe: ['rl', 'lr', 'up', 'down'],
+  axe: ['down', 'rl', 'down', 'lr'], crowbar: ['rl', 'down', 'lr'], kukri: ['rl', 'lr', 'down', 'stab'], baton: ['rl', 'lr', 'down', 'stab'], fireaxe: ['down', 'rl', 'down', 'up'] };
 function swingPose(keys, q) {
   let i = 0; while (i < keys.length - 2 && q > keys[i + 1][0]) i++;
   const a = keys[i], b = keys[i + 1], u = clamp((q - a[0]) / (b[0] - a[0] || 1), 0, 1), s = u * u * (3 - 2 * u);
@@ -1046,6 +1085,7 @@ function meleeHit(it, w) {
     damageBot(b, dmg, head, c, w.name, to, { weaponId: w.id, melee: true, force: w.knock ? 4 : 1.5 });
     sparks(c, w.model.style === 'scythe' ? 0xb388ff : 0xfff1c0, 7, 4);
     if (w.knock && pushable(b)) b.knock = { x: to.x * w.knock, z: to.z * w.knock, t: .25 };
+    if (w.stun && b.alive && !b.t.boss) { b.stunT = w.stun; arc(c, .6); arc(c, .5); } // shock baton: locks them up for a moment
     if (w.heal) player.hp = Math.min(player.maxHp, player.hp + w.heal);
   });
   if (w.slam) smoke(player.pos.clone().addScaledVector(fwd.setY(0).normalize(), 2).setY(.2), 5, .6, 1);
@@ -1159,8 +1199,8 @@ function fireShot(it) {
   if (!w.quiet) { gunFlash.intensity = 6; flashLight(muzzle, 0xffc46b, 10, 7, .06); }
   if (Math.random() < (w.pellets > 1 ? 1 : .35)) smoke(muzzle, 1, w.pellets > 1 ? .18 : .1, .8);
   // moving parts
-  if (view.slide) view.slideZ = .026;
-  if (view.ak) { view.ak.sz[side] = .026; view.ak.kick[side] = 1; }
+  if (view.slide) view.slideT = 0; // starts the slide's cycle (see poseView)
+  if (view.ak) { (view.ak.st ||= [9, 9])[side] = 0; view.ak.kick[side] = 1; }
   if (it.mag === 0) view.lastT = .35;
   if (view.cyl) view.cylT += Math.PI / 3;
   if (!w.cycle && !['double', 'revolver', 'launcher', 'minigun'].includes(w.model.kind) || w.model.kind === 'minigun' && Math.random() < .3) shell(ejectPos(side), ejectVel(w), 0xd4a73a, caseKind(w), player.yaw);
@@ -1222,7 +1262,8 @@ function trace(origin, dir, w, muzzle, pellet) {
     if (w.zap && pellet === 0) zapChain(bot, w, seen);
     if (pierced++ >= w.pierce) { end = h.point; stopped = true; break; }
   }
-  if (!stopped && wall) {
+  if (!stopped && wall?.c?.brk) { hitBreakable(wall.c.brk, w.dmg * (w.pellets > 1 ? 1 : 1.2), wall.point, dir); if (!wall.c.brk.glass) decal(wall.point, wall.normal); }
+  else if (!stopped && wall) {
     const n = wall.normal; decal(wall.point, n); if (pellet < 3) { sparks(wall.point, 0xb8a888, 3, 3); if (pellet < 1) smoke(wall.point.clone().addScaledVector(n, .05), 1, .12, .6); }
     // Ricochet: the round bounces off the wall into the closest bot it can see
     if (ml.ricochet && pellet < 2 && Math.random() < MV('ricochet', ml.ricochet)) {
@@ -1331,6 +1372,7 @@ function updatePlayer(dt) {
   const fwd = new V3(-Math.sin(player.yaw), 0, -Math.cos(player.yaw)), right = new V3(Math.cos(player.yaw), 0, -Math.sin(player.yaw)), want = new V3();
   const shift = keys.ShiftLeft;
   let sliding = player.slideT > 0;
+  if (player.zapT > 0) player.zapT -= dt;
   if (adm.fly) flyStep(dt, p); // admin: fly (through walls too)
   else if (player.mantle) {
     // scripted climb: rise first, then roll forward onto the ledge
@@ -1355,7 +1397,7 @@ function updatePlayer(dt) {
     player.slideQ = false; player.slideCd -= dt; player.sinceDash = (player.sinceDash || 9) + dt;
     if (player.slamBounce > 0) player.slamBounce -= dt; if (player.slideBuf > 0) player.slideBuf -= dt;
     player.groundT = player.onGround ? (player.groundT || 0) + dt : 0;
-    sliding = player.slideT > 0; if (sliding) player.slideT -= dt;
+    sliding = player.slideT > 0; if (sliding) { player.slideT -= dt; if ((slideMarkT -= dt) <= 0) { slideMarkT = .06; slideMark(player.pos, player.yaw); stepSplash(player.pos, .6); } }
     if (keys.KeyW) want.add(fwd); if (keys.KeyS) want.sub(fwd); if (keys.KeyD) want.add(right); if (keys.KeyA) want.sub(right);
     const wasSprint = player.sprinting;
     player.sprinting = !sliding && shift && keys.KeyW && !adsHeld && player.crouch < .3 && !(w.spin && trigger);
@@ -1486,7 +1528,7 @@ function updatePlayer(dt) {
       player.slideDir = new V3(player.vel.x, 0, player.vel.z).normalize(); player.vel.x = player.slideDir.x * sp; player.vel.z = player.slideDir.z * sp;
       player.slideT = slippery() ? 1.6 : .9; player.slideCd = .8; player.crouchOn = true; player.slideBuf = 0; SND.slide(); player.landDip = .05; moveCombo('LANDING SLIDE');
     }
-    else if (player.onGround && !wasGround && fallV < -5) { SND.land(Math.min(1, -fallV / 16)); player.landDip = Math.min(.12, -fallV * .006); }
+    else if (player.onGround && !wasGround && fallV < -5) { SND.land(Math.min(1, -fallV / 16)); player.landDip = Math.min(.12, -fallV * .006); stepSplash(player.pos, Math.min(2.5, -fallV / 6)); footprint(player.pos, player.yaw, 1); footprint(player.pos, player.yaw, -1); }
   }
   player.camOff *= Math.exp(-dt * 14); player.landDip *= Math.exp(-dt * 8);
   // jump pads launch you up onto rooftops
@@ -1509,6 +1551,7 @@ function updatePlayer(dt) {
     player.stepT -= dt;
     if (player.stepT <= 0) {
       player.stepT = player.sprinting ? .3 : player.crouch > .5 ? .6 : .44; SND.step(player.sprinting ? 1 : player.crouch > .5 ? .35 : .65);
+      { const fp = player.pos; footSide = -footSide; footprint(fp, player.yaw, footSide); if (stepSplash(fp, player.sprinting ? 1 : .7) > .5) SND.slide?.(); } // snow prints, rain splashes
       if (player.sprinting) for (const b of bots) if (b.alive && b.pos.distanceTo(p) < 11) b.noise(p, 3, .25);
     }
   }
@@ -1563,7 +1606,9 @@ const INSPECTS = ['showcase', 'spin', 'mag', 'chamber'];
 function startInspect(kind) {
   const it = cur(); if (!it || it.reloadT > 0 || player.adsT > .1 || player.switchT > 0 || state !== 'playing') return;
   player.inspectKind = kind ?? ((player.inspectKind ?? -1) + 1) % INSPECTS.length;
-  player.inspectT = 2.6; player.insEv = 0;
+  // guns with keyframed handling get the detailed inspects (see vmanim inspectKeys); the rest keep the simple ones
+  if (view?.fam && kind === undefined) { view.insN = ((view.insN ?? -1) + 1) % 3; view.flKind = null; startFlourish('ins' + view.insN); player.inspectT = 0; }
+  else { player.inspectT = 2.6; player.insEv = 0; }
   const w = it.w, L = levelOf(prog.xp[it.base.id] || 0), skin = skinById(prog.skinOf[it.base.id] || 'factory'), ch = charmById(prog.charmOf[it.base.id]);
   const parts = Object.values(it.att).map(id => attById(id)?.name).filter(Boolean);
   $('inspectCard').innerHTML = `<div class="ic-top"><span class="ic-cat">${w.cat}</span><span class="ic-lv">LV ${L.level}</span></div>
@@ -1637,7 +1682,7 @@ function poseAkimbo(dt, it, sw) {
     P.position.y = (s ? A.gripL.y : view.grip.y) - dip * .1 + kk * .008; P.position.z = (s ? A.gripL.z : view.grip.z) + kk * .03;
     // slide: blows back on each shot, locks open on an empty mag, racked by hand after an empty reload
     const sl = A.slide[s];
-    if (sl) { A.sz[s] = it.mag === 0 && it.reloadT <= 0 ? .022 : A.sz[s] * Math.exp(-dt * 28); sl.position.z = Math.max(A.sz[s], rackK * .022); }
+    if (sl) { const st = A.st ||= [9, 9], t = st[s] += dt, tr = .057, c = it.mag === 0 && it.reloadT <= 0 ? .92 : t < .03 ? 1 - (1 - t / .03) ** 2 : t < .05 ? 1 : t < .13 ? 1 - smooth((t - .05) / .08) : 0; sl.position.z = Math.max(c * tr, rackK * tr * .75); } // same cycle as one pistol
     const m = A.mag[s];
     if (m) {
       if (drop >= 0) { const f = drop; m.position.set(-sg * .01 * f, -(.06 * f + .5 * f * f), .02 * f); m.rotation.set(-f * 1.6, 0, sg * f * .8); m.visible = f < .9; }
@@ -1651,6 +1696,8 @@ function reloadEvents(evs, it) {
   for (const e of evs) {
     if (e === 'release') SND.magOut();
     else if (e === 'drop') spawnMag();
+    else if (e === 'flick') { spawnMag(true); SND.magOut(); } // thrown clear with a flick of the wrist
+    else if (e === 'toss') SND.pouch();
     else if (e === 'pouch') SND.pouch();
     else if (e === 'magIn') { if (view.fam === 'break') { SND.shellIn(); setTimeout(SND.shellIn, 110); } else SND.magIn(); it.magInDone = true; }
     else if (e === 'tap') SND.tap();
@@ -1664,12 +1711,12 @@ function reloadEvents(evs, it) {
 function startFlourish(kind) { if (!view?.fam) return; view.flKind = kind; view.flT = 0; view.lastFl = -1; }
 // the empty mag leaves the gun where it is on screen and falls into the world
 const MAG_KEEP = { potato: 3, low: 6, medium: 10, high: 14, ultra: 20, superultra: 30 };
-function spawnMag() {
+function spawnMag(thrown) {
   if (!view?.magG || !view.magMid) return;
   view.group.updateMatrixWorld(true); view.magG.updateMatrix();
   const mid = view.magMid.clone().applyMatrix4(view.magG.matrix), pos = toWorld(mid);
   const q = camera.quaternion.clone().multiply(view.group.quaternion).multiply(view.magG.quaternion);
-  const vel = new V3(-.35, -1.1, .1).applyQuaternion(camera.quaternion).add(player.vel.clone().multiplyScalar(.9));
+  const vel = (thrown ? new V3(-2.6, .9, -.4) : new V3(-.35, -1.1, .1)).applyQuaternion(camera.quaternion).add(player.vel.clone().multiplyScalar(.9));
   dropMag(scene, view.magG, pos, q, vel, MAG_KEEP[quality.level] ?? 14);
 }
 // revolvers dump all six cases; break-action shotguns pop their two hulls
@@ -1723,7 +1770,7 @@ function poseView(dt, it, w, speed, sliding) {
     for (const [t, fn] of INS_SOUNDS[kind] || []) if (ph >= t && player.insEv < t) fn();
     player.insEv = ph;
     $('inspectCard').classList.toggle('on', ph > .35 && player.inspectT > .3);
-  } else { view.cylBase = null; $('inspectCard').classList.remove('on'); }
+  } else { view.cylBase = null; const fi = view.flKind?.startsWith('ins'); $('inspectCard').classList.toggle('on', !!fi && view.flT > .5 && view.flT < FLOURISH[view.flKind] - .4); }
   rack = Math.max(rack, rRack);
   view.insY = lerp(view.insY, env * tY, Math.min(1, dt * 8)); view.insZ = lerp(view.insZ, env * tZ, Math.min(1, dt * 8));
   // wobble: the gun hangs on loose springs, so it overshoots and settles. It kicks up when you jump, swings down as you
@@ -1749,6 +1796,9 @@ function poseView(dt, it, w, speed, sliding) {
   const cant = smooth(view.cantT) * player.adsT;
   const gp = view.group.position;
   gp.lerpVectors(hip, adsPos, player.adsT);
+  if (view.inner) { gp.y += .06 * (1 - player.adsT); gp.z += .03; gp.x -= .02; } // melee: held higher, so the blade shows at rest and through every swing
+  // narrower screens (16:10 laptops, tablets, phones) show less to the side, so the gun moves in to stay clear of the ammo panel
+  gp.x -= hip.x * (1 - clamp(gunCam.aspect / 1.78, .45, 1)) * (1 - player.adsT);
   gp.x += Math.cos(player.bob) * .012 * bobA - player.lagX * (1 - player.adsT * .8) + sp * -.06 - Math.abs(view.insY) * .08 - tilt * .04 + cant * .034 + (wb.r * .12 - wb.w * .1) * calm * k;
   gp.y += Math.abs(Math.sin(player.bob)) * .016 * bobA - rl * .14 - sw * .3 - sp * .05 + player.kick * .012 * (1 - player.adsT * .6) - mant * .25 - sl * .03 + view.insZ * .08 - player.landDip * .5 + tilt * .03 + slap * .018 + cant * .012 + wb.y * calm * k;
   gp.z += player.kick * .045 * (1 - player.adsT * .5) + tilt * .03;
@@ -1786,7 +1836,7 @@ function poseView(dt, it, w, speed, sliding) {
   if (view.inner) {
     const B = view.innerBase, P = view.swingT > 0 ? swingPose(SWINGS[view.swingKind] || SWINGS.rl, 1 - (view.swingT = Math.max(0, view.swingT - dt)) / view.swingDur) : null;
     if (P) {
-      const big = view.oneHand ? 1 : 1.25, wr = view.oneHand ? 1 : .35; // two hands on the handle: the arms do the turning, not the wrist
+      const big = view.oneHand ? 1 : 1.1, wr = view.oneHand ? 1 : .35; // two hands on the handle: the arms do the turning, not the wrist
       gp.x += P[0] * big; gp.y += P[1] * big; gp.z += P[2] * big;
       R.x += P[3] * big; R.y += P[4] * big; R.z += P[5] * big;
       view.inner.rotation.set(B.x + P[6] * wr, B.y + P[7] * wr, B.z + P[8] * wr);
@@ -1803,7 +1853,15 @@ function poseView(dt, it, w, speed, sliding) {
   view.group.visible = !(magnified(w) && player.adsT > .9);
   if (view.spinner) view.spinner.rotation.z += dt * 40 * player.spin;
   // pistol slide blows back and locks open on an empty mag
-  if (view.slide) { const locked = it.mag === 0 && it.reloadT <= 0; view.slideZ = locked ? .022 : view.slideZ * Math.exp(-dt * 28); view.slide.position.z = Math.max(view.slideZ, rack * .02, RA ? RA.slide * .022 : 0); }
+  // Pistol slide, like the real thing: slams back its full travel (about a third of its length) in a few hundredths of
+  // a second, pauses as the spent case flies, then springs forward and settles with a tiny bounce. Slowed a little so
+  // you can see it. On the last round it stays locked back until you reload.
+  if (view.slide) {
+    const travel = (view.slideLen || .19) * .3, locked = it.mag === 0 && it.reloadT <= 0, t = view.slideT = (view.slideT ?? 9) + dt;
+    let c = t < .03 ? 1 - (1 - t / .03) ** 2 : t < .05 ? 1 : t < .13 ? 1 - smooth((t - .05) / .08) : t < .17 ? -Math.sin((t - .13) / .04 * Math.PI) * .05 : 0;
+    if (locked && t >= .03) c = .92;
+    view.slide.position.z = Math.max(c * travel, rack * travel * .75, RA ? RA.slide * travel * .8 : 0);
+  }
   if (view.cyl) view.cyl.rotation.z += (view.cylT - view.cyl.rotation.z) * Math.min(1, dt * 18);
   if (view.ak) poseAkimbo(dt, it, sw);
   // left hand: follows the reload keys, rides the pump, otherwise rests on the gun; the arm rig bends the elbow to match
@@ -2005,20 +2063,108 @@ function spawnWave(n) {
   const add = b => { bots.push(tuneBot(b)); return b; };
   for (let i = 0; i < count; i++) add(new Bot(type(), spawnPoint(taken), { elite: Math.random() < eliteP, hpMul }));
   if (titan) { const b = add(new Bot('titan', spawnPoint(taken), { hpMul: 1 + (fl / 10 - 1) * .6 })); b.phase = 1; b.stompT = 6; }
-  else if (bossWave) add(new Bot('boss', spawnPoint(taken), { hpMul: (1 + .35 * (n / 5 - 1)) * (1 + (fl - 1) * .08) * (M === 'hard' ? 1.4 : 1) }));
+  else if (bossWave) add(new Bot(bossFor(fl), spawnPoint(taken), { hpMul: (1 + .35 * (n / 5 - 1)) * (1 + (fl - 1) * .08) * (M === 'hard' ? 1.4 : 1) }));
   // bots spawn unaware: they patrol until they see or hear you
   const tag = M !== 'calm' ? ` · ${floorMod.name.toUpperCase()}` : '';
   if (R && newFloor) { banner(`FLOOR ${fl}: RAMPAGE`, `EASY KILLS · BOTTOMLESS AMMO · +50% DAMAGE · ${count} BOTS`); $('hud').classList.add('rampage'); }
   else if (R) banner(wi === 5 ? `WAVE ${n}: THE SWARM` : `RAMPAGE WAVE ${n}`, `${count} BOTS · GO WILD`);
   else if (titan) banner(`WAVE ${n}: THE TITAN`, 'SHOOT THE GLOWING CORE ON ITS CHEST · JUMP OVER ITS STOMPS');
   else if (newFloor) { $('hud').classList.remove('rampage'); banner(isTitanFloor(fl) ? `FLOOR ${fl}: TITAN FLOOR` : `FLOOR ${fl}${tag}`, isRampage(fl - 1) ? `PARTY'S OVER · BOTS: ${skill.tier.toUpperCase()}` : isTitanFloor(fl) ? `SOMETHING HUGE IS WAITING ON WAVE 5 · ${count} BOTS` : mapDef.sizeId === 'tiny' ? `TINY ARENA · NOWHERE TO HIDE · ${count} BOTS` : mapDef.sizeId === 'huge' ? `HUGE DESERT · ${mapDef.size * 2}M ACROSS · BRING A RIFLE` : `${M !== 'calm' ? floorMod.twist.toUpperCase() : mapDef.name.toUpperCase()} · ${count} BOTS`); }
-  else banner(bossWave ? `WAVE ${n}: BOSS` : `WAVE ${n}`, bossWave ? 'THE WARDEN IS ON THE FIELD' : `${count} BOTS ON PATROL · SKILL: ${skill.tier.toUpperCase()}${tag}`);
+  else banner(bossWave ? `WAVE ${n}: BOSS` : `WAVE ${n}`, bossWave ? BOSS_LINE[bossFor(fl)] : `${count} BOTS ON PATROL · SKILL: ${skill.tier.toUpperCase()}${tag}`);
   // night waves: from floor 2, roughly 1 wave in 5 goes pitch black (never rampage or Titan waves)
   nightWave = !R && !titan && fl >= 2 && Math.random() < .2 && !training; applyNight();
   if (nightWave) { const lit = ["primary", "secondary"].some(k => player.slots[k]?.w.torch);
     setTimeout(() => { if (state === "playing" && nightWave) banner("NIGHT WAVE: PITCH BLACK", player.nvg ? `NIGHT VISION: ${keyLabel("nvg")} · OR USE YOUR TAC LIGHT` : lit ? "YOUR TAC LIGHT IS THE ONLY LIGHT" : `YOU CAN'T SEE · BUY A TAC LIGHT ($250) OR NIGHT VISION ($5,000) IN THE SHOP (${keyLabel("shop")})`); }, newFloor ? 2600 : 1400); }
   bossWave || titan ? SND.boss() : SND.wave();
   renderPips(); musicSong(fl);
+}
+// ---------- floor bosses ----------
+// Four bosses take turns (one per floor's boss wave), each with its own attacks. Every one has two rage phases (at 2/3
+// and 1/3 health: faster, bigger attacks, and backup arrives), and they all hit harder and attack more often the
+// higher the floor (bossPower).
+//  Warden   cannon bursts and rockets, then MISSILE RAIN: glowing rings mark where shells will land
+//  Ravager  shotgun up close, CHARGES straight at you (sidestep), and from phase 2 SLAMS the ground (jump the shockwave)
+//  Tesla    chain lightning at long range, LIGHTNING STRIKES all around you, and from phase 3 an electric nova up close
+//  Overseer flies; rapid fire, and a burning LASER SWEEP across the ground (two crossing sweeps from phase 2)
+const BOSS_ORDER = ['boss', 'ravager', 'tesla', 'overseer'];
+const bossFor = fl => BOSS_ORDER[(fl - 1) % BOSS_ORDER.length];
+const BOSS_LINE = { boss: 'THE WARDEN · WATCH FOR THE MISSILE RAIN RINGS', ravager: 'THE RAVAGER · SIDESTEP THE CHARGE · JUMP THE SLAMS', tesla: 'TESLA · LIGHTNING STRIKES WHERE THE GROUND GLOWS · KEEP MOVING', overseer: 'THE OVERSEER · DODGE THE LASER SWEEP' };
+const BOSS_PHASE = { boss: ['MISSILE RAIN DOUBLES', 'ENDLESS BARRAGE'], ravager: ['IT SLAMS NOW: JUMP!', 'BERSERK: CHARGES BACK TO BACK'], tesla: ['THE STORM GROWS', 'OVERLOAD: DON\'T GET CLOSE'], overseer: ['TWIN LASERS', 'IT CALLS THE SWARM'] };
+const BOSS_HELP = { boss: ['heavy', 'grunt'], ravager: ['brawler', 'berserker'], tesla: ['arcwalker', 'drone'], overseer: ['hornet', 'hornet'] };
+const bossPower = () => 1 + (floorN - 1) * .12;
+function updateBosses(dt) {
+  if (coop?.role === 'guest') return; // the host runs the fight
+  for (const b of bots) {
+    if (!b.alive || !b.t.boss || b.t.titan || b.puppet || b.stunT > 0) continue;
+    if (!b.own) { b.own = true; b.t = { ...b.t }; b.hp0 = b.hp; b.phase = 1; b.spT = 4; } // its own copy of its stats, so rage only speeds up this one
+    const id = b.type, P = bossPower(), f = b.hp / b.hp0, want = f < .33 ? 3 : f < .66 ? 2 : 1;
+    if (want > b.phase) {
+      b.phase = want; b.t.rate *= .75; b.t.speed *= 1.15; b.spT = Math.min(b.spT, 1.5);
+      banner(`${b.t.name.toUpperCase()}: PHASE ${want}`, BOSS_PHASE[id]?.[want - 2] || 'ENRAGED'); SND.boss(); player.shake += 1.2;
+      const taken = [b.pos.clone()], help = BOSS_HELP[id] || ['grunt'];
+      for (let i = 0; i < 2 + want; i++) bots.push(tuneBot(new Bot(help[i % help.length], spawnPoint(taken), { hpMul: 1 + floorN * .05 })));
+      b.mats?.[0]?.emissive?.setHex(want === 3 ? 0x5a0a14 : 0x2a0a10);
+    }
+    // a charge or a laser sweep in progress
+    if (b.rush) bossRush(b, dt, P); if (b.sweep) bossSweep(b, dt, P);
+    if (!b.sees || b.rush || b.sweep || (b.spT -= dt * Math.sqrt(P)) > 0) continue;
+    const ph = b.phase, dm = diff.dmg * P, pl = player.pos;
+    if (id === 'boss') { // missile rain: rings around you, the first on where you're heading
+      const n = 3 + ph * 2 + Math.floor(P * 1.5);
+      for (let i = 0; i < n; i++) { const a = rand(0, 6.28), r = i ? rand(2, 8) : 0, p = new V3(pl.x + player.vel.x * .9 + Math.cos(a) * r, 0, pl.z + player.vel.z * .9 + Math.sin(a) * r);
+        zapAt(p, false, { mortar: true, dmg: 30 * dm, from: b, t: 1.3 + i * .12 }); }
+      b.spT = 9 / (1 + (ph - 1) * .4);
+    } else if (id === 'ravager') {
+      if (ph >= 2 && b.lastSp === 'rush') { b.slamT = .9; b.lastSp = 'slam'; beam(new V3(b.pos.x, 0, b.pos.z), new V3(b.pos.x, 12, b.pos.z), 0xff3b30, 1.1, .9); at3(b.pos, () => SND.boss()); }
+      else { const to = new V3(pl.x - b.pos.x, 0, pl.z - b.pos.z).normalize(); b.rush = { t: 1.2, dir: to, hit: false }; b.lastSp = 'rush'; at3(b.pos, () => SND.boss()); }
+      b.spT = ph >= 3 ? 2.6 : 5;
+    } else if (id === 'tesla') { // lightning strikes all around you
+      const n = 2 + ph + Math.floor(P * .8);
+      for (let i = 0; i < n; i++) { const a = rand(0, 6.28), r = i ? rand(1.5, 7) : 0, p = new V3(pl.x + player.vel.x * .6 + Math.cos(a) * r, 0, pl.z + player.vel.z * .6 + Math.sin(a) * r);
+        zapAt(p, false, { tesla: true, dmg: 34 * dm, from: b, t: .9 + i * .18 }); }
+      b.spT = 6.5 / (1 + (ph - 1) * .35);
+    } else if (id === 'overseer') { // laser sweep across where you stand
+      b.sweep = { t: 0, dur: 1.9, lines: [] };
+      for (let k = 0; k < (ph >= 2 ? 2 : 1); k++) { const a = rand(0, 6.28) + k * 1.57, d = new V3(Math.cos(a), 0, Math.sin(a)); b.sweep.lines.push([new V3(pl.x, 0, pl.z).addScaledVector(d, -9), new V3(pl.x, 0, pl.z).addScaledVector(d, 9)]); }
+      b.spT = 7 / (1 + (ph - 1) * .35);
+      if (ph >= 3 && Math.random() < .5) for (let i = 0; i < 2; i++) bots.push(tuneBot(new Bot('hornet', spawnPoint([b.pos.clone()]), { hpMul: 1 + floorN * .05 })));
+    }
+  }
+  // Ravager slam (warned by a red pillar) and Tesla's overload nova
+  for (const b of bots) {
+    if (b.alive && b.slamT > 0 && (b.slamT -= dt) <= 0) shockwave(b.pos, 11, 34 * diff.dmg * bossPower());
+    if (b.alive && b.type === 'tesla' && b.phase >= 3 && (b.novaT = (b.novaT ?? 3) - dt) <= 0) {
+      b.novaT = 3.2; const c = b.center(); for (let i = 0; i < 10; i++) arc(c, rand(2, 5)); flashLight(c, 0x9fd4ff, 20, 10, .15);
+      const d = c.distanceTo(camera.position); if (d < 7.5) { hurt(16 * diff.dmg * bossPower(), b.pos); ctx.zapped(.8); } at3(c, () => SND.thunder(d));
+    }
+  }
+}
+// Ravager charge: a straight run at where you were, fast, sparks off its feet; it hurts and throws you if it connects
+function bossRush(b, dt, P) {
+  const R = b.rush; R.t -= dt; const sp = (15 + b.phase * 2) * dt, nx = b.pos.x + R.dir.x * sp, nz = b.pos.z + R.dir.z * sp;
+  if (world.nav.free(nx, nz)) { b.pos.x = nx; b.pos.z = nz; } else R.t = 0; // ran into a wall
+  b.yaw = Math.atan2(R.dir.x, R.dir.z); if (Math.random() < .5) sparks(new V3(b.pos.x, .2, b.pos.z), 0xffd27a, 3, 3);
+  if (!R.hit && Math.hypot(player.pos.x - b.pos.x, player.pos.z - b.pos.z) < 2.6 && Math.abs(player.pos.y - b.pos.y) < 2.5) {
+    R.hit = true; hurt(26 * diff.dmg * P, b.pos); player.vel.x += R.dir.x * 14; player.vel.z += R.dir.z * 14; player.vel.y = 6; player.shake += 2;
+  }
+  if (R.t <= 0) b.rush = null;
+}
+// Overseer laser: a burning red line from its eye sweeps along the ground; standing in it burns
+function bossSweep(b, dt, P) {
+  const S = b.sweep; S.t += dt; const k = Math.min(1, S.t / S.dur), eye = b.center();
+  for (const [A, B] of S.lines) {
+    const p = A.clone().lerp(B, k); p.y = groundAt(p.x, p.z, .3, 40, 60) + .05;
+    beam(eye, p, 0xff2a2a, .07, .05); if (Math.random() < .6) sparks(p, 0xff8c42, 2, 3); if (Math.random() < .15) smoke(p, 1, .3, .6);
+    if (Math.hypot(player.pos.x - p.x, player.pos.z - p.z) < 1.4 && player.pos.y - p.y < 1.5) hurt(70 * diff.dmg * P * dt, b.pos);
+  }
+  if (S.t >= S.dur) b.sweep = null;
+}
+// a ground shockwave around p: being in the air dodges it (shared by the Ravager's slam)
+function shockwave(p0, R, dmg) {
+  const p = new V3(p0.x, .2, p0.z), d = Math.hypot(player.pos.x - p.x, player.pos.z - p.z);
+  explosionFx(p, 4); for (let i = 0; i < 16; i++) { const a = i / 16 * Math.PI * 2; smoke(new V3(p.x + Math.cos(a) * 5, .3, p.z + Math.sin(a) * 5), 1, .6, .8); }
+  at3(p, () => SND.boom(d)); player.shake += clamp(3 - d / 10, 0, 3);
+  if (d < R && player.pos.y - groundAt(player.pos.x, player.pos.z, .42, player.pos.y, .5) < .4) { hurt(dmg * (1 - d / R * .5), p); player.vel.y = 7; player.vel.x += (player.pos.x - p.x) / Math.max(d, 1) * 8; player.vel.z += (player.pos.z - p.z) / Math.max(d, 1) * 8; }
 }
 // ---------- the Titan: three phases ----------
 function titanPhase(b) {
@@ -2416,8 +2562,21 @@ $('pauseCode').addEventListener('keydown', e => { e.stopPropagation(); if (e.key
 
 // ---------- settings UI (shared by the main menu and the pause screen) ----------
 let setTab = 'game', setQ = ''; // settings tab and search text
-const getS = k => k.startsWith('xh.') ? settings.xh[k.slice(3)] : settings[k];
-const putS = (k, v) => { if (k.startsWith('xh.')) settings.xh[k.slice(3)] = v; else settings[k] = v; };
+const getS = k => k.startsWith('xh.') ? settings.xh[k.slice(3)] : k.startsWith('cq.') ? settings.customQ?.[k.slice(3)] : settings[k];
+const putS = (k, v) => {
+  if (k.startsWith('xh.')) { settings.xh[k.slice(3)] = v; return; }
+  if (k.startsWith('cq.')) { // one Custom graphics choice: numbers stay numbers
+    const f = k.slice(3), num = typeof v === 'string' && v !== '' && !isNaN(+v);
+    settings.customQ = { ...(settings.customQ || cqFrom(lastQuality || 'high')), [f]: num ? +v : v };
+    QUALITY.custom = buildCustom(settings.customQ); settings.quality = 'custom'; lastQuality = null; return;
+  }
+  if (k === 'quality' && v === 'custom') {
+    if (!settings.customQ) settings.customQ = cqFrom(settings.quality || 'high');
+    else if (settings.customQ.res === undefined) settings.customQ = cqFrom('custom'); // one made by an older graphics test
+    QUALITY.custom = buildCustom(settings.customQ); lastQuality = null;
+  }
+  settings[k] = v;
+};
 const pctF = v => Math.round(v * 100) + '%', mulF = v => (+v).toFixed(2) + '×', numF = v => (+v).toFixed(1);
 const FMT = { sens: mulF, adsSens: mulF, padSens: mulF, bob: pctF, wobble: pctF, hurtFx: pctF, fov: v => v + '°', vol: pctF, music: pctF, hud: pctF, 'xh.size': numF, 'xh.thick': numF, 'xh.gap': numF, 'xh.opacity': pctF };
 // ---------- graphics test: builds a Custom preset for this computer ----------
@@ -2501,10 +2660,10 @@ function benchEnd(ok) {
   document.body.classList.remove('benching'); $('bench').classList.remove('on');
   Object.assign(settings, B.saved);
   if (ok) {
-    settings.customQ = { ...B.cfg, fps: Math.round(1000 / B.target) };
+    QUALITY.custom = { ...B.cfg }; settings.customQ = { ...cqFrom('custom'), fps: Math.round(1000 / B.target) };
     settings.quality = 'custom'; settings.autoRes = true; if (B.cap60) settings.fpsCap = '60';
   }
-  if (settings.customQ) QUALITY.custom = settings.customQ; else delete QUALITY.custom;
+  if (settings.customQ) QUALITY.custom = buildCustom(settings.customQ); else delete QUALITY.custom;
   if (settings.quality === 'custom' && !settings.customQ) settings.quality = 'high';
   lastQuality = null; applySettings();
   if (B.host && document.body.contains(B.host)) renderSettings(B.host);
@@ -2512,9 +2671,31 @@ function benchEnd(ok) {
 }
 const customNote = () => {
   const c = settings.customQ; if (!c) return '';
-  return `Built by the test for this ${CHIP || 'computer'}: ${Math.round(c.pr / devicePixelRatio * 100)}% resolution, ${c.shadow ? (c.shadow >= 2048 ? 'sharp shadows' : 'soft shadows') : 'no shadows'}, ${!c.post ? 'no effects' : c.bloom ? 'glow on' : 'glow off'}, ${c.samples ? `${c.samples}x edge smoothing` : 'no edge smoothing'}. Aims for ${c.fps} FPS.`;
+  return (c.fps ? `Built by the graphics test for this ${CHIP || 'computer'} (aims for ${c.fps} FPS). ` : '') + 'Change anything below. The cost of each choice is shown next to it, so you can see what to turn down first.';
 };
-$('benchCancel').onclick = () => benchEnd(false);
+// the Custom graphics editor: each row says roughly how much it costs, so it's easy to see what to turn down first
+function customRows(choice, onoff) {
+  const c = settings.customQ || {}, cost = t => `<p class="shelp">${t}</p>`, post = !!c.post;
+  return `<div class="bindgrp">Custom graphics</div>`
+    + `<div class="set"><span>Start from</span><div class="seg-btn">${[['potato', 'Potato'], ['low', 'Low'], ['medium', 'Medium'], ['high', 'High'], ['ultra', 'Ultra']].map(([k, n]) => `<button data-cqfrom="${k}">${n}</button>`).join('')}</div><span></span></div>`
+    + cost('Copies a preset into Custom, then change what you like.')
+    + choice('cq.res', 'Resolution', [[50, '50%'], [60, '60%'], [67, '67%'], [75, '75%'], [85, '85%'], [100, '100%']])
+    + cost('BIGGEST COST. How many of your screen\'s pixels are drawn. 67-75% with Sharpen on looks close to 100% for about half the work.')
+    + choice('cq.shadow', 'Shadows', [[0, 'Off'], [1024, 'Low'], [2048, 'Medium'], [4096, 'High']])
+    + cost('BIG COST. Shadows from the sun on the world, you and the bots. Low is soft and much cheaper than High.')
+    + onoff('cq.post', 'Post effects') + cost('MEDIUM COST. Colour grading, glow, edge smoothing, sun rays and ray tracing all need this on.')
+    + (post ? onoff('cq.bloom', 'Glow (bloom)') + choice('cq.samples', 'Edge smoothing', [[0, 'Off'], [2, '2x'], [4, '4x']]) + cost('Glow: small cost. Edge smoothing: medium cost at 4x, small at 2x.') : '')
+    + choice('cq.lite', 'Materials & effects', [[.35, 'Light'], [.7, 'Medium'], [1, 'Full']])
+    + cost('MEDIUM COST. Full: shiny clear-coated guns and robots, every spark, blood drop and dust mote. Light: simple surfaces and fewer particles. Medium: simple surfaces, most particles.')
+    + onoff('cq.relief', 'Surface bumps') + cost('SMALL COST. Bumpy brick, stone, wood and metal on the world.')
+    + choice('cq.scatter', 'Ground details', [[0, 'Off'], [.35, 'Some'], [.65, 'Lots'], [1, 'Max']]) + cost('SMALL COST. Pebbles, grass tufts and debris on the floor.')
+    + choice('cq.lod', 'Bot detail range', [[32, '32 m'], [50, '50 m'], [70, '70 m'], [90, '90 m'], [120, '120 m'], [200, '200 m']]) + cost('MEDIUM COST in big fights. Past this, bots are drawn as simple shapes.')
+    + choice('cq.edges', 'Outline range', [[40, '40 m'], [70, '70 m'], [110, '110 m'], [160, '160 m']]) + cost('SMALL COST. How far away buildings keep their ink outlines.')
+    + choice('cq.drops', 'Rain & snow', [[0, 'Off'], [1000, 'Light'], [2200, 'Medium'], [3800, 'Heavy'], [5600, 'Max']]) + cost('SMALL COST. How many raindrops, snowflakes or sand grains fall in bad weather.')
+    + choice('cq.clouds', 'Clouds', [[0, 'Off'], [8, 'Few'], [14, 'Some'], [22, 'Lots'], [32, 'Max']]) + cost('SMALL COST. Clouds drifting across the sky.')
+    + choice('cq.think', 'Far bot updates', [[2, 'Smooth'], [3, 'Reduced'], [4, 'Minimal']]) + cost('CPU. Bots far away and not fighting you update less often. Helps on older laptops with many bots.')
+    + choice('cq.hudHz', 'HUD updates', [[0, 'Every frame'], [30, '30 a second'], [20, '20 a second']]) + cost('CPU. Redrawing the HUD and minimap less often helps slow laptops.');
+}$('benchCancel').onclick = () => benchEnd(false);
 addEventListener('keydown', e => { if (bench && e.code === 'Escape') { e.stopImmediatePropagation(); e.preventDefault(); benchEnd(false); } }, true);
 const QUALITY_NOTE = { potato: 'For old or 1 GB laptops. Low resolution, no shadows or effects, simpler bots, less blood, and the HUD, minimap and far bots update less often.', low: 'No post effects or glow, lower resolution, shorter shadow range. HUD and far bots update a bit less often.', medium: 'Glow, colour grading and light anti-aliasing.', high: 'Recommended. Sharp image, smooth edges, detailed bots out to 90 m.', ultra: 'Full resolution, the sharpest shadows and detailed bots out to 120 m. Needs a strong GPU.', superultra: 'For screenshots, not for playing: drawn bigger than your screen, 8K soft shadows, ray tracing at Max (light that bounces colour off walls, soft shadows in every corner, reflections, sun rays), the most ground detail and cloud shadows. Expect a very low frame rate.' };
 const HM_COLORS = ['#fffaf0', '#ffe14d', '#4fd1c5', '#ff4fd8', '#ff3b30'];
@@ -3076,7 +3257,7 @@ function openAdmin() {
   if (!staff()) return;
   admWas = state; if (state === 'playing') { stopCooking(); state = 'paused'; trigger = adsHeld = false; for (const k in keys) keys[k] = false; document.exitPointerLock?.(); }
   admBox = document.createElement('div'); admBox.className = 'savebox admbox';
-  const guest = NET.isGuest(), guns = WEAPONS.filter(w => w.admin || w.secret), tabs = [['cheats', 'Cheats'], ['guns', 'Admin guns'], ['world', 'Spawn & world']];
+  const guest = NET.isGuest(), guns = WEAPONS.filter(w => w.admin || w.secret), tabs = [['cheats', 'Cheats'], ['guns', 'Admin guns'], ['world', 'Spawn & world'], ['weather', 'Weather']];
   if (account.admin) tabs.push(['people', 'Testers']);
   const solo = coop ? 'disabled title="Solo runs only"' : '', hostOnly = guest ? 'disabled title="Only the host can spawn bots"' : '';
   const body = () => {
@@ -3086,9 +3267,24 @@ function openAdmin() {
         <button class="go" data-act="cash">+ $10,000</button><button class="go alt" data-act="heal">FULL HEAL</button><button class="go alt" data-act="maxab">MAX ALL ABILITIES</button>
         <button class="go alt" data-act="tp">TELEPORT TO CROSSHAIR</button><button class="go alt" data-act="kill">KILL ALL BOTS</button></div>
       <h3 class="tsh">Spawn bots</h3><div class="savebtns admacts">
-        <button class="go alt" data-spawn="boss" ${hostOnly}>BOSS</button><button class="go alt" data-spawn="titan" ${hostOnly}>TITAN</button>
+        <button class="go alt" data-spawn="boss" ${hostOnly}>WARDEN</button><button class="go alt" data-spawn="ravager" ${hostOnly}>RAVAGER</button><button class="go alt" data-spawn="tesla" ${hostOnly}>TESLA</button><button class="go alt" data-spawn="overseer" ${hostOnly}>OVERSEER</button><button class="go alt" data-spawn="titan" ${hostOnly}>TITAN</button>
         <button class="go alt" data-spawn="horde" ${hostOnly}>HORDE OF 12</button><button class="go alt" data-spawn="elite" ${hostOnly}>5 ELITES</button></div>
       <h3 class="tsh">Floors</h3><div class="palsadd"><input id="admFloor" type="number" min="1" max="200" value="${floorN + 1}"><button class="go" data-act="goto" ${solo}>GO TO FLOOR</button><button class="go alt" data-act="floor" ${solo}>NEXT FLOOR</button></div>`;
+    if (admTab === 'weather') {
+      const sl = (k, n, min, max, step, note) => `<div class="set admset"><span>${n}</span><input type="range" data-wxo="${k}" min="${min}" max="${max}" step="${step}" value="${WX_OPT[k]}"><output>${(+WX_OPT[k]).toFixed(2)}×</output></div><p class="shelp">${note}</p>`;
+      return `<p class="acnote">Changes the weather right now (only on your screen in co-op). Puddles, wet ground and snow build up over time; use SOAK to skip ahead.</p>
+      <div class="admgrid">${Object.values(WEATHER).map(W => `<button class="admsw${weather === W.id ? ' on' : ''}" data-wx="${W.id}"><b>${W.icon} ${W.name}</b><span>${W.id === 'clear' ? 'Sun out, everything dries off' : (WX_TEXT[W.id] || '').toLowerCase()}</span></button>`).join('')}
+        <button class="admsw${admWxLock ? ' on' : ''}" data-wxlock><b>Keep on every floor</b><span>${admWxLock ? 'Locked to ' + WEATHER[admWxLock].name : 'New floors pick their own weather'}</span></button>
+        <button class="admsw${nightWave ? ' on' : ''}" data-wxnight><b>Night</b><span>Dark map, torches and night vision</span></button></div>
+      <h3 class="tsh">How strong</h3>
+      ${sl('amount', 'Rain / snow amount', .25, 3, .05, 'How much falls. Above 1 is heavier than any real floor gets.')}
+      ${sl('wind', 'Wind', 0, 3, .05, 'Slants the rain, blows snow and sand sideways, and pushes clouds along.')}
+      ${sl('puddles', 'Puddles', 0, 1.6, .05, 'How much of the flat ground puddles cover in rain.')}
+      ${sl('snow', 'Snow cover', 0, 1.4, .05, 'How much snow settles on the ground and roofs.')}
+      ${sl('fog', 'Fog', .3, 3, .05, 'Thicker or thinner fog in bad weather.')}
+      ${sl('splash', 'Splashes', 0, 2.5, .05, 'Rings and droplets where rain lands.')}
+      <div class="savebtns admacts"><button class="go alt" data-wxact="soak">SOAK / SETTLE NOW</button><button class="go alt" data-wxact="dry">DRY OUT</button><button class="go alt" data-wxact="zap">LIGHTNING AT CROSSHAIR</button><button class="go ghost" data-wxact="reset">RESET SLIDERS</button></div>`;
+    }
     if (admTab === 'people') return `<p class="acnote">Testers get this panel too, but not this tab. You can also manage everyone from the ADMIN page in the menu.</p>
       <div class="palsadd"><input id="tsName" maxlength="16" placeholder="Their username" spellcheck="false" autocomplete="off"><button class="go" id="tsAdd">${ic('plus')}MAKE TESTER</button></div>
       <p class="palsmsg" id="tsMsg"></p><div class="tslist" id="tsList"><small>Loading...</small></div>`;
@@ -3108,7 +3304,7 @@ function openAdmin() {
     admBox.querySelectorAll('[data-spawn]').forEach(b => b.onclick = () => {
       if (guest) return; cheatRun = true; SND.ui(); const k = b.dataset.spawn, taken = [];
       const one = (type, o = {}) => { const x = new Bot(type, spawnPoint(taken), o); taken.push(x.pos.clone()); bots.push(x); };
-      if (k === 'boss' || k === 'titan') one(k); else if (k === 'elite') for (let i = 0; i < 5; i++) one(['grunt', 'heavy', 'brawler', 'stalker', 'phantom'][i], { elite: true });
+      if (k === 'boss' || k === 'titan' || BOSS_ORDER.includes(k)) one(k); else if (k === 'elite') for (let i = 0; i < 5; i++) one(['grunt', 'heavy', 'brawler', 'stalker', 'phantom'][i], { elite: true });
       else { const kinds = Object.keys(TYPES).filter(t => !['boss', 'titan', 'hydra'].includes(t) && !TYPES[t].boss); for (let i = 0; i < 12; i++) one(kinds[Math.floor(Math.random() * kinds.length)]); }
       toast('ADMIN', 'Bots spawned', '', '🛠');
     });
@@ -3131,6 +3327,23 @@ function openAdmin() {
         const to = a === 'floor' ? floorN + 1 : clamp(Math.round(+admBox.querySelector('#admFloor').value || 1), 1, 200);
         closeAdmin(); show('pause', false); clearBots(); wave = (to - 1) * 5; breakT = 0; nextWave(); return;
       }
+    });
+    admBox.querySelectorAll('[data-wx]').forEach(b => b.onclick = () => { cheatRun = true; if (admWxLock) admWxLock = b.dataset.wx; applyWeather(b.dataset.wx, true); SND.click(); draw(); });
+    admBox.querySelector('[data-wxlock]')?.addEventListener('click', () => { admWxLock = admWxLock ? null : weather; SND.click(); draw(); });
+    admBox.querySelector('[data-wxnight]')?.addEventListener('click', () => { cheatRun = true; nightWave = !nightWave; applyNight(); if (!nightWave) applyWeather(weather, true); SND.click(); draw(); });
+    let wxT = 0;
+    admBox.querySelectorAll('[data-wxo]').forEach(r => r.oninput = () => {
+      const k = r.dataset.wxo; WX_OPT[k] = +r.value; r.nextElementSibling.textContent = (+r.value).toFixed(2) + '×'; cheatRun = true;
+      clearTimeout(wxT); wxT = setTimeout(() => { refreshWeather(); if (state === 'paused') frozenDrawn = false; }, k === 'amount' ? 150 : 0); // rebuilding the drops is the slow part, so wait for the slider to stop
+    });
+    admBox.querySelectorAll('[data-wxact]').forEach(b => b.onclick = () => {
+      const a = b.dataset.wxact; SND.ui(); cheatRun = true;
+      if (a === 'soak') { const rain = weather === 'rain' || weather === 'storm', sn = weather === 'snow' || weather === 'blizzard';
+        WXU.wxWet.value = rain ? 1 : 0; WXU.wxPud.value = rain ? Math.min(1.6, WX_OPT.puddles) : 0; WXU.wxSnow.value = sn ? Math.min(1.4, WX_OPT.snow) : 0; }
+      if (a === 'dry') { WXU.wxWet.value = WXU.wxPud.value = WXU.wxSnow.value = 0; }
+      if (a === 'zap') { const f = new V3(0, 0, -1).applyQuaternion(camera.quaternion), hit = rayWall(camera.position, f, 200); const p = hit ? hit.point.clone() : camera.position.clone().addScaledVector(f, 40); closeAdmin(); zapAt(p, false); return; }
+      if (a === 'reset') { Object.assign(WX_OPT, { amount: 1, wind: 1, puddles: 1, snow: 1, fog: 1, splash: 1 }); refreshWeather(); }
+      frozenDrawn = false; draw();
     });
     if (admTab === 'people') {
       const inp = admBox.querySelector('#tsName'), msg = admBox.querySelector('#tsMsg'), list = admBox.querySelector('#tsList');
@@ -3288,7 +3501,8 @@ function renderSettings(host) {
   else if (setTab === 'hud') body = (FONTS.forEach(loadFont), `<div class="set"><span>Font</span><div class="seg-btn fontpick">${FONTS.map(f => `<button data-k="font" data-v="${f[0]}" class="${(settings.font || 'futura') === f[0] ? 'sel' : ''}" style='font-family:${fontFam(f)}'>${f[1]}</button>`).join('')}</div><span></span></div><p class="shelp">Changes every menu and the HUD straight away. Futura only exists on Macs; the others look the same on every computer.</p>`) + range('hud', 'HUD size', .75, 1.25, .05) + onoff('minimap', 'Minimap') + `<p class="shelp">M still opens the full map when it's off.</p>`
     + onoff('killfeed', 'Kill feed') + onoff('toasts', 'Pop-ups') + `<p class="shelp">Achievement and unlock banners at the top of the screen.</p>`
     + onoff('dmgNums', 'Damage numbers') + onoff('hitmarkers', 'Hit markers') + swatches('hmColor', 'Hit marker colour', HM_COLORS) + onoff('fps', 'FPS counter');
-  else if (setTab === 'graphics') body = choice('quality', 'Quality', [['potato', 'Potato'], ['low', 'Low'], ['medium', 'Medium'], ['high', 'High'], ['ultra', 'Ultra'], ['superultra', 'SUPER ULTRA'], ...(settings.customQ ? [['custom', 'Custom']] : [])]) + `<p class="shelp">${settings.quality === 'custom' ? customNote() : QUALITY_NOTE[settings.quality]}</p>`
+  else if (setTab === 'graphics') body = choice('quality', 'Quality', [['potato', 'Potato'], ['low', 'Low'], ['medium', 'Medium'], ['high', 'High'], ['ultra', 'Ultra'], ['superultra', 'SUPER ULTRA'], ['custom', 'Custom']]) + `<p class="shelp">${settings.quality === 'custom' ? customNote() : QUALITY_NOTE[settings.quality]}</p>`
+    + (settings.quality === 'custom' ? customRows(choice, onoff) : '')
     + `<div class="set"><span>Auto-tune</span><div><button class="go benchbtn" data-bench="1">${settings.customQ ? 'RE-TEST' : 'TEST'} THIS ${IS_MAC ? 'MAC' : 'COMPUTER'} &amp; BUILD CUSTOM</button></div><span></span></div><p class="shelp">${state === 'menu' ? 'Takes 15 to 60 seconds. It tries the settings one by one on the menu with extra bots, and keeps the best picture your screen can keep up with. Press Esc to stop.' : 'Quit to the main menu to run the test.'}</p>`
     + choice('res', 'Resolution', [['auto', 'Preset'], [50, '50%'], [67, '67%'], [75, '75%'], [85, '85%'], [100, '100%']]) + `<p class="shelp">How much of your screen's real resolution the game draws. 100% is pin-sharp but heaviest. Now drawing at ${renderPct()}%.</p>`
     + choice('sharpen', 'Sharpen', [[0, 'Off'], [0.2, 'Low'], [0.35, 'Medium'], [0.6, 'High']]) + `<p class="shelp">Crisps up the picture. Almost free. Not used on Potato or Low.</p>`
@@ -3299,8 +3513,8 @@ function renderSettings(host) {
     + onoff('rtRefl', 'Ray-traced reflections') + onoff('sunRays', 'Sun rays') + `<p class="shelp">Reflections make floors, metal and wet ground mirror what's around them. Sun rays stream through gaps when you look toward the sun. Both only work while ray tracing is on.</p>`
     + choice('mblur', 'Motion blur', [['off', 'Off'], ['low', 'Low'], ['high', 'High']]) + `<p class="shelp">Smears the world a little when you turn fast. Your gun stays sharp.</p>`
     + `<div class="bindgrp">Effects</div>`
-    + onoff('bloom', 'Glow (bloom)') + onoff('vignette', 'Vignette') + onoff('grain', 'Film grain') + choice('blood', 'Blood', allowed('blood', [['red', 'Red'], ['oil', 'Oil'], ['paint', 'Paint'], ['off', 'Off']]))
-    + choice('gore', 'Gore', allowed('gore', [['bath', 'Bloodbath'], ['extreme', 'Over the top'], ['normal', 'Normal']]))
+    + onoff('bloom', 'Glow (bloom)') + onoff('vignette', 'Vignette') + onoff('grain', 'Film grain') + choice('blood', 'Robot insides', allowed('blood', [['oil', 'Oil & sparks'], ['red', 'Red blood'], ['paint', 'Paint'], ['off', 'Off']]))
+    + choice('gore', 'Gore', allowed('gore', [['bath', 'Carnage'], ['extreme', 'Over the top'], ['normal', 'Normal']]))
     + choice('fpsCap', 'Frame rate', [['0', 'Monitor (smoothest)'], ['uncapped', 'Unlimited'], ['240', '240'], ['144', '144'], ['120', '120'], ['60', '60'], ['30', '30']])
     + `<p class="shelp">Monitor draws one frame per screen refresh, which is the smoothest. Unlimited draws as many as it can, so the counter goes higher, but the extra frames never reach your screen and motion can look uneven.</p>`;
   else if (setTab === 'controls') {
@@ -3351,6 +3565,7 @@ function renderSettings(host) {
     sq.onkeydown = e => { e.stopPropagation(); if (e.key === 'Escape' && sq.value) { e.preventDefault(); setQ = ''; renderSettings(host); host.querySelector('#setSearch').focus(); } };
   }
   host.querySelectorAll('input[type=range]').forEach(r => { stop(r); r.oninput = () => { putS(r.dataset.k, +r.value); r.nextElementSibling.textContent = FMT[r.dataset.k](r.value); applySettings(); refreshPreview(); }; });
+  host.querySelectorAll('button[data-cqfrom]').forEach(b => { stop(b); b.onclick = () => { settings.customQ = cqFrom(b.dataset.cqfrom); QUALITY.custom = buildCustom(settings.customQ); settings.quality = 'custom'; lastQuality = null; applySettings(); SND.ui(); renderSettings(host); }; });
   host.querySelectorAll('button[data-v]').forEach(b => { stop(b); b.onclick = () => { const v = b.dataset.v; putS(b.dataset.k, v === 'true' ? true : v === 'false' ? false : v); applySettings(); SND.ui(); renderSettings(host); }; });
   host.querySelectorAll('input[data-color]').forEach(i => { stop(i); i.oninput = () => { putS(i.dataset.color, i.value); applySettings(); refreshPreview(); }; i.onchange = () => renderSettings(host); });
   host.querySelectorAll('[data-bind]').forEach(b => { stop(b); b.onclick = () => startRebind(b, host); });
@@ -3827,6 +4042,7 @@ function coopMsg(d, from) {
   if (d.t === 'snap') coopSnap(d);
   else if (d.t === 'cfloor') coopFloor(d);
   else if (d.t === 'zap') zapAt(new V3(d.x, 0, d.z), true);
+  else if (d.t === 'brk') breakByIndex(d.i);
   else if (d.t === 'acwarn') banner('🛡 ANTI-CHEAT', `${escH(String(d.name).slice(0, 14))} MAY BE CHEATING (${escH(String(d.why).slice(0, 24).toUpperCase())}) · THE HOST IS BLOCKING IT`);
   else if (d.t === 'bd') { const b = botByNid(d.n); if (b && b.alive) { b.hp = 0; b.die({ head: !!d.h, blast: !!d.bl }); } }
   else if (d.t === 'bb') ghostBolt(new V3(...d.f), new V3(...d.v), d.c, !!d.r, !!d.hv);
@@ -4446,16 +4662,51 @@ function macPace(gap) {
   macMin = Math.min(macMin, gap); macGap = lerp(macGap, gap, .03);
   if (macMin < 9.5 && macGap > 10.4) { if ((macT += gap / 1000) > 2) macCap = 60; } else macT = 0;
 }
+// ---------- performance readouts ----------
+// CPU: how long the game's own work takes each frame. GPU: how long the graphics chip spends drawing it (browsers that
+// support timer queries: Chrome and Edge on most computers). Both show in the FPS counter (Settings > Interface).
+let workMs = 0, cpuTimes = [], gpuMs = 0, gpuQ = null, gpuX;
+const gl2 = renderer.getContext();
+function gpuBegin() {
+  if (!settings.fps || gpuQ) return;
+  if (gpuX === undefined) gpuX = gl2.getExtension('EXT_disjoint_timer_query_webgl2');
+  if (!gpuX) return; gpuQ = gl2.createQuery(); gl2.beginQuery(gpuX.TIME_ELAPSED_EXT, gpuQ); gpuQ.open = true;
+}
+function gpuEnd() {
+  if (!gpuQ) return;
+  if (gpuQ.open) { gl2.endQuery(gpuX.TIME_ELAPSED_EXT); gpuQ.open = false; return; }
+  // results come back a frame or two later
+  if (gl2.getQueryParameter(gpuQ, gl2.QUERY_RESULT_AVAILABLE)) {
+    if (!gl2.getParameter(gpuX.GPU_DISJOINT_EXT)) gpuMs = lerp(gpuMs || 0, gl2.getQueryParameter(gpuQ, gl2.QUERY_RESULT) / 1e6, .2);
+    gl2.deleteQuery(gpuQ); gpuQ = null;
+  }
+}
+// Battery savers (Chrome's Energy Saver, Edge's efficiency mode, a Mac's Low Power Mode, Windows battery saver) hold every
+// web page to 30 FPS, whatever the settings. If frames keep arriving exactly 33 ms apart while the game only needs a
+// fraction of that, it's the browser, not the game, so say so once.
+let capN = 0, capSeen = 0, capTold = false;
+function capWatch(gap) {
+  if (capTold || state !== 'playing' || document.hidden || +settings.fpsCap === 30) return;
+  if (gap > 31 && gap < 35.5 && workMs < 14) capN++; else if (gap < 28) capN = Math.max(0, capN - 3);
+  if (++capSeen > 240 && capN > 150) {
+    capTold = true;
+    toast('HELD AT 30 FPS', 'Your browser is saving battery', IS_MAC ? 'Turn off Low Power Mode (System Settings > Battery) and Chrome\'s Energy Saver (Settings > Performance), or plug in.' : 'Turn off your browser\'s Energy Saver / efficiency mode (Settings > Performance) and Windows battery saver, or plug in.', '🔋');
+  }
+  if (capSeen > 600) { capSeen = 0; capN = 0; }
+}
 function loop() {
   const cap = +settings.fpsCap || macCap, now = performance.now();
   if (cap && now - lastFrame < 1000 / cap - .6) { schedule(); return; }
   if (lastFrame && IS_MAC && !+settings.fpsCap && !macCap && state === 'playing' && !document.hidden) macPace(now - lastFrame);
   if (bench && lastFrame) bench.gaps.push(now - lastFrame);
+  if (lastFrame) capWatch(now - lastFrame);
   lastFrame = now; schedule();
   try { frame(); } catch (e) { if (!loopErr) { loopErr = true; report('Game loop', e); } }
+  workMs = performance.now() - now;
   if (bench) try { benchTick(); } catch (e) { report("Graphics test", e); benchEnd(false); }
   try { netFrame(lastDt); } catch (e) { if (!mpErr) { mpErr = true; report("Multiplayer", e); } }
 }
+const _doorPts = [];
 function frame() {
   const dt = Math.max(Math.min(clock.getDelta(), .05), 1e-5) * ((cheats.slow || adm.slow) && state === "playing" ? .5 : 1);
   lastDt = dt;
@@ -4465,11 +4716,12 @@ function frame() {
   // FPS counter from real frame times (not the clamped game step). "1% low" is the speed of the slowest frames,
   // and "worst" is the longest frame: those are what you feel as stutter, even when the average is high.
   if (settings.fps) {
-    const now = performance.now(); if (fpsLast) fpsTimes.push(now - fpsLast); fpsLast = now;
+    const now = performance.now(); if (fpsLast) fpsTimes.push(now - fpsLast); fpsLast = now; if (workMs) cpuTimes.push(workMs);
     if (now - fpsT0 > 1000 && fpsTimes.length > 5) {
       const s = fpsTimes.slice().sort((a, b) => b - a), avg = fpsTimes.reduce((a, b) => a + b, 0) / fpsTimes.length;
       const low = s.slice(0, Math.max(1, Math.round(s.length / 100))).reduce((a, b) => a + b, 0) / Math.max(1, Math.round(s.length / 100));
-      const el = $('fps'); el.textContent = `${Math.round(1000 / avg)} FPS · 1% low ${Math.round(1000 / low)} · worst ${s[0].toFixed(1)} ms · res ${renderPct()}% · ${drawCalls} draws`;
+      const cpu = cpuTimes.length ? cpuTimes.reduce((a, b) => a + b, 0) / cpuTimes.length : 0; cpuTimes = [];
+      const el = $('fps'); el.textContent = `${Math.round(1000 / avg)} FPS · 1% low ${Math.round(1000 / low)} · worst ${s[0].toFixed(1)} ms · CPU ${cpu.toFixed(1)} ms${gpuMs ? ` · GPU ${gpuMs.toFixed(1)} ms` : ''} · res ${renderPct()}% · ${drawCalls} draws`;
       el.style.color = s[0] > avg * 3 && s[0] > 25 ? '#ff6b5e' : ''; fpsTimes = []; fpsT0 = now;
     }
   } else fpsLast = 0;
@@ -4492,7 +4744,7 @@ function frame() {
       if (adm.freeze && b.alive) continue; // admin: frozen bots
       if (!(T ? withTarget(T, () => b.update(step)) : b.update(step))) bots.splice(i, 1);
     }
-    updateShots(dt); updateNades(dt); updateStrikes(dt); if (weather === 'storm') updateStorm(dt); updatePickups(dt); updateSupport(dt, runTime); updateStragglers(dt); updateBurns(dt); updateSpells(dt); updateSkill(dt); updateTitan(dt);
+    updateShots(dt); updateNades(dt); updateStrikes(dt); if (weather === 'storm' || zaps.length) updateStorm(dt); updatePickups(dt); updateSupport(dt, runTime); updateStragglers(dt); updateBurns(dt); updateSpells(dt); updateSkill(dt); updateTitan(dt); updateBosses(dt);
     if (frenzyT > 0) { frenzyT -= dt; $('hud').classList.toggle('frenzy', frenzyT > 0); }
     if (training) updateTraining(dt);
     if (diff.rampage) for (const k of ["primary", "secondary"]) { const it = player.slots[k]; if (it && !it.w.projectile) it.reserve = Math.max(it.reserve, it.w.reserve); }
@@ -4510,6 +4762,7 @@ function frame() {
     // Potato and Low redraw the HUD and minimap less often: writing to the page every frame costs more than the 3D on slow laptops
     if (me) updateAim(); hudAcc += dt; if (!Q.hudHz || hudAcc >= 1 / Q.hudHz) { updateHUD(hudAcc); hudAcc = 0; }
     if (++mmTick % (Q.mm || 2) === 0) drawMinimap();
+    if (fxSettings.lite < 1 && mmTick % 90 === 0) liteMats(scene, true); // new bots and pickups get the lighter surfaces too
     autoRes(dt);
   } else if (state === 'menu') {
     menuT += dt * .07; const r = Math.min(world.size * .9, 62);
@@ -4518,6 +4771,7 @@ function frame() {
     for (let i = bots.length - 1; i >= 0; i--) if (!bots[i].update(dt)) bots.splice(i, 1);
   }
   if (live || state === "menu") { const q = QUALITY[quality.level] || QUALITY.high; updateDebris(dt); updateMags(dt, scene, magFloor, insideSolid, (p, h) => at3(p, () => SND.magDrop(Math.min(1, h / 4)))); updateLOD(camera.position, world.night ? Math.min(q.lod, 44) : q.lod, quality.shadow && !world.night ? q.botShadow : 0); }
+  if (live || state === 'menu') { _doorPts.length = 0; _doorPts.push(player.pos); for (const b of bots) if (b.alive && !b.t.fly && _doorPts.length < 40 && Math.abs(b.pos.x - player.pos.x) < 60 && Math.abs(b.pos.z - player.pos.z) < 60) _doorPts.push(b.pos); for (const m of mates) if (m.pos) _doorPts.push(m.pos); updateExtras(dt, _doorPts); }
   updateFx(dt); updateAtmos(dt); updatePads(performance.now() / 1000); updateWeatherFx(dt); updateImmersion(dt);
   followShadow(state === "menu" ? { x: 0, z: 0 } : player.pos); setListener(camera);
   updateTorch(); updateEdges(camera.position);
@@ -4531,8 +4785,10 @@ function frame() {
   frozenDrawn = frozen;
   renderer.info.reset(); // count draws over the whole frame (scene, shadows, gun and effects), not just the last pass
   post.sunOn = world.night || world.nvg ? 0 : 1;
+  gpuBegin();
   post.render(() => renderer.render(scene, camera), performance.now() / 1000,
     view && state !== "menu" ? () => { renderer.clearDepth(); renderer.render(gunScene, gunCam); } : null, camera, frozen ? 12 : 0); // a still frame gets extra ray tracing passes so it's smooth at once
+  gpuEnd();
   drawEsp(); shown.p.copy(camera.position); shown.q.copy(camera.quaternion); shown.ok = state === "playing"; // the view on screen right now: your next shot is checked against this
   drawCalls = renderer.info.render.calls;
 }

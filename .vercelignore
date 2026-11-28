@@ -1,2 +1,5 @@
 # the relay runs on the homelab, not on Vercel
 relay/
+
+# private notes, not part of the website
+docs/

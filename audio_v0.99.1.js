@@ -1,13 +1,16 @@
 // Synthesised sound. Gunshots are layered (crack + body + low thump + action click) and sent through a small room reverb.
 export const clampA = (v, a, b) => Math.max(a, Math.min(b, v));
 const rnd = (a, b) => a + Math.random() * (b - a);
-let A = null, master, comp, verb, verbIn, noise, pink, tail, tailIn;
+let A = null, master, comp, verb, verbIn, noise, pink, tail, tailIn, drive = null;
 export const audioSettings = { volume: .8, spatial: 'hrtf' };
 export function ac() {
   if (A) return A;
   A = new (window.AudioContext || window.webkitAudioContext)();
-  comp = A.createDynamicsCompressor(); comp.threshold.value = -14; comp.knee.value = 12; comp.ratio.value = 5; comp.attack.value = .002; comp.release.value = .18;
+  comp = A.createDynamicsCompressor(); comp.threshold.value = -14; comp.knee.value = 12; comp.ratio.value = 5; comp.attack.value = .006; comp.release.value = .18;
   master = A.createGain(); master.gain.value = audioSettings.volume; master.connect(comp); comp.connect(A.destination);
+  // warm saturation for gun thumps: adds harmonics so the bass is felt even on laptop and phone speakers that can't play 50 Hz
+  drive = A.createWaveShaper(); const dc = new Float32Array(1024); for (let i = 0; i < 1024; i++) { const x = i / 511.5 - 1; dc[i] = Math.tanh(x * 2.6) / Math.tanh(2.6); }
+  drive.curve = dc; drive.oversample = '2x'; const dOut = A.createGain(); dOut.gain.value = .9; drive.connect(dOut); dOut.connect(master);
   // room reverb from a decaying noise impulse
   const len = A.sampleRate * 1.6, ir = A.createBuffer(2, len, A.sampleRate);
   for (let ch = 0; ch < 2; ch++) { const d = ir.getChannelData(ch); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3.2); }
@@ -100,6 +103,14 @@ const GUN_CHAR = {
   Special:  { crack: .7, body: 1, sub: 1.1, tail: .9, mech: .4, bright: .9, width: .4 },
 };
 let lastGun = 0, gunRun = 0;
+// the thump: a kick-drum punch. The pitch drops from about 180 Hz to 48 Hz in 45 ms (the "hit"), then the low end rings
+// on for a moment. Run through the saturator so it's felt as much as heard.
+function thump(f, vol, dur, delay = 0) {
+  const t = A.currentTime + delay, g = A.createGain(), o = A.createOscillator(); o.type = 'sine';
+  g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .003); g.gain.setTargetAtTime(0, t + .025, dur / 3.2);
+  o.frequency.setValueAtTime(f, t); o.frequency.exponentialRampToValueAtTime(48, t + .045); o.frequency.exponentialRampToValueAtTime(36, t + dur);
+  o.connect(g); g.connect(drive || master); o.start(t); o.stop(t + dur + .1);
+}
 function gun(s, o = {}) {
   ac(); const C = GUN_CHAR[o.cat] || GUN_CHAR.Rifle, now = A.currentTime;
   // in long sprays the tail builds up; space the expensive layers so the mix stays clean
@@ -126,15 +137,18 @@ function gun(s, o = {}) {
   tone({ f: 4200 * C.bright, f2: 900, type: 'square', dur: .008, vol: v * .18, hp: 1200 });
   // 1. supersonic crack, split left/right for width
   const cd = (big ? .07 : .04) * (o.cat === 'Shotgun' ? 1.2 : 1);
-  hiss({ dur: cd, vol: v * .55 * C.crack, hp: 2400 * C.bright, pan: -w, verb: .12 });
-  hiss({ dur: cd * 1.15, vol: v * .5 * C.crack, hp: 2000 * C.bright, pan: w, verb: .12 });
+  hiss({ dur: cd, vol: v * .4 * C.crack, hp: 2400 * C.bright, pan: -w, verb: .12 });
+  hiss({ dur: cd * 1.15, vol: v * .36 * C.crack, hp: 2000 * C.bright, pan: w, verb: .12 });
   // 2. punchy mid body: what makes it sound "full"
   hiss({ dur: s.dur * 1.3, vol: v * .8 * s.noise * C.body, bp: clampA(s.f * 2.4, 280, 2400), q: .6, colour: 'pink', verb: .4, tail: .35 * C.tail, pan: side() * .5 });
   tone({ f: clampA(s.f * 1.4, 160, 900) * rnd(.97, 1.03), f2: 70, type: 'triangle', dur: .06 + s.dur * .3, vol: v * .32 * C.body, lp: 2500 });
-  if (!dense) hiss({ dur: s.dur * 2.4, vol: v * .38 * s.noise * C.body, lp: 750, colour: 'pink', verb: .55 });
+  if (!dense) hiss({ dur: s.dur * 2.4, vol: v * .5 * s.noise * C.body, lp: 650, colour: 'pink', verb: .55 });
+  // the thump (see thump above): bigger, lower and longer for heavier guns
+  thump((heavy ? 150 : 185) * rnd(.96, 1.04), v * (dense ? .95 : 1.25) * C.sub, .12 + s.dur * .5);
+  if (big && !dense) thump(95, v * .7 * C.sub, .3 + s.dur, .012); // a second, deeper hit for snipers and shotguns
   // 3. sub-bass boom with a pitch drop (the chest hit) + a short distorted punch
   const subF = (heavy ? 95 : 130) * rnd(.95, 1.05);
-  tone({ f: subF, f2: 28, type: 'sine', dur: .16 + s.dur * .6, vol: v * .85 * C.sub });
+  tone({ f: subF, f2: 28, type: 'sine', dur: .2 + s.dur * .7, vol: v * .8 * C.sub });
   tone({ f: subF * 2, f2: 50, type: 'sawtooth', dur: .05 + s.dur * .15, vol: v * .12 * C.sub, lp: 500 });
   // 4. the action: bolt carrier slam, brass flick
   if (C.mech > .25) {
@@ -365,7 +379,7 @@ export function setAmbience(id) {
   ambWant = id; if (!A) return;
   if (amb && amb.id === id) return;
   stopAmb(amb); amb = null;
-  const cfg = AMB[id]; if (!cfg) return;
+  const cfg = AMB[id] || (id === 'hail' ? AMB.rain : null); if (!cfg) return; // hail sounds like rain (plus its own clatter)
   amb = buildAmb(cfg); amb.id = id; amb.out.gain.setTargetAtTime(ambQuiet, A.currentTime, .8);
 }
 // quieter in menus (k = 0..1)

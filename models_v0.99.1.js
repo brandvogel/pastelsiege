@@ -1,8 +1,8 @@
 // First-person gun models. Each returns anchor points (grip, fore hand, mag well, sight line) so hands and attachments line up.
-import { kit, materials, frontPost, rearSight, redDot, holo, acog, scope, birdcage, slantBrake, arms } from './gunkit_v0.99.0.js';
-import { applySkin } from './skins_v0.99.0.js';
-import { pistol, revolver, minigun, launcher, railgun, doubleBarrel } from './models2_v0.99.0.js';
-export { makeEnv } from './gunkit_v0.99.0.js';
+import { kit, materials, frontPost, rearSight, redDot, holo, acog, scope, birdcage, slantBrake, arms } from './gunkit_v0.99.1.js';
+import { applySkin } from './skins_v0.99.1.js';
+import { pistol, revolver, minigun, launcher, railgun, doubleBarrel } from './models2_v0.99.1.js';
+export { makeEnv } from './gunkit_v0.99.1.js';
 
 // L receiver length, H height, B barrel, up upper style, hg handguard, st stock, mg magazine, mz muzzle device, irons [front, rear]
 const S = {
@@ -336,6 +336,27 @@ function meleeModel(THREE, K0, M, w, o) {
     K.cyl(.014, .22, 0, .04, 0, M.acc, 16, 'y'); for (let i = 0; i < 5; i++) K.torus(.0145, .002, 0, -.04 + i * .04, 0, M.dark, Math.PI * 2, 'y');
     K.cyl(.036, .008, 0, .155, 0, M.dark, 20, 'y'); K.cyl(.017, .02, 0, .17, 0, M.brass, 14, 'y');
     blade([[.009, .18], [.013, .55], [.008, .8], [-.004, .86], [-.011, .78], [-.01, .18]], .005);
+  } else if (st === 'axe') { // tomahawk: wrapped handle, thin bearded head, back spike
+    K.cyl(.012, .36, 0, .13, 0, M.acc, 14, 'y'); K.cyl(.0135, .12, 0, -.01, 0, M.rubber, 14, 'y');
+    blade([[.014, .29], [.014, .36], [-.03, .355], [-.088, .395], [-.096, .335], [-.082, .27], [-.03, .3]], .009, M.metal);
+    blade([[-.088, .395], [-.1, .4], [-.108, .335], [-.096, .335]], .003); // bright edge
+    blade([[.014, .315], [.06, .33], [.014, .345]], .007, M.dark);           // back spike
+  } else if (st === 'crowbar') { // bent hex bar with a claw at one end and a chisel at the other
+    K.cyl(.011, .5, 0, .2, 0, M.body, 6, 'y'); K.torus(.035, .011, -.035, .45, 0, M.body, Math.PI * 1.1, 'z');
+    K.box(.022, .012, .018, -.07, .43, 0, M.body); K.box(.006, .012, .02, -.08, .425, 0, M.dark);
+    K.box(.016, .03, .012, 0, -.06, .006, M.body);
+  } else if (st === 'kukri') { // the classic forward bend, wide toward the tip
+    K.cyl(.014, .11, 0, -.008, 0, M.acc, 16, 'y', .017); K.cyl(.018, .008, 0, .05, 0, M.brass, 16, 'y');
+    blade([[.011, .055], [.016, .13], [.03, .21], [.026, .28], [.006, .315], [-.018, .3], [-.024, .23], [-.012, .14], [-.011, .055]], .0045);
+  } else if (st === 'baton') { // rubber grip, three telescoped steel sections, a glowing shock tip
+    K.cyl(.015, .12, 0, -.01, 0, M.rubber, 16, 'y'); K.cyl(.017, .012, 0, .055, 0, M.dark, 16, 'y');
+    K.cyl(.011, .13, 0, .12, 0, M.metal, 14, 'y'); K.cyl(.0085, .12, 0, .245, 0, M.steel, 14, 'y'); K.cyl(.0065, .1, 0, .35, 0, M.steel, 12, 'y');
+    K.sphere(.013, 0, .405, 0, M.glow); K.torus(.012, .002, 0, .39, 0, M.glow, Math.PI * 2, 'y');
+  } else if (st === 'fireaxe') { // long painted handle, big flat blade and a pick on the back
+    K.cyl(.015, .74, 0, .3, 0, M.acc, 14, 'y'); K.cyl(.017, .1, 0, -.04, 0, M.rubber, 14, 'y');
+    blade([[.02, .58], [.02, .7], [-.05, .69], [-.13, .76], [-.15, .6], [-.13, .53], [-.05, .6]], .014, M.body);
+    blade([[-.13, .76], [-.152, .768], [-.168, .6], [-.15, .6]], .004);
+    blade([[.02, .6], [.12, .63], [.13, .645], [.02, .67]], .012, M.dark);
   } else { // scythe
     K.cyl(.013, .95, 0, .41, 0, M.acc, 14, 'y'); K.cyl(.02, .03, 0, .87, 0, M.dark, 14, 'y');
     blade([[.01, .86], [-.06, .9], [-.22, .9], [-.42, .8], [-.26, .84], [-.08, .84], [.0, .82]], .006, M.body);

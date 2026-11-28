@@ -1,5 +1,5 @@
-import { THREE, scene, camera, world, quality, resolveCircle, lineOfSight, insideSolid, openPoint, openPointNear, rand, clamp, angDiff, tracer, beam, sparks, blood, pool, flashLight, SND, goreBurst, gibs, fountain, drip, fxSettings, explosionFx } from './world_v0.99.0.js';
-import { at3 } from './audio_v0.99.0.js';
+import { THREE, scene, camera, world, quality, resolveCircle, lineOfSight, insideSolid, openPoint, openPointNear, rand, clamp, angDiff, tracer, beam, sparks, blood, pool, flashLight, SND, goreBurst, gibs, fountain, drip, fxSettings, explosionFx, arc, shortCircuit, smoke } from './world_v0.99.1.js';
+import { at3 } from './audio_v0.99.1.js';
 
 // Set by game.js: player state, whether the game is live, difficulty, damage and explosion callbacks.
 export const ctx = { player: null, playing: () => false, diff: null, hurt: () => {}, explode: () => {} };
@@ -78,6 +78,15 @@ const MORE = {
   gunship:    ['drone',   { name: 'Gunship',    hp: 160, speed: 5.5, color: 0x3d5a80, trim: P.coral,  dmg: 9,  rate: .5,  pts: 420, cash: 520, scale: 1.5, fly: 5, blurb: 'Armoured flying gun platform.' }, 11, .6],
   mite:       ['bomber',  { name: 'Mite',       hp: 25,  speed: 9.5, color: 0xffc8dd, trim: P.ink,    pts: 80,  cash: 100, scale: .6, blurb: 'Little bomb on legs. Usually comes in pairs.' }, 7, .9],
   nuke:       ['bomber',  { name: 'Nuke',       hp: 140, speed: 6,   color: 0x9ef01a, trim: P.ink,    pts: 400, cash: 500, scale: 1.25, boom: 1.8, blurb: 'Slow walking bomb. Huge blast. Kill it far away.' }, 12, .5],
+  rocketeer:  ['grunt',   { name: 'Rocketeer',  hp: 130, speed: 4.4, color: 0xf4845f, trim: P.ink,    dmg: 30, rate: 2.8, acc: .8, pts: 380, cash: 480, range: [14, 30], weapon: 'rocket', blurb: 'Hangs back and fires rockets. They splash: don\'t stand near walls.' }, 8, .7],
+  arcwalker:  ['brawler', { name: 'Arc Walker', hp: 150, speed: 6.4, color: 0x5ab8ff, trim: P.ink,    dmg: 9,  rate: .55, acc: .8, pts: 360, cash: 450, range: [2, 8], weapon: 'arc', blurb: 'Walks in close and arcs electricity into you. Each zap slows you down.' }, 9, .8],
+  mortar:     ['sniper',  { name: 'Mortar',     hp: 120, speed: 2.8, color: 0x9c6644, trim: P.mustard, dmg: 45, rate: 3.6, acc: .85, pts: 420, cash: 520, range: [22, 60], view: 60, weapon: 'mortar', blurb: 'Lobs shells from far away. A glowing ring shows where each will land: move!' }, 11, .6],
+  leech:      ['drone',   { name: 'Leech',      hp: 70,  speed: 9,   color: 0xb5179e, trim: P.ink,    dmg: 6,  rate: .3,  acc: 1,  pts: 260, cash: 330, scale: .85, range: [0, 3], weapon: 'drain', blurb: 'A drone that latches on, drains your health and heals itself with it.' }, 10, .8],
+  sentry:     ['heavy',   { name: 'Sentry',     hp: 340, speed: .01, color: 0x6c757d, trim: P.orange, dmg: 4,  rate: .11, acc: .62, pts: 420, cash: 520, scale: 1.1, dr: .75, range: [0, 40], blurb: 'Planted turret. Never moves, never stops firing. Flank it or blow it up.' }, 9, .6],
+  // floor bosses (never in normal waves): each has its own body, attacks and two rage phases (the attacks are in the game file)
+  ravager:    ['boss',    { name: 'Ravager',    hp: 1900, speed: 3.4, color: 0x8c1c2c, trim: P.ink, dmg: 7, rate: 1.1, acc: .8, pts: 3000, cash: 3500, scale: 2.1, range: [2, 14], weapon: 'shotgun', pellets: 8, blurb: 'Floor boss: charges you down and slams the ground. Jump the shockwave, sidestep the charge.' }, 9999, 0],
+  tesla:      ['boss',    { name: 'Tesla',      hp: 1500, speed: 2.4, color: 0x3a6ea5, trim: P.ink, dmg: 14, rate: .85, acc: .85, pts: 3000, cash: 3500, scale: 2, range: [10, 26], weapon: 'arc', arcRange: 28, blurb: 'Floor boss: chain lightning at range and lightning strikes all around you. Never stand still.' }, 9999, 0],
+  overseer:   ['drone',   { name: 'Overseer',   hp: 1300, speed: 3.2, color: 0x4a4e69, trim: P.gold, dmg: 9, rate: .2, acc: .8, pts: 3000, cash: 3500, scale: 2.7, fly: 6.5, boss: true, helmet: true, head: .6, view: 45, range: [10, 30], blurb: 'Floor boss: a flying eye that sweeps a burning laser across the ground and calls in Hornets.' }, 9999, 0],
   revenant:   ['grunt',   { name: 'Revenant',   hp: 200, speed: 5.6, color: 0x4a4e69, trim: 0xc77dff, dmg: 11, rate: .55, acc: .92, pts: 480, cash: 600, regen: 8, dr: .8, blurb: 'Late-floor nightmare: tough, tanky and it heals.' }, 15, .6],
 };
 export const SPAWN_EXTRA = [];
@@ -152,6 +161,11 @@ function buildBody(bot) {
   let muzzle;
   if (t.fly) { // ---- drone: armoured core, four ducted rotors, camera eye, belly gun
     bot.body = M(sph(.3, 20, 14), mat);
+    if (bot.type === 'overseer') { // Overseer: a crown of armour fins, a ring of red lights, a huge glowing eye
+      for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2, f = M(box(.05, .2, .16), dark, Math.cos(a) * .3, .12, Math.sin(a) * .3); f.rotation.y = -a; f.rotation.z = .5; }
+      for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2; M(sph(.025, 6, 4), new THREE.MeshStandardMaterial({ color: 0xff3b30, emissive: 0xff3b30, emissiveIntensity: 3 }), Math.cos(a) * .36, -.02, Math.sin(a) * .36); }
+      M(sph(.13, 18, 12), new THREE.MeshStandardMaterial({ color: 0xffe0e0, emissive: 0xff2a2a, emissiveIntensity: 2.6 }), 0, -.02, .25);
+    }
     M(new THREE.TorusGeometry(.31, .05, 8, 28), dark, 0, 0, 0).rotation.x = Math.PI / 2;
     M(sph(.2, 16, 10, 0), dark, 0, .12, 0).scale.y = .6;
     const eye = M(sph(.12, 14, 10), visor, 0, 0, .26, g, 'head'); void eye; M(new THREE.TorusGeometry(.13, .025, 8, 20), joint, 0, 0, .27);
@@ -191,6 +205,22 @@ function buildBody(bot) {
     arm(-1, .62, 1.7, .8, .14, .18, -1.4); arm(1, .62, 1.7, .8, .14, .18, -1.4);
     [-1, 1].forEach(s => { const c = M(cyl(.12, .5, 16), dark, s * .62, 1.55, .85); c.rotation.x = Math.PI / 2; });
     muzzle = new V3(.62, 1.55, 1.12);
+    // each boss on this frame gets its own look
+    const glow = (c, k = 2.2) => new THREE.MeshStandardMaterial({ color: c, emissive: c, emissiveIntensity: k });
+    if (bot.type === 'boss') { // Warden: glowing vents down its sides, exhaust stacks, a sensor mast
+      [-1, 1].forEach(sd => { for (let i = 0; i < 3; i++) M(box(.04, .06, .4), glow(0xff8c42), sd * .56, 1.32 + i * .14, 0); M(cyl(.07, .5, 10), dark, sd * .3, 2.15, -.42); M(cyl(.075, .05, 10), glow(0xff5f3d, 1.4), sd * .3, 2.42, -.42); });
+      M(cyl(.015, .5, 6), joint, -.25, 2.6, -.1); M(sph(.04, 8, 6), glow(0xff3b30, 3), -.25, 2.86, -.1);
+    } else if (bot.type === 'ravager') { // Ravager: spiked shoulders, horns, a jaw plate and red eyes
+      [-1, 1].forEach(sd => { for (let i = 0; i < 3; i++) { const c = M(new THREE.ConeGeometry(.07, .34, 6), std(0xe9ecf2, .3, .8), sd * (.62 + i * .1), 2.1 + i * .05, -.12 + i * .12); c.rotation.z = -sd * .7; }
+        const horn = M(new THREE.ConeGeometry(.06, .4, 6), std(0xe9ecf2, .3, .8), sd * .26, .3, 0, h); horn.rotation.z = -sd * .5; horn.rotation.x = -.4; });
+      M(box(.52, .12, .2), dark, 0, -.18, .2, h); visorBar(h, .5, .05, .28, .05); bot.visorMat.emissive.set(0xff2020);
+      for (let i = -2; i <= 2; i++) M(new THREE.ConeGeometry(.04, .18, 5), std(0xe9ecf2, .3, .8), i * .18, 1.95, -.38).rotation.x = -.6; // a spine of spikes down the back
+    } else if (bot.type === 'tesla') { // Tesla: two humming coils on its back, rings glowing blue, a blue core
+      [-1, 1].forEach(sd => { M(cyl(.06, .8, 12), joint, sd * .32, 2.3, -.45); for (let i = 0; i < 4; i++) M(new THREE.TorusGeometry(.12 - i * .015, .02, 6, 18), glow(0x7fd4ff, 2.6), sd * .32, 2.0 + i * .17, -.45).rotation.x = Math.PI / 2;
+        M(sph(.09, 12, 8), glow(0xd9f2ff, 3.2), sd * .32, 2.75, -.45); });
+      bot.core.material = glow(0x5ab8ff, 3); M(new THREE.TorusGeometry(.2, .025, 8, 24), glow(0x7fd4ff, 2.4), 0, 1.55, .43);
+      bot.coils = true;
+    }
   } else {
     // ---- humanoids: proportions per type
     const L = {
@@ -306,10 +336,12 @@ export function updateDebris(dt) {
     if (!d.rest) {
       d.v.y -= 20 * dt; o.position.addScaledVector(d.v, dt);
       if (d.bleed && d.t < 1.6 && Math.random() < dt * 25) drip(o.position, d.base);
+      if (d.bleed && fxSettings.blood === 'oil' && d.t < 2.5 && Math.random() < dt * 5) { sparks(o.position, 0xffd27a, 3, 3); if (Math.random() < .35) arc(o.position, .2); } // torn wires spit sparks as it flies
       o.rotation.x += d.spin.x * dt; o.rotation.y += d.spin.y * dt; o.rotation.z += d.spin.z * dt;
       if (o.position.y < d.r) {
         o.position.y = d.r; if (Math.abs(d.v.y) > 2 && d.t < 1.5 && Math.random() < .3) SND.casing();
         if (d.bleed && Math.abs(d.v.y) > 2) pool(o.position, .35, d.base);
+        if (d.bleed && fxSettings.blood === 'oil' && Math.abs(d.v.y) > 3) sparks(o.position, 0xffd27a, 5, 3); // metal scraping the floor
         d.v.y *= -.3; d.v.x *= .55; d.v.z *= .55; d.spin.multiplyScalar(.5);
         if (Math.abs(d.v.y) < .6 && d.v.lengthSq() < .5) d.rest = true;
       }
@@ -386,7 +418,7 @@ export class Bot {
     if (opts.hpMul) t.hp = Math.round(t.hp * opts.hpMul);
     this.hpMul = opts.hpMul || 0;
     this.type = type; this.kind = base.base || type; this.nid = opts.nid || ++NID; this.puppet = !!opts.puppet;
-    this.name = t.titan ? 'TITAN' : t.boss ? 'WARDEN' : NAMES[Math.floor(Math.random() * NAMES.length)] + '-' + Math.floor(rand(10, 99));
+    this.name = t.titan ? 'TITAN' : t.boss ? (t.name === 'Warden' ? 'WARDEN' : t.name.toUpperCase()) : NAMES[Math.floor(Math.random() * NAMES.length)] + '-' + Math.floor(rand(10, 99));
     this.pos = pos.clone(); this.pos.y = 0; this.yaw = rand(0, Math.PI * 2);
     this.hp = t.hp; this.alive = true; this.state = 'patrol';
     this.aware = 0; this.lastKnown = null; this.alert = 0; this.react = 0; this.cd = rand(.6, 1.6); this.charge = 0; this.burst = 0;
@@ -469,7 +501,8 @@ export class Bot {
       kid.aware = 1; kid.lastKnown = ctx.player.pos.clone(); kid.alert = 6; kid.setState('hunt'); bots.push(kid);
     }
     at3(this.center(), () => SND.shatter());
-    flashLight(this.center(), 0xffd166, 8, 6, .12); sparks(this.center(), 0xffd166, 10, 5);
+    if (fxSettings.blood === 'oil' && !this.alt) shortCircuit(this.center(), this.t.scale * (this.t.boss ? 1.8 : 1)); // robots short out as they die
+    else { flashLight(this.center(), 0xffd166, 8, 6, .12); sparks(this.center(), 0xffd166, 10, 5); }
   }
   // Break the robot into its parts and throw them. Headshots pop the head clean off.
   shatter(dir, force, headPop) {
@@ -531,6 +564,8 @@ export class Bot {
     const g = this.group, t = this.t;
     if (!this.alive) { if (this.blinkTo) { this.blinkTo = null; g.scale.setScalar(t.scale); } this.dieT -= dt; return this.dieT > 0; }
     if (this.spawnT < 1) { this.spawnT = Math.min(1, this.spawnT + dt * 2.5); g.scale.setScalar(t.scale * (1 - Math.pow(1 - this.spawnT, 3))); }
+    // stunned (shock baton): twitching in place with electricity crawling over them; no moving, aiming or shooting
+    if (this.stunT > 0) { this.stunT -= dt; g.rotation.z = Math.sin(this.stunT * 60) * .04; if (Math.random() < dt * 14) arc(this.center(), .45); if (this.stunT <= 0) g.rotation.z = 0; return true; }
     const pl = ctx.player, pe = camera.position, toP = new V3(pe.x - this.pos.x, 0, pe.z - this.pos.z), dist = toP.length();
     const facing = angDiff(this.yaw, Math.atan2(toP.x, toP.z));
     this.losT -= dt; this.repath -= dt;
@@ -709,6 +744,16 @@ export class Bot {
   pan() { const pl = ctx.player; return clamp(-Math.sin(angDiff(pl.yaw, Math.atan2(-(this.pos.x - pl.pos.x), -(this.pos.z - pl.pos.z)))), -1, 1) * .8; }
   fireWeapon(dist) {
     const t = this.t;
+    if (t.weapon === 'rocket') { this.bolt(0, { rocket: true }); this.cd = t.rate * rand(.9, 1.25) * (ctx.diff.fire || 1); return; }
+    if (t.weapon === 'arc') { if (dist < (t.arcRange || 10)) this.zap(); else this.cd = .3; return; }
+    if (t.weapon === 'drain') { if (dist < 3.6) this.drain(); else this.cd = .2; return; }
+    if (t.weapon === 'mortar') { // a shell lobbed at where you're going to be; the game shows a warning ring and does the blast
+      const pl = ctx.player, sk = ctx.diff.skill || 0, lead = 1.2 * (.4 + sk * .6), miss = (1 - t.acc * ctx.diff.acc) * 6;
+      const p = new V3(pl.pos.x + pl.vel.x * lead + rand(-miss, miss), 0, pl.pos.z + pl.vel.z * lead + rand(-miss, miss));
+      ctx.mortar?.(this, p, t.dmg * ctx.diff.dmg); this.cd = t.rate * rand(.9, 1.2) * (ctx.diff.fire || 1);
+      const from = this.muzzle.getWorldPosition(new V3()); smoke(from, 2, .35, 1); at3(from, () => SND.bot(0, dist, 'heavy'), !lineOfSight(from, camera.position));
+      return;
+    }
     if (t.weapon === 'shotgun') { if (dist < 14) { for (let i = 0; i < t.pellets; i++) this.bolt(.11, { quiet: i > 0 }); this.cd = t.rate * rand(.85, 1.2); } return; }
     if (t.weapon === 'boss') {
       // alternates a 6-round burst with a rocket
@@ -717,6 +762,25 @@ export class Bot {
       return;
     }
     this.bolt(); this.cd = t.rate * rand(.8, 1.3) * (ctx.diff.fire || 1);
+  }
+  // Arc Walker: a crackling bolt of electricity straight into you (it can miss if you're moving); hits slow you down
+  zap() {
+    const from = this.muzzle.getWorldPosition(new V3()), pl = ctx.player, moving = Math.hypot(pl.vel.x, pl.vel.z) > 3;
+    const hit = lineOfSight(from, camera.position) && Math.random() < this.t.acc * ctx.diff.acc * (moving ? .6 : 1);
+    const to = hit ? this.chest() : this.chest().add(new V3(rand(-1.5, 1.5), rand(-.5, 1), rand(-1.5, 1.5)));
+    for (let i = 0; i < 3; i++) beam(from, to.clone().add(new V3(rand(-.15, .15), rand(-.15, .15), rand(-.15, .15))), i ? 0xd9b8ff : 0x9fd4ff, .025, .1);
+    arc(from, .35); arc(to, .5); flashLight(from, 0x9fd4ff, 5, 6, .06);
+    if (hit) { ctx.hurt(this.t.dmg * ctx.diff.dmg, this.pos); ctx.zapped?.(.7); }
+    at3(from, () => SND.bot(0, from.distanceTo(camera.position), 'shotgun'), !lineOfSight(from, camera.position));
+    this.cd = this.t.rate * rand(.85, 1.2) * (ctx.diff.fire || 1);
+  }
+  // Leech: a short purple tether that drains you and heals it
+  drain() {
+    const from = this.center(), to = this.chest();
+    if (!lineOfSight(from, camera.position)) { this.cd = .2; return; }
+    beam(from, to, 0xe056fd, .035, .14); if (Math.random() < .4) arc(from, .25, 0xe056fd);
+    const d = this.t.dmg * ctx.diff.dmg; ctx.hurt(d, this.pos); this.hp = Math.min(this.t.hp, this.hp + d * 2); if (this.bar.visible) this.setBar();
+    this.cd = this.t.rate;
   }
   bolt(extraSpread = 0, o = {}) {
     const from = this.muzzle.getWorldPosition(new V3()), pl = ctx.player, d = ctx.diff, sk = d.skill || 0;

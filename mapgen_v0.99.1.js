@@ -3,13 +3,17 @@
 function mulberry(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 
 export function makeBuilder(seed) {
-  const boxes = [], decorList = [], pads = [], r = mulberry(seed);
+  const boxes = [], decorList = [], pads = [], brks = [], doors = [], drains = [], r = mulberry(seed);
   const B = {
-    r, boxes, decorList, pads,
+    r, boxes, decorList, pads, brks, doors, drains,
     box(x, z, w, d, h, color, y0 = 0) { if (w > 0 && d > 0 && h > y0) boxes.push({ x, z, w, d, h, color, y0 }); },
     slab(x, z, w, d, top, thick, color) { B.box(x, z, w, d, top, color, top - thick); },
     decor(x, y, z, w, h, d, color, shadow = true, kind = 'box') { decorList.push({ x, y, z, w, h, d, color, shadow, kind }); },
     pad(x, z) { pads.push({ x, z, r: 1.1 }); },
+    // things that break when shot: glass panes (one hit) and wooden crates and planks (a few)
+    brk(x, z, w, d, h, color, kind = 'wood', y0 = 0) { if (w > 0 && d > 0 && h > y0) brks.push({ x, z, w, d, h, y0, color, kind }); },
+    door(x, z, axis, w, h, t = .45) { doors.push({ x, z, axis, w, h, t }); },   // a door that swings open when someone walks up
+    drain(x, z, h) { drains.push({ x, z, h }); },                    // a rain spout pouring off a roof edge
     // dir: direction the stairs climb ('n' = -z, 's' = +z, 'e' = +x, 'w' = -x). (x,z) = outer edge centre of the bottom step.
     stairs(x, z, dir, width, height, color, run = .55, rise = .33) {
       const n = Math.ceil(height / rise), [dx, dz] = { n: [0, -1], s: [0, 1], e: [1, 0], w: [-1, 0] }[dir];
@@ -156,7 +160,9 @@ function wall(B, axis, at, a, b, h, t, color, openings, band) {
   openings.sort((p, q) => p.at - q.at).forEach(o => {
     const s = o.at - o.w / 2, e = o.at + o.w / 2; if (s < cur + .3 || e > b - .3) return;
     seg(cur, s, h);
-    if (o.door) seg(s, e, h, 2.6); else { seg(s, e, 1.1); seg(s, e, h, 2.1); }
+    const m = (s + e) / 2;
+    if (o.door) { seg(s, e, h, 2.6); if (B.r() < .75) B.door(axis === 'x' ? m : at, axis === 'x' ? at : m, axis, e - s, 2.6, t); }
+    else { seg(s, e, 1.1); seg(s, e, h, 2.1); if (B.r() < .8) axis === 'x' ? B.brk(m, at, e - s, t, 2.1, 0x9fd6ec, 'glass', 1.1) : B.brk(at, m, t, e - s, 2.1, 0x9fd6ec, 'glass', 1.1); }
     cur = e;
   });
   seg(cur, b, h);
@@ -263,7 +269,8 @@ const FEATS = {
     B.box(x1 - .12, cz, .25, d, ph, c, h);
     if (r() < .8) B.stairs(sxp, z1 + Math.ceil(h / .33) * .55, 'n', 2, h, 0x8d99a6);
     // interior cover and roof clutter
-    for (let k = 0; k < 2 + r() * 3; k++) { const x = cx + (r() - .5) * (w - 3), z = cz + (r() - .5) * (d - 3); B.box(x, z, 1.2 + r(), 1.2 + r(), B.pick([1.1, 1.6]), B.pick([C.wood, C.paper, C.sand])); }
+    for (let k = 0; k < 2 + r() * 3; k++) { const x = cx + (r() - .5) * (w - 3), z = cz + (r() - .5) * (d - 3), bw = 1.2 + r(), bd = 1.2 + r(), bh = B.pick([1.1, 1.6]); if (r() < .5) B.brk(x, z, bw, bd, bh, C.wood, 'wood'); else B.box(x, z, bw, bd, bh, B.pick([C.wood, C.paper, C.sand])); }
+    B.drain(x0 - .12, z1 + .12, h); if (w > 10) B.drain(x1 + .12, z0 - .12, h); // rain spouts at two corners
     if (r() < .6) B.box(cx - w / 4, cz - d / 4, 1.8, 1.8, h + 1.1, 0x8d99a6, h);
     info.roofs.push({ x: cx, z: cz, w, d, h });
   },
@@ -289,6 +296,7 @@ const FEATS = {
     for (let k = 0; k < 4 + r() * 6; k++) {
       const s = 1.2 + r() * 1.6, x = cx + (r() - .5) * L, z = cz + (r() - .5) * L, h = B.pick([1.2, 1.2, 1.8, 2.4]);
       if (!B.free(x, z, s, s, 1.8)) continue;
+      if (h <= 1.8 && r() < .45) { B.brk(x, z, s, s, h, C.wood, 'wood'); continue; } // wooden crates you can shoot apart
       B.box(x, z, s, s, h, B.pick([C.wood, C.mustard, C.paper, col()]));
       if (r() < .35) B.box(x + (r() - .5) * .4, z + (r() - .5) * .4, s * .7, s * .7, h + s * .7, B.pick([C.wood, C.paper]), h);
     }

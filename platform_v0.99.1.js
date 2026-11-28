@@ -1,6 +1,6 @@
 // Game-site hooks. Each release's index.html sets window.PS_PLATFORM to 'web', 'crazygames' or 'poki';
 // the preview leaves it unset ('dev'). Everything here is safe when a site's SDK is missing or blocked: it just does nothing.
-import { ac } from './audio_v0.99.0.js';
+import { ac } from './audio_v0.99.1.js';
 
 export const PLATFORM = window.PS_PLATFORM || 'dev';
 

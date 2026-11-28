@@ -1,12 +1,12 @@
 // Handguns and special weapons, built from the parts kit.
-import { frontPost, rearSight, redDot, holo } from './gunkit_v0.99.0.js';
+import { frontPost, rearSight, redDot, holo } from './gunkit_v0.99.1.js';
 const V = (THREE, x, y, z) => new THREE.Vector3(x, y, z);
 
 export function pistol(THREE, K, M, w, o) {
   const m = w.model, big = !!m.big, back = .1, L = big ? .23 : .19, front = back - L, sh = big ? .05 : .042, sw = big ? .032 : .027;
   const sy0 = .006, top = sy0 + sh;
   // slide with rounded nose, cocking serrations and ejection port
-  o.slide = K.capture(() => {
+  o.slideLen = L; o.slide = K.capture(() => {
   K.side([[back, sy0], [front + .004, sy0], [front, sy0 + .01], [front, top - .006], [front + .01, top], [back - .006, top], [back, top - .008]], sw, M.body, { r: .003 });
   for (let i = 0; i < 7; i++) [-1, 1].forEach(s => K.box(.001, sh * .7, .0028, s * (sw / 2 + .0002), sy0 + sh * .5, back - .012 - i * .0062, M.dark));
   for (let i = 0; i < 4; i++) [-1, 1].forEach(s => K.box(.001, sh * .55, .0025, s * (sw / 2 + .0002), sy0 + sh * .5, front + .02 + i * .006, M.dark));
